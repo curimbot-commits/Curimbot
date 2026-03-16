@@ -75,8 +75,8 @@ export class Settings implements OnInit, OnDestroy {
   // ==================================================================
 
   readonly languages: LanguageOption[] = [
-    { code: LanguageEnum.ES, label: 'settings.languages.es', flag: 'Spain' },
-    { code: LanguageEnum.EN, label: 'settings.languages.en', flag: 'United States' }
+    { code: LanguageEnum.ES, label: 'settings.languages.es', flag: '' },
+    { code: LanguageEnum.EN, label: 'settings.languages.en', flag: '' }
   ];
 
   readonly themes: ThemeOption[] = [

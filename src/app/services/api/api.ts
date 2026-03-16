@@ -254,7 +254,7 @@ export class Api {
     if (fileType) {
       params = params.set('file_type', fileType.toString());
     }
-    return this.http.get<PaginatedDocumentsResponse>(this.DOCUMENTS_URL, {
+    return this.http.get<PaginatedDocumentsResponse>(`${this.DOCUMENTS_URL}/`, {
       headers: this.authHeaderService.getAuthHeaders(),
       params
     }).pipe(catchError(this.handleError));
@@ -291,7 +291,7 @@ export class Api {
       params = params.set('text', options.text);
     }
 
-    return this.http.get<PaginatedDocumentsResponse>(this.DOCUMENTS_URL, { headers, params }).pipe(catchError(this.handleError));
+    return this.http.get<PaginatedDocumentsResponse>(`${this.DOCUMENTS_URL}/`, { headers, params }).pipe(catchError(this.handleError));
   }
 
   /**

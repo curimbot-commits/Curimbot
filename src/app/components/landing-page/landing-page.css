@@ -1,0 +1,62 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+/* ==========================================================================
+   ANIMACIONES
+   ========================================================================== */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+.animate-fade-in { animation: fadeIn 1.2s ease-out forwards; }
+.animate-fade-in-up { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-fade-in-down { animation: fadeInDown 0.6s ease-out forwards; }
+.animate-marquee { animation: marquee 30s linear infinite; }
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+
+/* GSAP Initial States - Removiendo opacity 0 forzado para asegurar visibilidad si falla el script */
+.gsap-feature-card, .gsap-role-card {
+    will-change: transform, opacity;
+}
+
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+
+/* ==========================================================================
+   ELEMENTOS NAVEGACIÓN
+   ========================================================================== */
+.nav-link-custom { position: relative; transition: all 0.3s ease; }
+.nav-link-custom::after {
+    content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1.5px;
+    background-color: #02ab74; transition: width 0.3s ease;
+}
+.nav-link-custom:hover::after { width: 100%; }
+.shadow-3xl { box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.6); }
+
+/* ==========================================================================
+   MODO OSCURO CORPORATIVO (ESPECIALIZACIÓN)
+   ========================================================================== */
+:host-context(html.dark) .bg-white {
+    background-color: #000000 !important;
+}
+
+
+/* Lucide icons en dark mode */
+:host-context(html.dark) lucide-angular {
+    filter: drop-shadow(0 0 10px rgba(2, 171, 116, 0.2));
+}
+
+@media (max-width: 768px) {
+    .animate-marquee { animation-duration: 40s; }
+}
+
+html { scroll-behavior: smooth; }

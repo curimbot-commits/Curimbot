@@ -1,0 +1,117 @@
+<div class="max-w-7xl mx-auto w-full p-2 sm:p-4 lg:p-6">
+  <div class="mb-4 sm:mb-6">
+    <h1 id="document-title" class="text-[#070025] mb-1 sm:mb-2 text-xl sm:text-2xl font-bold">{{ 'settings.title' | translate }}</h1>
+    <p class="text-gray-600 text-sm sm:text-base">{{ 'settings.subtitle' | translate }}</p>
+  </div>
+
+  <!-- Perfil de Usuario -->
+  <section class="p-6 border border-gray-200 rounded-xl mb-6">
+    <div class="flex items-center gap-3 mb-6">
+      <lucide-angular name="user" class="w-6 h-6 text-[#02ab74]"></lucide-angular>
+      <h2 class="text-[#070025]">{{ 'settings.userProfile' | translate }}</h2>
+    </div>
+
+    <div class="space-y-4">
+
+      <app-profile-avatar [size]="5" [showEditControls]="true"></app-profile-avatar>
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label for="name" class="block text-sm font-medium text-gray-700">{{ 'settings.fullName' | translate }}</label>
+            <input type="text" id="name" formControlName="name"
+              class="w-full pr-10 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#02ab74]"
+              [placeholder]="'settings.namePlaceholder' | translate" [ngClass]="{'border-red-500': hasError('name')}">
+            <p *ngIf="hasError('name')" class="text-red-500 text-sm">{{ getErrorMessage('name') }}</p>
+          </div>
+          <div class="space-y-2">
+            <label for="email" class="block text-sm font-medium text-gray-700">{{ 'settings.email' | translate }}</label>
+            <input type="email" id="email" formControlName="email"
+              class="w-full pr-10 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#02ab74]"
+              [placeholder]="'settings.emailPlaceholder' | translate" [ngClass]="{'border-red-500': hasError('email')}">
+            <p *ngIf="hasError('email')" class="text-red-500 text-sm">{{ getErrorMessage('email') }}</p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+
+  <!-- Notificaciones -->
+  <section class="p-6 border border-gray-200 rounded-xl mb-6">
+    <div class="flex items-center gap-3 mb-6">
+      <lucide-angular name="bell" class="w-6 h-6 text-[#02ab74]"></lucide-angular>
+      <h2 class="text-[#070025]">{{ 'settings.notifications' | translate }}</h2>
+    </div>
+
+    <div class="space-y-4">
+      <div class="flex items-center justify-between py-3 border-b border-gray-200">
+        <div>
+          <p class="text-[#070025]">{{ 'settings.emailNotifs' | translate }}</p>
+          <p class="text-sm text-gray-600">{{ 'settings.emailNotifsDesc' | translate }}</p>
+        </div>
+        <z-switch [ngModel]="emailNotifications"
+          (checkChange)="emailNotifications = $event; updateNotificationPreferences()" />
+      </div>
+      <div class="flex items-center justify-between py-3 border-b border-gray-200">
+        <div>
+          <p class="text-[#070025]">{{ 'settings.pushNotifs' | translate }}</p>
+          <p class="text-sm text-gray-600">{{ 'settings.pushNotifsDesc' | translate }}</p>
+        </div>
+        <z-switch [ngModel]="pushNotifications"
+          (checkChange)="pushNotifications = $event; updateNotificationPreferences()" />
+      </div>
+      <div class="flex items-center justify-between py-3">
+        <div>
+          <p class="text-[#070025]">{{ 'settings.weeklySummary' | translate }}</p>
+          <p class="text-sm text-gray-600">{{ 'settings.weeklySummaryDesc' | translate }}</p>
+        </div>
+        <z-switch [ngModel]="weeklySummary" (checkChange)="weeklySummary = $event; updateNotificationPreferences()" />
+      </div>
+      <div class="flex justify-end">
+        <button (click)="sendTestEmail()" class="border border-gray-500 p-2 rounded hover:bg-gray-100">
+          {{ 'settings.testEmail' | translate }}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preferencias -->
+  <section class="p-6 border border-gray-200 rounded-xl mb-6">
+    <div class="flex items-center gap-3 mb-6">
+      <lucide-angular name="palette" class="w-6 h-6 text-[#02ab74]"></lucide-angular>
+      <h2 class="text-[#070025]">{{ 'settings.preferences' | translate }}</h2>
+    </div>
+    <div class="space-y-4">
+      <div class="space-y-2">
+        <label for="language" class="flex items-center gap-2">
+          <lucide-angular name="globe" class="w-4 h-4" />
+          {{ 'settings.language' | translate }}
+        </label>
+        <select id="language" [(ngModel)]="selectedLanguage" (change)="changeLanguage(selectedLanguage)"
+          class="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#02ab74]">
+          <option *ngFor="let lang of languages" [value]="lang.code">{{ lang.flag }} {{ lang.label | translate }}</option>
+        </select>
+      </div>
+      <div class="space-y-2">
+        <label for="theme" class="flex items-center gap-2">
+          <lucide-angular [name]="selectedThemeIcon" class="w-4 h-4" />
+          {{ 'settings.theme' | translate }}
+        </label>
+        <select id="theme" [(ngModel)]="selectedTheme" (change)="changeTheme(selectedTheme)"
+          class="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#02ab74]">
+          <option *ngFor="let theme of themes" [value]="theme.code">{{ theme.label | translate }}</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- Guardar Cambios -->
+  <div class="flex justify-end mb-6">
+    <button (click)="saveProfile()" [disabled]="saving || profileForm.invalid"
+      class="bg-[#02ab74] hover:bg-[#028a5f] text-white rounded-lg px-8 flex items-center h-10"
+      aria-label="Guardar Cambios">
+      <lucide-angular name="save" class="w-5 h-5 mr-2" />
+      {{ saving ? ('settings.saving' | translate) : ('settings.saveChanges' | translate) }}
+    </button>
+  </div>
+</div>

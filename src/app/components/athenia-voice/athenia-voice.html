@@ -1,0 +1,230 @@
+<div class="cv-shell">
+
+  <!-- ── HEADER ─────────────────────────────────────────────── -->
+  <header class="cv-header" style="justify-content:center;">
+
+    <!-- Toggle de modo -->
+    <nav class="cv-seg" role="tablist" aria-label="Modo del asistente">
+      <button class="cv-seg-btn"
+        role="tab"
+        [class.active]="currentMode() === 'text'"
+        [attr.aria-selected]="currentMode() === 'text'"
+        (click)="setMode('text')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        {{ 'voice.chat' | translate }}
+      </button>
+      <button class="cv-seg-btn"
+        role="tab"
+        [class.active]="currentMode() === 'voice'"
+        [attr.aria-selected]="currentMode() === 'voice'"
+        (click)="setMode('voice')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3M9 22h6"/>
+        </svg>
+        {{ 'voice.voice' | translate }}
+      </button>
+    </nav>
+
+  </header>
+
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <!-- PANEL VOZ                                                   -->
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <section class="cv-panel" [class.visible]="currentMode() === 'voice'" aria-label="Asistente de voz">
+
+    <div class="cv-voice-stage">
+
+      <!-- Orbe -->
+      <div class="cv-orb-frame"
+        [class.idle]="!isActive() && !state().error"
+        [class.listening]="state().isListening && !state().isSpeaking"
+        [class.speaking]="state().isSpeaking"
+        [class.connecting]="state().status === 'CONNECTING' || state().status === 'RECONNECTING'"
+        [class.error]="!!state().error">
+
+        <!-- Glow de fondo -->
+        <div class="orb-glow"></div>
+
+        <!-- Anillos de energía -->
+        <div class="orb-ring orb-ring-1"></div>
+        <div class="orb-ring orb-ring-2"></div>
+        <div class="orb-ring orb-ring-3"></div>
+
+        <!-- Canvas Three.js -->
+        <canvas #threeCanvas></canvas>
+
+        <div class="cv-orb-badge" [ngClass]="badgeClass()" style="bottom:-36px;">
+          <span class="b-dot"></span>
+          {{ statusLabel() | translate }}
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="cv-voice-info" style="margin-top: 20px;">
+
+
+        <p class="cv-voice-subtext"
+          [class.listening]="state().isListening && !state().isSpeaking"
+          [class.speaking]="state().isSpeaking">
+          <ng-container *ngIf="!isActive() && !state().error">{{ 'voice.pressMic' | translate }}</ng-container>
+          <ng-container *ngIf="state().status === 'CONNECTING'">{{ 'voice.connecting' | translate }}</ng-container>
+          <ng-container *ngIf="isActive() && !state().isListening && !state().isSpeaking && state().status !== 'CONNECTING'">{{ 'voice.canSpeak' | translate }}</ng-container>
+          <ng-container *ngIf="state().isListening && !state().isSpeaking">{{ 'voice.speakNow' | translate }}</ng-container>
+          <ng-container *ngIf="state().isSpeaking">{{ 'voice.speakingNow' | translate }}</ng-container>
+          <ng-container *ngIf="state().error">{{ 'voice.error' | translate }}: {{ state().error }}</ng-container>
+        </p>
+
+        <div class="cv-vol" *ngIf="state().isListening || state().isSpeaking" aria-hidden="true" style="margin-top: 36px; margin-bottom: 12px;">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+
+
+        <div class="cv-error-bar" *ngIf="state().error" role="alert">
+          <span>{{ 'voice.connectionError' | translate }}</span>
+          <button (click)="toggleVoice()" type="button">{{ 'voice.retry' | translate }}</button>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <!-- PANEL TEXTO                                                  -->
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <section class="cv-panel" [class.visible]="currentMode() === 'text'" aria-label="Consulta textual">
+
+    <div class="cv-chat-body">
+
+      <!-- Estado vacío -->
+      <div class="cv-empty" *ngIf="!hasMessages()">
+        <div class="cv-empty-icon" aria-hidden="true">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/>
+          </svg>
+        </div>
+        <h3 class="cv-empty-h">{{ 'voice.chatTitle' | translate }}</h3>
+        <p class="cv-empty-p">{{ 'voice.chatSubtitle' | translate }}</p>
+
+        <!-- Hints como lista (no chips horizontales — más profesional) -->
+        <div class="cv-hints">
+          <button
+            class="cv-hint-btn"
+            *ngFor="let hintKey of hintKeys"
+            (click)="sendHint(hintKey)"
+            type="button">
+            {{ hintKey | translate }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Conversación -->
+      <div class="cv-scroll" #messagesList *ngIf="hasMessages()" role="log" aria-live="polite">
+
+        <article
+          *ngFor="let msg of messages(); trackBy: trackMsg"
+          class="cv-row"
+          [class.ai]="msg.role === 'ai'"
+          [class.user]="msg.role === 'user'">
+
+          <div class="cv-av" [class.ai]="msg.role === 'ai'" [class.user]="msg.role === 'user'" aria-hidden="true">
+            {{ msg.role === 'ai' ? 'C' : ('voice.you' | translate) }}
+          </div>
+
+          <div class="cv-bw">
+            <div class="cv-bubble">{{ msg.text }}</div>
+            <time class="cv-ts">{{ msg.time }}</time>
+          </div>
+
+        </article>
+
+        <!-- Typing -->
+        <div class="cv-row ai" *ngIf="isTyping()" aria-label="Curim está escribiendo">
+          <div class="cv-av ai" aria-hidden="true">C</div>
+          <div class="cv-typing">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <!-- INPUT BAR                                                   -->
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <footer class="cv-input-bar">
+
+    <!-- Modo texto -->
+    <ng-container *ngIf="currentMode() === 'text'">
+      <div class="cv-txt-row" [class.focused]="inputFocused">
+        <textarea
+          #textInput
+          class="cv-ta"
+          [placeholder]="'voice.inputPlaceholder' | translate"
+          rows="1"
+          [(ngModel)]="inputValue"
+          (keydown)="onKeydown($event)"
+          (input)="autoResize($event)"
+          (focus)="inputFocused = true"
+          (blur)="inputFocused = false"
+          aria-label="Tu consulta">
+        </textarea>
+
+        <button
+          class="cv-send"
+          type="button"
+          [disabled]="!inputValue.trim()"
+          (click)="sendText()"
+          aria-label="Enviar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 2L11 13M22 2 15 22 11 13 2 9l20-7z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="cv-bar-meta">
+        <span class="cv-bar-hint">{{ 'voice.keyboardHint' | translate }}</span>
+        <button class="cv-clear" type="button" (click)="clearMessages()">{{ 'voice.clearBtn' | translate }}</button>
+      </div>
+    </ng-container>
+
+    <!-- Modo voz -->
+    <ng-container *ngIf="currentMode() === 'voice'">
+      <div class="cv-voice-row">
+        <span class="cv-mic-label" [class.active]="isActive()">
+          <ng-container *ngIf="!isActive()">{{ 'voice.micTapToSpeak' | translate }}</ng-container>
+          <ng-container *ngIf="state().isListening && !state().isSpeaking">{{ 'voice.micListening' | translate }}</ng-container>
+          <ng-container *ngIf="state().isSpeaking">{{ 'voice.micSpeaking' | translate }}</ng-container>
+          <ng-container *ngIf="isActive() && !state().isListening && !state().isSpeaking">{{ 'voice.micActive' | translate }}</ng-container>
+        </span>
+
+        <button
+          class="cv-mic-btn"
+          type="button"
+          [class.active]="isActive()"
+          [disabled]="state().status === 'CONNECTING' || state().status === 'RECONNECTING'"
+          (click)="toggleVoice()"
+          [attr.aria-label]="isActive() ? 'Detener asistente' : 'Activar asistente de voz'">
+          <svg *ngIf="!isActive()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3M9 22h6"/>
+          </svg>
+          <svg *ngIf="isActive()" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="7" y="7" width="10" height="10" rx="2"/>
+          </svg>
+        </button>
+
+       
+      </div>
+    </ng-container>
+
+  </footer>
+
+</div>

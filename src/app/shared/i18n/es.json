@@ -1,0 +1,889 @@
+{
+  "login": {
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "submit": "Iniciar Sesión",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "headerTitle": "Asistente Virtual IA",
+    "title": "Iniciar Sesión",
+    "subtitle": "Accede a tu asistente virtual",
+    "email": "Correo Electrónico",
+    "emailPlaceholder": "tu@email.com",
+    "passwordPlaceholder": "••••••••",
+    "showPassword": "Mostrar/ocultar contraseña",
+    "rememberMe": "Recordarme",
+    "submitting": "Iniciando sesión...",
+    "orContinueWith": "O continúa con",
+    "noAccount": "¿No tienes una cuenta?",
+    "register": "Regístrate",
+    "errors": {
+      "emailRequired": "El correo electrónico es requerido.",
+      "emailInvalid": "Ingresa un correo electrónico válido.",
+      "passwordRequired": "La contraseña es requerida.",
+      "passwordMinLength": "La contraseña debe tener al menos 8 caracteres.",
+      "authTitle": "Error de autenticación",
+      "invalidCredentialsTitle": "Credenciales inválidas",
+      "accountDisabledTitle": "Cuenta desactivada",
+      "sessionExpiredTitle": "Sesión expirada",
+      "sessionClosedTitle": "Sesión cerrada",
+      "unauthorizedTitle": "Acceso no autorizado",
+      "accountLockedTitle": "Cuenta bloqueada temporalmente",
+      "insufficientPermissionsTitle": "Permisos insuficientes",
+      "forbiddenAccessTitle": "Acceso prohibido",
+      "userNotFoundTitle": "Usuario no encontrado",
+      "resourceNotFoundTitle": "Recurso no encontrado",
+      "activeSessionTitle": "Sesión activa detectada",
+      "conflictTitle": "Conflicto",
+      "invalidDataTitle": "Datos inválidos",
+      "tooManyAttemptsTitle": "Has excedido el límite de intentos",
+      "serverErrorTitle": "Error del servidor. Intenta más tarde.",
+      "connectionErrorTitle": "Error de conexión",
+      "unexpectedErrorTitle": "Error inesperado"
+    },
+    "success": {
+      "twoFactorRequired": "Verificación de dos factores requerida",
+      "loginSuccess": "¡Inicio de sesión exitoso!"
+    }
+  },
+  "dashboard": {
+    "welcomeMessage": "Bienvenido a tu panel de control",
+    "title": "Dashboard de Documentos",
+    "subtitleAdmin": "Visualización global de todos los usuarios",
+    "subtitleUser": "Visualización y análisis de actividad de documentos",
+    "exportAll": "Exportar Todo",
+    "exportMine": "Exportar Mis Datos",
+    "searchAdmin": "Buscar por usuario o nombre de documento...",
+    "searchUser": "Buscar en mis documentos...",
+    "loadingStats": "Cargando estadísticas...",
+    "retry": "Reintentar",
+    "distributionTitle": "Distribución de Documentos",
+    "byFileType": "Por tipo de archivo",
+    "filteredBy": "Filtrado:",
+    "global": " (Global)",
+    "noDataTitle": "No hay datos disponibles",
+    "noDocsAll": "No hay documentos para mostrar",
+    "noDocsType": "No hay documentos de tipo",
+    "trendTitle": "Tendencia de Documentos",
+    "trendSubtitle": "Evolución por tipo de archivo",
+    "noTrendData": "No hay datos de tendencia para el período seleccionado",
+    "recentActivitiesTitle": "Actividades Recientes",
+    "allUsers": "(Todos los usuarios)",
+    "showingAllActivities": "Mostrando todas las actividades",
+    "loadingActivities": "Cargando actividades...",
+    "table": {
+      "user": "Usuario",
+      "document": "Documento",
+      "type": "Tipo",
+      "action": "Acción",
+      "dateTime": "Fecha y Hora"
+    },
+    "noRecentActivitiesTitle": "No hay actividades recientes",
+    "noActivitiesAdmin": "No hay actividades de ningún usuario",
+    "noActivitiesUser": "Las actividades aparecerán aquí cuando interactúes con documentos",
+    "pagination": {
+      "showing": "Mostrando",
+      "of": "de",
+      "activities": "actividades"
+    },
+    "stats": {
+      "today": "Hoy",
+      "todayGlobal": "Hoy (Global)",
+      "docsUploaded": "documentos subidos",
+      "thisWeek": "Esta Semana",
+      "thisWeekGlobal": "Esta Semana (Global)",
+      "storage": "Almacenamiento",
+      "storageGlobal": "Almacenamiento (Global)",
+      "spaceUsed": "espacio utilizado"
+    },
+    "errors": {
+      "stats": "Error al cargar las estadísticas:",
+      "chart": "Error al cargar los datos del gráfico:",
+      "activities": "Error al cargar las actividades:"
+    },
+    "timeRanges": {
+      "week": "Semana",
+      "month": "Mes",
+      "year": "Año"
+    }
+  },
+  "voice": {
+    "chat": "Chat",
+    "voice": "Voz",
+    "waiting": "EN ESPERA",
+    "listening": "ESCUCHANDO...",
+    "processing": "PROCESANDO...",
+    "speaking": "RESPONDIENDO...",
+    "connecting": "CONECTANDO...",
+    "error": "ERROR",
+    "pressMic": "Presiona el micrófono para iniciar la conversación.",
+    "speakNow": "Escuchando tu consulta...",
+    "processingAudio": "Curim está pensando...",
+    "speakingNow": "Curim está respondiendo...",
+    "tapToSpeak": "TOCA PARA HABLAR",
+    "aiProvider": "ElevenLabs Conversational AI",
+    "chatTitle": "¿En qué puedo ayudarte?",
+    "chatSubtitle": "Analizo pólizas, documentos legales y contratos. Escribe tu consulta o elige una sugerencia.",
+    "inputPlaceholder": "Escribe tu consulta...",
+    "you": "Tú",
+    "connectionError": "Error al conectar con el servidor",
+    "retry": "Reintentar",
+    "keyboardHint": "Enter para enviar · Shift+Enter nueva línea",
+    "clearBtn": "Limpiar",
+    "micTapToSpeak": "Toca para hablar",
+    "micListening": "Escuchando…",
+    "micSpeaking": "Respondiendo…",
+    "micActive": "Curim activo",
+    "canSpeak": "Puede hablar.",
+    "errorConsulting": "Error consultando a Curim.",
+    "hints": {
+      "hint1": "¿Qué beneficios tiene mi póliza?",
+      "hint2": "¿Cuáles son las exclusiones de salud?",
+      "hint3": "¿Cómo radicar un siniestro?"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Personaliza tu experiencia y preferencias",
+    "userProfile": "Perfil de Usuario",
+    "fullName": "Nombre Completo",
+    "email": "Correo Electrónico",
+    "namePlaceholder": "Ingresa tu nombre completo",
+    "emailPlaceholder": "Ingresa tu correo electrónico",
+    "notifications": "Notificaciones",
+    "emailNotifs": "Notificaciones por Email",
+    "emailNotifsDesc": "Recibe actualizaciones importantes por correo",
+    "pushNotifs": "Notificaciones Push",
+    "pushNotifsDesc": "Recibe notificaciones en tiempo real",
+    "weeklySummary": "Resumen Semanal",
+    "weeklySummaryDesc": "Recibe un resumen de actividad cada semana",
+    "testEmail": "Enviar Email de Prueba",
+    "preferences": "Preferencias",
+    "language": "Idioma",
+    "theme": "Tema de Interfaz",
+    "saveChanges": "Guardar Cambios",
+    "saving": "Guardando...",
+    "errors": {
+      "required": "Este campo es requerido",
+      "invalidEmail": "Email inválido",
+      "minLength": "Mínimo 2 caracteres",
+      "maxLength": "Máximo 100 caracteres"
+    },
+    "languages": {
+      "es": "Español",
+      "en": "Inglés"
+    },
+    "themes": {
+      "light": "Claro",
+      "dark": "Oscuro",
+      "auto": "Automático"
+    },
+    "alerts": {
+      "loadUserError": "Error al cargar datos del usuario",
+      "loadPrefsError": "Error al cargar preferencias",
+      "profileSuccess": "Perfil actualizado correctamente",
+      "profileError": "Error al actualizar perfil",
+      "notifSuccess": "Preferencias de notificaciones actualizadas",
+      "notifError": "Error al actualizar preferencias",
+      "langSuccess": "Idioma actualizado",
+      "langError": "Error al cambiar idioma",
+      "themeSuccess": "Tema actualizado",
+      "themeError": "Error al cambiar tema",
+      "convSuccess": "Convocatoria actualizada correctamente",
+      "convError": "Error actualizando convocatoria",
+      "emailSuccess": "Email de prueba enviado. Revisa tu bandeja de entrada.",
+      "emailError": "Error al enviar email de prueba"
+    }
+  },
+  "navbar": {
+    "documents": "Documentos",
+    "search": "Búsqueda",
+    "dashboard": "Dashboard",
+    "users": "Usuarios",
+    "history": "Historial",
+    "settings": "Configuración",
+    "security": "Seguridad",
+    "curim": "Curim",
+    "logout": "Cerrar sesión",
+    "loggingOut": "Cerrando...",
+    "alerts": {
+      "logoutSuccess": "Sesión cerrada",
+      "logoutMessage": "Sesión cerrada correctamente",
+      "errorTitle": "Algo salió mal",
+      "sessionExpired": "Sesión expirada",
+      "serviceUnavailable": "Servicio no disponible",
+      "unknownError": "Error desconocido"
+    }
+  },
+  "document": {
+    "title": "Gestión de Documentos",
+    "subtitle": "Visualiza, carga y organiza tus documentos",
+    "upload": {
+      "dragDrop": "Arrastra y suelta tus archivos aquí",
+      "or": "o",
+      "select": "Seleccionar archivos",
+      "supported": "Formatos soportados: PDF, DOCX, TXT (Máx. 10MB por archivo)"
+    },
+    "filters": {
+      "all": "Todos",
+      "pdf": "PDF",
+      "docx": "DOCX",
+      "txt": "TXT"
+    },
+    "list": {
+      "loading": "Cargando documentos...",
+      "noDocs": "No hay documentos disponibles",
+      "uploadFirst": "Sube tu primer documento arrastrándolo al área superior",
+      "noType": "No hay documentos de tipo",
+      "viewed": "Documento visto",
+      "view": "Ver documento"
+    },
+    "pagination": {
+      "previous": "Anterior",
+      "next": "Siguiente"
+    },
+    "alerts": {
+      "uploading": "Subiendo archivos...",
+      "uploadSuccess": "¡Archivos subidos!",
+      "uploadError": "No se pudieron subir los archivos.",
+      "sessionExpired": "Sesión expirada. Por favor, inicia sesión nuevamente.",
+      "loadError": "Error al cargar documentos.",
+      "filterError": "Error al filtrar documentos. Inténtalo nuevamente.",
+      "downloadComplete": "Descarga completada",
+      "downloadError": "No se pudo descargar el documento.",
+      "deleteConfirm": "¿Deseas eliminar",
+      "deleteSuccess": "ha sido eliminado.",
+      "deleteError": "No se pudo eliminar el documento.",
+      "viewError": "No se pudo visualizar el documento."
+    }
+  },
+  "chat": {
+    "docsContext": "documentos · En línea",
+    "subtitleFallback": "Asistente de Curiman Brokers Group",
+    "greeting": "Hola, ¿en qué te puedo ayudar hoy con tus documentos?",
+    "inputPlaceholder": "Envía un mensaje a Curim...",
+    "suggestionsTitle": "Sugerencias de preguntas:",
+    "startVoice": "Iniciar chat por voz en Athenia",
+    "poweredBy": "Powered by OpenAI & Athenia",
+    "toggleOpen": "Abrir chat",
+    "toggleClose": "Cerrar chat",
+    "minimize": "Minimizar chat",
+    "maximize": "Expandir chat",
+    "botName": "Curim",
+    "you": "Tú",
+    "suggestions": {
+      "summary": "¿Me puedes dar un resumen de mis documentos?",
+      "dates": "¿Cuáles son las fechas clave del último proceso?",
+      "status": "¿Cuál es el estado de mis trámites?"
+    },
+    "close": "Cerrar chat",
+    "emptyTitle": "¿En qué puedo ayudarte?",
+    "emptySubtitle": "Athenia puede responder preguntas sobre tus documentos, ayudarte a redactar o resumir información compleja.",
+    "sources": "Fuentes",
+    "inputLabel": "Mensaje",
+    "send": "Enviar mensaje",
+    "inputHint": "Presiona Enter para enviar",
+    "systemOnline": "Sistema en línea",
+    "errorMessage": "Lo siento, ha ocurrido un error al procesar tu solicitud."
+  },
+  "history": {
+    "title": "Historial de Actividad",
+    "subtitle": "Revisa todas las acciones realizadas en tu cuenta",
+    "searchPlaceholder": "Buscar en el historial...",
+    "filters": {
+      "all": "Todas las acciones",
+      "upload": "Subidas",
+      "download": "Descargas",
+      "delete": "Eliminados",
+      "error": "Errores"
+    },
+    "stats": {
+      "total": "Total Acciones",
+      "uploadsThisMonth": "Subidos Este Mes",
+      "errors": "Errores"
+    },
+    "labels": {
+      "upload": "Documento subido",
+      "download": "Documento descargado",
+      "process": "Documento procesado",
+      "edit": "Documento editado",
+      "delete": "Documento eliminado",
+      "error": "Error al procesar",
+      "default": "Acción"
+    },
+    "loading": "Cargando actividades...",
+    "recentActivity": "Actividad Reciente",
+    "unnamedDoc": "Sin nombre",
+    "empty": {
+      "title": "No se encontraron resultados",
+      "subtitle": "Intenta con otros términos de búsqueda o filtros"
+    },
+    "pagination": {
+      "info": "Página {{current}} de {{total}} ({{count}} actividades)",
+      "prevDesc": "Página Anterior",
+      "nextDesc": "Página Siguiente"
+    },
+    "export": {
+      "title": "Exportar Historial",
+      "subtitle": "Descarga un reporte completo de tu actividad",
+      "pdfBtn": "Exportar PDF",
+      "excelBtn": "Exportar Excel",
+      "generatedOn": "Generado el",
+      "columns": {
+        "datetime": "Fecha y Hora",
+        "action": "Acción",
+        "document": "Documento"
+      }
+    },
+    "alerts": {
+      "loadErrorTitle": "Error al cargar las actividades recientes",
+      "loadErrorDesc": "No se pudieron cargar las actividades recientes",
+      "noActivities": "No hay actividades para exportar",
+      "pdfSuccess": "Historial exportado a PDF",
+      "pdfError": "Hubo un error al generar el PDF.",
+      "excelSuccess": "Historial exportado a Excel (CSV)",
+      "excelError": "Hubo un error al generar el Excel."
+    }
+  },
+  "search": {
+    "title": "Buscar Documentos",
+    "subtitle": "Encuentra documentos utilizando búsqueda avanzada",
+    "placeholder": "Buscar por nombre, contenido, etiquetas...",
+    "btnSearch": "Buscar",
+    "filters": {
+      "title": "Filtros Avanzados",
+      "fileType": "Tipo de Archivo",
+      "types": {
+        "all": "Todos",
+        "pdf": "PDF",
+        "docx": "DOCX",
+        "txt": "TXT"
+      },
+      "date": "Fecha",
+      "dates": {
+        "any": "Cualquier fecha",
+        "today": "Hoy",
+        "week": "Última semana",
+        "month": "Último mes",
+        "year": "Último año"
+      }
+    },
+    "loading": "Cargando...",
+    "results": {
+      "found": "Se encontraron",
+      "resultsFor": "resultados para",
+      "uploadedBy": "Subido por:",
+      "unknown": "Desconocido",
+      "view": "Ver documento",
+      "download": "Descargar documento",
+      "delete": "Eliminar documento"
+    },
+    "pagination": {
+      "previous": "Anterior",
+      "next": "Siguiente"
+    },
+    "empty": {
+      "title": "No se encontraron resultados",
+      "noMatches": "No hay documentos que coincidan con",
+      "startSearch": "Ingresa un término de búsqueda para comenzar"
+    },
+    "tips": {
+      "title": "Consejos de Búsqueda",
+      "tip1": "• Usa palabras clave específicas para mejores resultados",
+      "tip2": "• Combina filtros para búsquedas más precisas",
+      "tip3": "• Puedes buscar por nombre de archivo o contenido del documento",
+      "tip4": "• Las etiquetas te ayudan a organizar y encontrar documentos rápidamente"
+    },
+    "alerts": {
+      "dateUnavailable": "Fecha no disponible",
+      "viewError": "No se pudo visualizar el documento.",
+      "downloadSuccess": "Descarga completada",
+      "downloadError": "No se pudo descargar el documento.",
+      "deleteConfirmTitle": "¿Eliminar",
+      "deleteConfirmText": "Esta acción no se puede deshacer.",
+      "deleteSuccess": "Documento Eliminado",
+      "deleteError": "No se pudo eliminar el documento.",
+      "searchError": "Ocurrió un problema al buscar documentos."
+    }
+  },
+  "register": {
+    "title": "Crear una Cuenta",
+    "subtitle": "Únete y comienza a gestionar tus documentos.",
+    "name": "Nombre Completo",
+    "namePlaceholder": "Tu nombre",
+    "email": "Correo Electrónico",
+    "emailPlaceholder": "tu@email.com",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Al menos 8 caracteres",
+    "confirmPassword": "Confirmar Contraseña",
+    "confirmPasswordPlaceholder": "Repite tu contraseña",
+    "termsPre": "Acepto los",
+    "termsLink": "términos y condiciones",
+    "termsAnd": "y la",
+    "privacyLink": "política de privacidad",
+    "submit": "Crear Cuenta",
+    "submitting": "Creando cuenta...",
+    "orContinueWith": "O continúa con",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "login": "Inicia sesión",
+    "errors": {
+      "nameRequired": "El nombre es obligatorio.",
+      "nameMinLength": "El nombre debe tener al menos 2 caracteres.",
+      "nameMaxLength": "El nombre no puede exceder los 50 caracteres.",
+      "namePattern": "El nombre no puede contener números.",
+      "emailRequired": "El correo es obligatorio.",
+      "emailInvalid": "Ingresa un correo válido.",
+      "emailMaxLength": "El correo no puede exceder los 100 caracteres.",
+      "passwordRequired": "La contraseña es obligatoria.",
+      "passwordMinLength": "La contraseña debe tener al menos 8 caracteres.",
+      "weakPassword": "Debe incluir mayúsculas, minúsculas, números y símbolos.",
+      "passwordMismatch": "Las contraseñas no coinciden.",
+      "confirmRequired": "Debes confirmar la contraseña.",
+      "termsRequired": "Debes aceptar los términos y condiciones.",
+      "registerErrorHeader": "Error en el registro.",
+      "invalidData": "Datos inválidos. Por favor, revisa el formulario.",
+      "conflict": "Este correo electrónico ya está registrado.",
+      "unprocessable": "Formato de datos inválido. Revisa los campos.",
+      "serverError": "Error del servidor. Intenta de nuevo más tarde."
+    },
+    "success": {
+      "registerSuccess": "¡Registro exitoso!"
+    }
+  },
+  "forgotPassword": {
+    "backToLogin": "Volver al inicio de sesión",
+    "title": "¿Olvidaste tu contraseña?",
+    "subtitle": "No te preocupes, te enviaremos instrucciones para recuperarla",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "tu@email.com",
+    "emailHint": "Ingresa el correo asociado a tu cuenta",
+    "submit": "Enviar instrucciones",
+    "submitting": "Enviando...",
+    "noAccount": "¿No tienes una cuenta?",
+    "register": "Regístrate",
+    "errors": {
+      "emailRequired": "El correo es requerido",
+      "emailInvalid": "Ingresa un correo válido",
+      "emailWarning": "Por favor ingresa un correo válido.",
+      "emailNotFound": "Correo no encontrado",
+      "sendError": "Error al enviar el correo.",
+      "verifyError": "Error al verificar el correo."
+    },
+    "success": {
+      "sendSuccess": "Correo de restablecimiento enviado."
+    }
+  },
+  "checkEmail": {
+    "title": "¡Revisa tu correo!",
+    "subtitle": "Te hemos enviado un enlace para restablecer tu contraseña.",
+    "step1": "Abre tu bandeja de entrada",
+    "step2": "Busca el correo de Asistente Virtual IA",
+    "step3": "Haz clic en el enlace para restablecer tu contraseña",
+    "notReceived": "¿No recibiste el correo?",
+    "resend": "Reenviar correo",
+    "resendIn": "Reenviar en {{seconds}}s",
+    "backToLogin": "Volver al inicio de sesión",
+    "errors": {
+      "noConnectionHeader": "Sin conexión",
+      "noConnection": "No se pudo conectar con el servidor. Verifica tu conexión.",
+      "attention": "Atención",
+      "resendErrorHeader": "Error",
+      "resendError": "Ocurrió un error al reenviar el correo. Intenta nuevamente."
+    },
+    "success": {
+      "resendSuccessHeader": "Correo reenviado",
+      "resendSuccess": "Se ha enviado nuevamente el correo de restablecimiento."
+    }
+  },
+  "resetPassword": {
+    "title": "Restablecer Contraseña",
+    "subtitle": "Ingresa tu nueva contraseña",
+    "newPassword": "Nueva Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "confirmPassword": "Confirmar Contraseña",
+    "strength": "Fortaleza:",
+    "mismatch": "Las contraseñas no coinciden",
+    "requirements": "La contraseña debe contener:",
+    "reqLength": "Al menos 8 caracteres",
+    "reqUppercase": "Una letra mayúscula",
+    "reqLowercase": "Una letra minúscula",
+    "reqNumber": "Un número",
+    "submit": "Actualizar Contraseña",
+    "submitting": "Actualizando...",
+    "errors": {
+      "invalidToken": "Token inválido o expirado",
+      "invalidFields": "Por favor completa correctamente los campos.",
+      "mismatchAlert": "Las contraseñas no coinciden.",
+      "invalidData": "Formato de datos inválido.",
+      "updateErrorHeader": "Error al actualizar la contraseña.",
+      "updateError": "Intenta nuevamente."
+    },
+    "success": {
+      "updateSuccess": "Contraseña actualizada correctamente"
+    },
+    "strengthLabels": {
+      "veryWeak": "Muy débil",
+      "weak": "Débil",
+      "fair": "Aceptable",
+      "strong": "Fuerte",
+      "veryStrong": "Muy fuerte"
+    }
+  },
+  "passwordChanged": {
+    "title": "¡Contraseña Actualizada!",
+    "subtitle": "Tu contraseña ha sido cambiada exitosamente",
+    "securityHeader": "Seguridad mejorada",
+    "securityDesc": "Tu cuenta ahora está protegida con una nueva contraseña segura. Asegúrate de guardarla en un lugar seguro.",
+    "tipsHeader": "Consejos de seguridad:",
+    "tip1": "No compartas tu contraseña con nadie",
+    "tip2": "Usa contraseñas diferentes para cada servicio",
+    "tip3": "Considera usar un gestor de contraseñas",
+    "tip4": "Activa la autenticación de dos factores",
+    "login": "Iniciar Sesión",
+    "supportPrefix": "Si no solicitaste este cambio, contacta a",
+    "supportLink": "soporte técnico",
+    "supportSuffix": "inmediatamente"
+  },
+  "users": {
+    "title": "Gestión de Usuarios",
+    "subtitle": "Administra usuarios, roles, permisos y accesos del sistema",
+    "searchPlaceholder": "Buscar por nombre o email...",
+    "filters": {
+      "allRoles": "Todos los roles",
+      "admin": "Administrador",
+      "editor": "Editor",
+      "user": "Usuario",
+      "allStatus": "Todos",
+      "active": "Activos",
+      "inactive": "Inactivos"
+    },
+    "loading": "Cargando usuarios...",
+    "table": {
+      "title": "Lista de Usuarios",
+      "user": "Usuario",
+      "role": "Rol",
+      "status": "Estado",
+      "documents": "Documentos",
+      "lastActivity": "Última Actividad",
+      "actions": "Acciones"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "noActivity": "Sin actividad"
+    },
+    "documentsCount": "documentos",
+    "menu": {
+      "viewDocs": "Ver Documentos",
+      "activate": "Activar",
+      "deactivate": "Desactivar",
+      "delete": "Eliminar Usuario"
+    },
+    "empty": {
+      "title": "No se encontraron usuarios",
+      "subtitle": "Intenta con otros términos de búsqueda o filtros"
+    },
+    "docsDialog": {
+      "title": "Documentos de",
+      "subtitle": "Lista de documentos subidos por este usuario",
+      "view": "Ver",
+      "viewTooltip": "Ver documento",
+      "viewedTooltip": "Documento visto",
+      "noDocs": "Este usuario no ha subido documentos",
+      "close": "Cerrar"
+    },
+    "deleteDialog": {
+      "title": "Confirmar Eliminación",
+      "confirmText1": "¿Estás seguro que deseas eliminar a",
+      "confirmText2": "de la base de datos?",
+      "warning": "Esta acción no se puede deshacer.",
+      "listTitle": "Se eliminarán permanentemente:",
+      "itemProfile": "Perfil del usuario",
+      "itemDocs": "documentos asociados",
+      "itemHistory": "Historial de actividad",
+      "itemSettings": "Configuraciones y preferencias",
+      "deleteBtn": "Eliminar Usuario",
+      "cancelBtn": "Cancelar"
+    },
+    "stats": {
+      "total": "Total Usuarios",
+      "active": "Usuarios Activos",
+      "inactive": "Usuarios Inactivos",
+      "admins": "Administradores"
+    },
+    "time": {
+      "justNow": "Justo ahora",
+      "ago": "Hace",
+      "minute": "minuto",
+      "hour": "hora",
+      "yesterday": "Ayer",
+      "day": "día",
+      "s": "s"
+    },
+    "alerts": {
+      "error": "Error",
+      "loadErrorDesc": "No se pudieron cargar los usuarios",
+      "roleUpdated": "Rol actualizado exitosamente",
+      "roleErrorDesc": "No se pudo actualizar el rol",
+      "userActivated": "Usuario Activado",
+      "userDeactivated": "Usuario Desactivado",
+      "statusErrorDesc": "No se pudo cambiar el estado del usuario",
+      "deletedTitle": "Usuario Eliminado",
+      "deletedDesc": "Usuario eliminado exitosamente",
+      "deleteErrorDesc": "No se pudo eliminar el usuario",
+      "viewDocErrorTitle": "No se pudo visualizar el documento."
+    }
+  },
+  "security": {
+    "title": "Seguridad",
+    "subtitle": "Gestiona la seguridad de tu cuenta y protege tu información",
+    "status": {
+      "secureTitle": "Cuenta Segura",
+      "secureDesc": "Tu cuenta está protegida. Todas las medidas de seguridad están activas."
+    },
+    "password": {
+      "title": "Cambiar Contraseña",
+      "currentLabel": "Contraseña Actual",
+      "currentPlaceholder": "••••••••",
+      "newLabel": "Nueva Contraseña",
+      "newPlaceholder": "Mínimo 6 caracteres",
+      "confirmLabel": "Confirmar Nueva Contraseña",
+      "confirmPlaceholder": "Repite la nueva contraseña",
+      "mismatch": "Las contraseñas no coinciden",
+      "updateBtn": "Actualizar Contraseña"
+    },
+    "twoFactor": {
+      "title": "Autenticación de Dos Factores",
+      "subtitle": "Verificación en Dos Pasos",
+      "description": "Agrega una capa adicional de seguridad a tu cuenta. Requiere un código de verificación además de tu contraseña al iniciar sesión.",
+      "activeTitle": "2FA Activo",
+      "activeDesc": "Tu cuenta está protegida con autenticación de dos factores.",
+      "viewCodesBtn": "Ver códigos de respaldo"
+    },
+    "preferences": {
+      "title": "Preferencias de Seguridad",
+      "emailNotifs": "Notificaciones por Email",
+      "emailNotifsDesc": "Recibe alertas de seguridad por correo electrónico",
+      "loginAlerts": "Alertas de Inicio de Sesión",
+      "loginAlertsDesc": "Notificarte cuando se detecten nuevos inicios de sesión"
+    },
+    "sessions": {
+      "title": "Sesiones Activas",
+      "closeAllBtn": "Cerrar Todas",
+      "currentSession": "Sesión Actual",
+      "closeSessionBtn": "Cerrar Sesión"
+    },
+    "alerts": {
+      "loadPrefsError": "Error al cargar preferencias",
+      "check2FAError": "No se pudo verificar el estado del 2FA",
+      "loadSessionsError": "Error al cargar sesiones activas",
+      "fillAllFields": "Por favor completa todos los campos",
+      "minLength": "La nueva contraseña debe tener al menos 6 caracteres",
+      "passwordsMismatch": "Las contraseñas no coinciden",
+      "passwordSuccess": "Contraseña actualizada exitosamente",
+      "passwordError": "Error al actualizar contraseña",
+      "disable2FATitle": "Desactivar autenticación en dos pasos",
+      "disable2FADesc": "¿Seguro que deseas desactivar el 2FA?",
+      "codePrompt": "Introduce tu código de autenticación (TOTP o respaldo):",
+      "invalidCode": "Código inválido o cancelado",
+      "disable2FASuccess": "2FA desactivado correctamente",
+      "disable2FAError": "Error desactivando 2FA",
+      "enable2FASuccess": "2FA activado correctamente",
+      "emailNotifsOn": "Notificaciones por email activadas",
+      "emailNotifsOff": "Notificaciones por email desactivadas",
+      "loginAlertsOn": "Alertas de inicio de sesión activadas",
+      "loginAlertsOff": "Alertas de inicio de sesión desactivadas",
+      "updatePrefsError": "Error al actualizar preferencias",
+      "closeSessionTitle": "Cerrar sesión",
+      "closeSessionDesc": "¿Estás seguro de cerrar esta sesión?",
+      "closeSessionSuccess": "Sesión cerrada correctamente",
+      "closeSessionError": "Error al cerrar sesión",
+      "closeAllTitle": "Cerrar todas las sesiones",
+      "closeAllDesc": "¿Deseas cerrar todas las demás sesiones activas? Tendrás que iniciar sesión nuevamente en esos dispositivos.",
+      "closeAllSuccess": "sesión(es) cerrada(s) exitosamente",
+      "closeAllError": "Error al cerrar sesiones",
+      "getBackupCodesError": "Error al obtener códigos de respaldo",
+      "setup2faError": "Error al iniciar configuración 2FA",
+      "secretCopied": "Código secreto copiado",
+      "backupCopied": "Códigos de respaldo copiados",
+      "codesDownloaded": "Códigos descargados",
+      "enter6digits": "Por favor ingresa el código de 6 dígitos",
+      "codeVerified": "¡Código verificado!",
+      "wrongCode": "Código incorrecto. Inténtalo de nuevo",
+      "setup2faSuccess": "Autenticación de dos factores activada correctamente",
+      "cancelConfirm": "¿Estás seguro de que deseas cancelar la configuración de 2FA?"
+    },
+    "setup2fa": {
+      "title": "Configurar Autenticación de Dos Factores",
+      "step1Desc": "Escanea el código QR con tu aplicación de autenticación",
+      "step2Desc": "Verifica tu configuración ingresando el código",
+      "step3Desc": "Guarda estos códigos de respaldo en un lugar seguro",
+      "scan": "Escanear",
+      "verify": "Verificar",
+      "backup": "Respaldo",
+      "recommendedApps": "Aplicaciones recomendadas:",
+      "manualCode": "O ingresa este código manualmente:",
+      "continue": "Continuar",
+      "cancel": "Cancelar",
+      "enterCodeTitle": "Ingresa el código de verificación",
+      "enterCodeDesc": "Abre tu aplicación de autenticación y escribe el código de 6 dígitos",
+      "backBtn": "Atrás",
+      "verifyBtn": "Verificar",
+      "important": "¡Importante!",
+      "backupDesc": "Guarda estos códigos en un lugar seguro. Podrás usarlos si pierdes acceso a tu aplicación de autenticación. Cada código solo puede usarse una vez.",
+      "copied": "Copiado",
+      "copy": "Copiar",
+      "download": "Descargar",
+      "finish": "Finalizar Configuración",
+      "downloadContentTitle": "CÓDIGOS DE RESPALDO - ASISTENTE VIRTUAL IA\n\nGuarda estos códigos en un lugar seguro.\nCada código solo puede usarse una vez.\n\n",
+      "downloadContentFooter": "\n\nFecha de generación: "
+    },
+    "time": {
+      "activeNow": "Activo ahora",
+      "agoMinute": "Hace {{count}} minuto",
+      "agoMinutes": "Hace {{count}} minutos",
+      "agoHour": "Hace {{count}} hora",
+      "agoHours": "Hace {{count}} horas",
+      "agoDay": "Hace {{count}} día",
+      "agoDays": "Hace {{count}} días"
+    }
+  },
+  "landing": {
+    "nav": {
+      "company": "Trayectoria",
+      "features": "IA Assistant",
+      "roles": "Soluciones",
+      "platform": "PLATAFORMA →"
+    },
+    "mobileMenu": {
+      "company": "Trayectoria",
+      "features": "IA Assistant",
+      "roles": "Soluciones",
+      "enterPlatform": "Entrar a la Plataforma"
+    },
+    "hero": {
+      "title1": "Curim AI",
+      "title2": "Assistant",
+      "subtitle": "No es solo una herramienta, es tu socio estratégico que entiende tus documentos mejor que nadie.",
+      "startNow": "Empezar Ahora",
+      "ourTrajectory": "Nuestra Trayectoria"
+    },
+    "partners": {
+      "trustedBy": "Empresas que confían en nosotros"
+    },
+    "company": {
+      "badge": "Trayectoria y Liderazgo",
+      "title": "La Agencia Hispana #1 <br> en los Estados Unidos.",
+      "description": "Fundada en 2014, Curiman Brokers Group ha revolucionado el mercado financiero. Nuestra misión es simple: <strong class=\"text-gray-900 dark:text-gray-200\">empoderar a la comunidad hispana</strong> a través de conocimiento y tecnología de punta.",
+      "stats": {
+        "states": "Estados de la Unión",
+        "agents": "Agentes Expertos"
+      },
+      "badgeCard": {
+        "title": "Liderazgo Hispano",
+        "desc": "Reconocidos nacionalmente por nuestra excelencia y compromiso con la comunidad."
+      },
+      "ranking": {
+        "value": "#1",
+        "label": "Ranking Nacional"
+      }
+    },
+    "featuresSection": {
+      "badge": "Tecnología de Vanguardia",
+      "title": "Curim AI Assistant",
+      "subtitle": "No es solo una herramienta, es tu socio estratégico que entiende tus documentos mejor que nadie."
+    },
+    "features": {
+      "upload": {
+        "title": "Carga Instantánea",
+        "desc": "Sube archivos en formato PDF, DOCX, y TXT con solo arrastrar y soltar. Todo se almacena de forma segura en la nube."
+      },
+      "search": {
+        "title": "Búsqueda Inteligente",
+        "desc": "Encuentra información específica dentro de tus documentos con búsquedas semánticas. No solo por palabras clave, sino por significado."
+      },
+      "voice": {
+        "title": "Asistente por Voz",
+        "desc": "Interactúa con tus documentos de forma natural. Pregúntale a tu asistente por voz y obtén respuestas precisas al instante."
+      },
+      "history": {
+        "title": "Historial Organizado",
+        "desc": "Accede a un historial completo de todas tus interacciones y búsquedas. Nunca pierdas el hilo de tus consultas."
+      },
+      "summary": {
+        "title": "Resúmenes Automáticos",
+        "desc": "Pide a la IA que genere resúmenes de documentos extensos. Extrae los puntos clave y ahorra horas de lectura."
+      },
+      "security": {
+        "title": "Seguridad Robusta",
+        "desc": "Tus documentos y datos están protegidos con cifrado de grado militar. Tu privacidad es nuestra máxima prioridad."
+      }
+    },
+    "rolesSection": {
+      "badge": "Adaptabilidad Total",
+      "title": "Soluciones por Rol"
+    },
+    "personas": {
+      "agents": {
+        "title": "Agentes de Seguros",
+        "description": "Optimiza la gestión de pólizas y atención al cliente con acceso instantáneo a datos críticos.",
+        "benefits": [
+          "Resúmenes de cobertura rápidos",
+          "Búsqueda de cláusulas específicas",
+          "Asistente de voz en campo"
+        ]
+      },
+      "directors": {
+        "title": "Directores de Agencia",
+        "description": "Supervisa el conocimiento corporativo y acelera el entrenamiento de nuevos agentes.",
+        "benefits": [
+          "Centralización de normativas",
+          "Análisis de productividad IA",
+          "Onboarding documentado"
+        ]
+      },
+      "compliance": {
+        "title": "Equipos de Cumplimiento",
+        "description": "Asegura que cada documento cumpla con las regulaciones estatales y federales vigentes.",
+        "benefits": [
+          "Auditoría documental IA",
+          "Detección de riesgos",
+          "Reportes de compliance"
+        ]
+      },
+      "support": {
+        "title": "Atención al Cliente",
+        "description": "Resuelve dudas complejas de asegurados en segundos consultando la base de conocimiento.",
+        "benefits": [
+          "Respuestas precisas",
+          "Reducción de tiempos de espera",
+          "Satisfacción del cliente"
+        ]
+      }
+    },
+    "cta": {
+      "title": "Impulsa tu Agencia Hoy Mismo.",
+      "button": "Acceso a la Plataforma"
+    },
+    "footer": {
+      "description": "Innovación tecnológica para el mercado de seguros hispano en Estados Unidos.",
+      "company": "Compañía",
+      "companyLinks": {
+        "about": "Sobre Curiman Group",
+        "mission": "Nuestra Misión",
+        "careers": "Carreras"
+      },
+      "product": "Producto",
+      "productLinks": {
+        "features": "Características",
+        "security": "Seguridad",
+        "faq": "FAQ"
+      },
+      "legal": "Legal",
+      "legalLinks": {
+        "privacy": "Privacidad",
+        "terms": "Términos"
+      },
+      "copyright": "© 2025 CURIM AI. Powered by Curiman Brokers Group."
+    }
+  }
+}

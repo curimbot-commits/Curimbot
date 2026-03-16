@@ -1,0 +1,341 @@
+
+@import "tailwindcss";
+@import "tailwindcss/utilities";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+:root {
+    /* Colores base */
+    --primary-color: #02ab74;        /* Azul elegante */
+    --secondary-color: #190379;      /* Gris neutro */
+    --accent-color: #7209b7;         /* Lavanda suave */
+    --light-color: #f8f9fa;          /* Fondo principal */
+    --dark-color: #212529;           /* Texto principal */
+    --text-color: #1f2933;
+
+    /* Estados */
+    --success-color: #2f9e44;
+    --warning-color: #f08c00;
+    --logout-color: #d00000;
+
+    /* Documentos */
+    --pdf-color: #c92a2a;
+    --docx-color: #364fc7;
+    --txt-color: #2b8a3e;
+
+    /* UI */
+    --btn-hover-color: #2f3e9e;
+    --card-bg: #ffffff;
+    --card-hover-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+
+    /* Glass / Blur (muy sutil) */
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(0, 0, 0, 0.04);
+
+    /* Sombras suaves */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --header-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    --sidebar-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+
+    /* Texto secundario */
+    --small-text-color: #6b7280;
+    --meta-text-color: #8b8f97;
+    --action-btn-color: #4b5563;
+
+    /* Filtros / botones */
+    --filter-btn-border: #e5e7eb;
+    --filter-btn-text-color: #374151;
+    --filter-btn-hover-text-color: #1f2933;
+
+    /* Navegación */
+    --nav-item-color: #1f2933;
+    --nav-item-separator: rgba(0, 0, 0, 0.06);
+    --sidebar-border-color: #e5e7eb;
+    --logout-hover-bg: #fbeaea;
+
+    /* Upload / áreas */
+    --upload-area-hover-bg: #f0f4ff;
+
+    /* Asistente */
+    --assistant-bg: linear-gradient(
+        135deg,
+        #f5f7ff,
+        #eef1ff
+    );
+
+    /* Bordes */
+    --doc-actions-border: #e5e7eb;
+
+    /* Transiciones */
+    --transition-ease: all 0.25s ease;
+}
+
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+    color: var(--dark-color);
+    background: var(--light-color);
+    transition: var(--transition-ease);
+}
+
+body::-webkit-scrollbar {
+    width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background: #028a5e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent-color);
+}
+
+/* Content: La columna derecha (sección del dashboard) */
+.content {
+    width: 100%;
+    background: var(--light-color);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    min-height: 100vh;
+}
+
+/* ==============================================================
+   MODO OSCURO LEGACY (CSS Variables, compatibilidad con CSS custom)
+   ============================================================== */
+body.dark {
+    --primary-color: #02ab74;
+    --secondary-color: #dfe6e9;
+    --accent-color: #81ecec;
+    --light-color: #111827;    /* gray-900 */
+    --dark-color: #f9fafb;     /* gray-50  */
+    --text-color: #d1d5db;
+    --success-color: #00cec9;
+    --warning-color: #fab1a0;
+    --pdf-color: #e17055;
+    --docx-color: #0984e3;
+    --txt-color: #55efc4;
+    --btn-hover-color: #ffffff;
+    --card-hover-shadow: 0 8px 20px rgba(255, 255, 255, 0.08);
+    --glass-bg: rgba(17,24,39, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
+    --upload-area-hover-bg: #1e3a5f;
+    --small-text-color: #9ca3af;
+    --filter-btn-border: #374151;
+    --filter-btn-text-color: #d1d5db;
+    --filter-btn-hover-text-color: #fff;
+    --card-bg: #1f2937;        /* gray-800 */
+    --meta-text-color: #9ca3af;
+    --doc-actions-border: #374151;
+    --action-btn-color: #9ca3af;
+    --header-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    --sidebar-border-color: #374151;
+    --sidebar-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    --nav-item-color: #d1d5db;
+    --nav-item-separator: rgba(255, 255, 255, 0.07);
+    --logout-color: #f87171;
+    --logout-hover-bg: #3b0000;
+
+    background-color: #111827;
+    color: #f9fafb;
+    color-scheme: dark;
+}
+
+body.dark::-webkit-scrollbar-track { background: #1f2937; }
+body.dark::-webkit-scrollbar-thumb { background: #02ab74; }
+body.dark::-webkit-scrollbar-thumb:hover { background: #028a5f; }
+
+
+/* ==============================================================
+   MODO OSCURO CON TAILWIND
+   Sobreescribimos las clases más usadas de Tailwind en toda la app
+   usando html.dark como selector de máxima especificidad.
+   ============================================================== */
+html.dark {
+    color-scheme: dark;
+}
+
+/* ==============================================================
+   REGLAS PARA MODO LUZ (PRO-VISIBILIDAD)
+   ============================================================== */
+html:not(.dark) .text-gray-300,
+html:not(.dark) .text-gray-400,
+html:not(.dark) .text-gray-500 {
+    color: #374151 !important; /* gray-700 (Más oscuro) */
+}
+
+html:not(.dark) .text-gray-600 {
+    color: #1f2937 !important; /* gray-800 */
+}
+
+html:not(.dark) .text-gray-700,
+html:not(.dark) .text-gray-800,
+html:not(.dark) .text-gray-900 {
+    color: #030712 !important; /* slate-950 (Máximo contraste) */
+}
+
+html:not(.dark) .bg-white {
+    background-color: #ffffff !important;
+}
+
+html:not(.dark) .bg-gray-50 {
+    background-color: #f9fafb !important;
+}
+
+/* Evitar que enlaces en header/footer se vuelvan invisibles si heredan blanco */
+html:not(.dark) .nav-link-custom {
+    color: #1f2937;
+}
+
+html:not(.dark) .footer-link {
+    color: #4b5563;
+}
+
+/* ── Fondos principales ── */
+html.dark, 
+html.dark body,
+html.dark .content,
+html.dark .bg-white            { background-color: #111827 !important; } /* gray-900 */
+html.dark .bg-gray-50          { background-color: #111827 !important; } /* gray-900 */
+html.dark .bg-gray-100         { background-color: #1f2937 !important; } /* gray-800 */
+html.dark .bg-gray-200         { background-color: #374151 !important; } /* gray-700 */
+html.dark .bg-\[\#f8f9fa\]      { background-color: #111827 !important; } /* gray-900 (Main content) */
+html.dark .bg-\[\#f5f6fa\]      { background-color: #111827 !important; } /* gray-900 */
+
+/* ── Textos e Iconos ── */
+html.dark .text-black          { color: #f9fafb !important; }
+html.dark .text-gray-900       { color: #f9fafb !important; }
+html.dark .text-gray-800       { color: #f3f4f6 !important; }
+html.dark .text-gray-700       { color: #e5e7eb !important; }
+html.dark .text-gray-600       { color: #d1d5db !important; }
+html.dark .text-gray-500       { color: #9ca3af !important; }
+html.dark .text-gray-400       { color: #6b7280 !important; }
+html.dark .text-\[\#070025\]   { color: #f9fafb !important; }
+html.dark .text-black .lucide { color: #f9fafb !important; }
+
+/* ── Bordes ── */
+html.dark .border-gray-100   { border-color: #374151 !important; }
+html.dark .border-gray-200   { border-color: #374151 !important; }
+html.dark .border-gray-300   { border-color: #4b5563 !important; }
+
+/* ── Dividores (divide-y) ── */
+html.dark .divide-gray-200 > * + * { border-color: #374151 !important; }
+
+/* ── Inputs y Selects ── */
+html.dark input,
+html.dark select,
+html.dark textarea {
+    background-color: #374151 !important;
+    color: #f3f4f6 !important;
+    border-color: #4b5563 !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder { color: #6b7280 !important; }
+
+/* ── Sidebar ── */
+html.dark nav.sidebar {
+    background-color: #1f2937 !important;
+    border-color: #374151 !important;
+}
+html.dark nav.sidebar button { color: #d1d5db !important; }
+html.dark nav.sidebar button:hover { background-color: #374151 !important; color: #f9fafb !important; }
+html.dark nav.sidebar .border-b { border-color: #374151 !important; }
+html.dark nav.sidebar .bg-gray-50 { background-color: #111827 !important; }
+html.dark nav.sidebar .bg-gray-50\/50 { background-color: #111827 !important; }
+
+/* ── Topbar móvil ── */
+html.dark header.md\:hidden { background-color: #1f2937 !important; border-color: #374151 !important; }
+html.dark header.md\:hidden h1 { color: #f9fafb !important; }
+html.dark header.md\:hidden button { color: #d1d5db !important; }
+
+/* ── Tablas ── */
+html.dark thead,
+html.dark .bg-gray-50.border-b { background-color: #111827 !important; }
+html.dark tbody tr:hover { background-color: #1f2937 !important; }
+html.dark td, html.dark th { color: #d1d5db !important; border-color: #374151 !important; }
+
+/* ── Tarjetas y paneles ── */
+html.dark .border.border-gray-200.rounded-xl { background-color: #1f2937 !important; }
+html.dark .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important; }
+html.dark .shadow-md { box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important; }
+
+/* ── Área de arrastre (upload) ── */
+html.dark .border-dashed { background-color: #1f2937 !important; border-color: #4b5563 !important; }
+html.dark .border-dashed h3 { color: #e5e7eb !important; }
+
+/* ── Badges y Pills ── */
+html.dark .bg-green-100 { background-color: #064e3b !important; }
+html.dark .text-green-700 { color: #34d399 !important; }
+html.dark .bg-red-50 { background-color: #450a0a !important; }
+html.dark .text-red-600, html.dark .text-red-700 { color: #f87171 !important; }
+html.dark .border-red-200 { border-color: #7f1d1d !important; }
+html.dark .bg-blue-50 { background-color: #1e3a5f !important; }
+html.dark .text-blue-700 { color: #60a5fa !important; }
+html.dark .bg-purple-50 { background-color: #3b0764 !important; }
+
+/* ── Paginación ── */
+html.dark nav.flex button:not([class*="bg-\[#02ab74\]"]):not([disabled]) {
+    background-color: #1f2937 !important;
+    border-color: #4b5563 !important;
+    color: #d1d5db !important;
+}
+html.dark nav.flex button:hover { background-color: #374151 !important; }
+
+/* ── Filtros de tipo de archivo ── */
+html.dark .rounded-full.border { background-color: #1f2937 !important; color: #d1d5db !important; }
+
+/* ── Modales y Diálogos ── */
+html.dark .bg-white.rounded-lg,
+html.dark .bg-white.rounded-xl,
+html.dark .bg-white.rounded-t-2xl { background-color: #1f2937 !important; }
+html.dark .bg-gray-50.px-6 { background-color: #111827 !important; }
+
+/* ── Transición suave al cambiar de tema ── */
+html, body, nav, main, header, section, div, button, input, select, textarea {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content { flex-direction: column; }
+    .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #eaeaea; padding: 1rem; }
+    .nav-item { justify-content: center; text-align: center; }
+    .documents-grid { grid-template-columns: 1fr; }
+    .assistant-section { flex-direction: column; text-align: center; gap: 15px; }
+    .assistant-text { flex-grow: 0; }
+    .mic-btn { margin-top: 10px; }
+    .landing-header { flex-direction: column; padding: 1rem; margin: 1rem; }
+    .nav-links { margin-top: 1rem; flex-direction: column; align-items: center; }
+    .nav-links a { margin: 5px 0; }
+    .hero-content h2 { font-size: 2.5rem; }
+    .hero-content p { font-size: 1rem; }
+    .cta-buttons .btn { padding: 12px 25px; font-size: 1rem; }
+    .features-grid,
+    .testimonials-grid { grid-template-columns: 1fr; }
+}

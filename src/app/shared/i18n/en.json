@@ -1,0 +1,874 @@
+{
+  "login": {
+    "username": "Username",
+    "password": "Password",
+    "submit": "Log In",
+    "forgotPassword": "Forgot your password?",
+    "headerTitle": "AI Virtual Assistant",
+    "title": "Log In",
+    "subtitle": "Access your virtual assistant",
+    "email": "Email Address",
+    "emailPlaceholder": "you@email.com",
+    "passwordPlaceholder": "••••••••",
+    "showPassword": "Show/hide password",
+    "rememberMe": "Remember Me",
+    "submitting": "Logging in...",
+    "orContinueWith": "Or continue with",
+    "noAccount": "Don't have an account?",
+    "register": "Sign up",
+    "errors": {
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Please enter a valid email address.",
+      "passwordRequired": "Password is required.",
+      "passwordMinLength": "Password must be at least 8 characters long.",
+      "authTitle": "Authentication error",
+      "invalidCredentialsTitle": "Invalid credentials",
+      "accountDisabledTitle": "Account disabled",
+      "sessionExpiredTitle": "Session expired",
+      "sessionClosedTitle": "Session closed",
+      "unauthorizedTitle": "Unauthorized access",
+      "accountLockedTitle": "Account temporarily locked",
+      "insufficientPermissionsTitle": "Insufficient permissions",
+      "forbiddenAccessTitle": "Forbidden access",
+      "userNotFoundTitle": "User not found",
+      "resourceNotFoundTitle": "Resource not found",
+      "activeSessionTitle": "Active session detected",
+      "conflictTitle": "Conflict",
+      "invalidDataTitle": "Invalid data",
+      "tooManyAttemptsTitle": "Too many attempts limit exceeded",
+      "serverErrorTitle": "Server error. Try again later.",
+      "connectionErrorTitle": "Connection error",
+      "unexpectedErrorTitle": "Unexpected error"
+    },
+    "success": {
+      "twoFactorRequired": "Two-factor verification required",
+      "loginSuccess": "Successful login!"
+    }
+  },
+  "dashboard": {
+    "welcomeMessage": "Welcome to your Dashboard",
+    "title": "Documents Dashboard",
+    "subtitleAdmin": "Global view of all users",
+    "subtitleUser": "Visualization and analysis of document activity",
+    "exportAll": "Export All",
+    "exportMine": "Export My Data",
+    "searchAdmin": "Search by user or document name...",
+    "searchUser": "Search my documents...",
+    "loadingStats": "Loading statistics...",
+    "retry": "Retry",
+    "distributionTitle": "Document Distribution",
+    "byFileType": "By file type",
+    "filteredBy": "Filtered by:",
+    "global": " (Global)",
+    "noDataTitle": "No data available",
+    "noDocsAll": "No documents to display",
+    "noDocsType": "No documents of type",
+    "trendTitle": "Document Trend",
+    "trendSubtitle": "Evolution by file type",
+    "noTrendData": "No trend data for the selected period",
+    "recentActivitiesTitle": "Recent Activities",
+    "allUsers": "(All users)",
+    "showingAllActivities": "Showing all activities",
+    "loadingActivities": "Loading activities...",
+    "table": {
+      "user": "User",
+      "document": "Document",
+      "type": "Type",
+      "action": "Action",
+      "dateTime": "Date and Time"
+    },
+    "noRecentActivitiesTitle": "No recent activities",
+    "noActivitiesAdmin": "No activities from any user",
+    "noActivitiesUser": "Activities will appear here when you interact with documents",
+    "pagination": {
+      "showing": "Showing",
+      "of": "of",
+      "activities": "activities"
+    },
+    "stats": {
+      "today": "Today",
+      "todayGlobal": "Today (Global)",
+      "docsUploaded": "documents uploaded",
+      "thisWeek": "This Week",
+      "thisWeekGlobal": "This Week (Global)",
+      "storage": "Storage",
+      "storageGlobal": "Storage (Global)",
+      "spaceUsed": "space used"
+    },
+    "errors": {
+      "stats": "Error loading statistics:",
+      "chart": "Error loading chart data:",
+      "activities": "Error loading activities:"
+    },
+    "timeRanges": {
+      "week": "Week",
+      "month": "Month",
+      "year": "Year"
+    }
+  },
+  "voice": {
+    "chat": "Chat",
+    "voice": "Voice",
+    "waiting": "WAITING",
+    "listening": "LISTENING...",
+    "processing": "PROCESSING...",
+    "speaking": "SPEAKING...",
+    "connecting": "CONNECTING...",
+    "error": "ERROR",
+    "pressMic": "Press the microphone to start the conversation.",
+    "speakNow": "Listening to your query...",
+    "processingAudio": "Curim is thinking...",
+    "speakingNow": "Curim is responding...",
+    "tapToSpeak": "TAP TO SPEAK",
+    "aiProvider": "ElevenLabs Conversational AI",
+    "chatTitle": "How can I help you?",
+    "chatSubtitle": "I analyze policies, legal documents, and contracts. Type your query or choose a suggestion.",
+    "inputPlaceholder": "Type your query...",
+    "you": "You",
+    "connectionError": "Error connecting to the server",
+    "retry": "Retry",
+    "keyboardHint": "Enter to send · Shift+Enter new line",
+    "clearBtn": "Clear",
+    "micTapToSpeak": "Tap to speak",
+    "micListening": "Listening…",
+    "micSpeaking": "Responding…",
+    "micActive": "Curim active",
+    "canSpeak": "You can speak.",
+    "errorConsulting": "Error consulting Curim.",
+    "hints": {
+      "hint1": "What are the benefits of my policy?",
+      "hint2": "What are the health exclusions?",
+      "hint3": "How to file a claim?"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Customize your experience and preferences",
+    "userProfile": "User Profile",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "namePlaceholder": "Enter your full name",
+    "emailPlaceholder": "Enter your email address",
+    "notifications": "Notifications",
+    "emailNotifs": "Email Notifications",
+    "emailNotifsDesc": "Receive important updates via email",
+    "pushNotifs": "Push Notifications",
+    "pushNotifsDesc": "Receive real-time notifications",
+    "weeklySummary": "Weekly Summary",
+    "weeklySummaryDesc": "Receive a weekly activity summary",
+    "testEmail": "Send Test Email",
+    "preferences": "Preferences",
+    "language": "Language",
+    "theme": "Interface Theme",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "errors": {
+      "required": "This field is required",
+      "invalidEmail": "Invalid email",
+      "minLength": "Minimum 2 characters",
+      "maxLength": "Maximum 100 characters"
+    },
+    "languages": {
+      "es": "Spanish",
+      "en": "English"
+    },
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "auto": "Automatic"
+    },
+    "alerts": {
+      "loadUserError": "Error loading user data",
+      "loadPrefsError": "Error loading preferences",
+      "profileSuccess": "Profile updated successfully",
+      "profileError": "Error updating profile",
+      "notifSuccess": "Notification preferences updated",
+      "notifError": "Error updating notification preferences",
+      "langSuccess": "Language updated",
+      "langError": "Error changing language",
+      "themeSuccess": "Theme updated",
+      "themeError": "Error changing theme",
+      "convSuccess": "Call for applications updated successfully",
+      "convError": "Error updating call for applications",
+      "emailSuccess": "Test email sent. Check your inbox.",
+      "emailError": "Error sending test email"
+    }
+  },
+  "navbar": {
+    "documents": "Documents",
+    "search": "Search",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "history": "History",
+    "settings": "Settings",
+    "security": "Security",
+    "curim": "Curim",
+    "logout": "Log out",
+    "loggingOut": "Logging out...",
+    "alerts": {
+      "logoutSuccess": "Session closed",
+      "logoutMessage": "Logged out successfully",
+      "errorTitle": "Something went wrong",
+      "sessionExpired": "Session expired",
+      "serviceUnavailable": "Service unavailable",
+      "unknownError": "Unknown error"
+    }
+  },
+  "document": {
+    "title": "Document Management",
+    "subtitle": "View, upload, and organize your documents",
+    "upload": {
+      "dragDrop": "Drag and drop your files here",
+      "or": "or",
+      "select": "Select files",
+      "supported": "Supported formats: PDF, DOCX, TXT (Max 10MB per file)"
+    },
+    "filters": {
+      "all": "All",
+      "pdf": "PDF",
+      "docx": "DOCX",
+      "txt": "TXT"
+    },
+    "list": {
+      "loading": "Loading documents...",
+      "noDocs": "No documents available",
+      "uploadFirst": "Upload your first document by dragging it to the top area",
+      "noType": "There are no documents of type",
+      "viewed": "Document viewed",
+      "view": "View document"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "alerts": {
+      "uploading": "Uploading files...",
+      "uploadSuccess": "Files uploaded!",
+      "uploadError": "Could not upload files.",
+      "sessionExpired": "Session expired. Please log in again.",
+      "loadError": "Error loading documents.",
+      "filterError": "Error filtering documents. Please try again.",
+      "downloadComplete": "Download complete",
+      "downloadError": "Could not download the document.",
+      "deleteConfirm": "Do you want to delete",
+      "deleteSuccess": "has been deleted.",
+      "deleteError": "Could not delete the document.",
+      "viewError": "Could not view the document."
+    }
+  },
+  "history": {
+    "title": "Activity History",
+    "subtitle": "Review all actions performed on your account",
+    "searchPlaceholder": "Search history...",
+    "filters": {
+      "all": "All actions",
+      "upload": "Uploads",
+      "download": "Downloads",
+      "delete": "Deleted",
+      "error": "Errors"
+    },
+    "stats": {
+      "total": "Total Actions",
+      "uploadsThisMonth": "Uploads This Month",
+      "errors": "Errors"
+    },
+    "labels": {
+      "upload": "Document uploaded",
+      "download": "Document downloaded",
+      "process": "Document processed",
+      "edit": "Document edited",
+      "delete": "Document deleted",
+      "error": "Error processing",
+      "default": "Action"
+    },
+    "loading": "Loading activities...",
+    "recentActivity": "Recent Activity",
+    "unnamedDoc": "Unnamed",
+    "empty": {
+      "title": "No results found",
+      "subtitle": "Try with other search terms or filters"
+    },
+    "pagination": {
+      "info": "Page {{current}} of {{total}} ({{count}} activities)",
+      "prevDesc": "Previous Page",
+      "nextDesc": "Next Page"
+    },
+    "export": {
+      "title": "Export History",
+      "subtitle": "Download a full report of your activity",
+      "pdfBtn": "Export PDF",
+      "excelBtn": "Export Excel",
+      "generatedOn": "Generated on",
+      "columns": {
+        "datetime": "Date & Time",
+        "action": "Action",
+        "document": "Document"
+      }
+    },
+    "alerts": {
+      "loadErrorTitle": "Error loading recent activities",
+      "loadErrorDesc": "Could not load recent activities",
+      "noActivities": "No activities to export",
+      "pdfSuccess": "History exported to PDF",
+      "pdfError": "There was an error generating the PDF.",
+      "excelSuccess": "History exported to Excel (CSV)",
+      "excelError": "There was an error generating the Excel file."
+    }
+  },
+  "search": {
+    "title": "Search Documents",
+    "subtitle": "Find documents using advanced search",
+    "placeholder": "Search by name, content, tags...",
+    "btnSearch": "Search",
+    "filters": {
+      "title": "Advanced Filters",
+      "fileType": "File Type",
+      "types": {
+        "all": "All",
+        "pdf": "PDF",
+        "docx": "DOCX",
+        "txt": "TXT"
+      },
+      "date": "Date",
+      "dates": {
+        "any": "Any date",
+        "today": "Today",
+        "week": "Last week",
+        "month": "Last month",
+        "year": "Last year"
+      }
+    },
+    "loading": "Loading...",
+    "results": {
+      "found": "Found",
+      "resultsFor": "results for",
+      "uploadedBy": "Uploaded by:",
+      "unknown": "Unknown",
+      "view": "View document",
+      "download": "Download document",
+      "delete": "Delete document"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "empty": {
+      "title": "No results found",
+      "noMatches": "There are no documents matching",
+      "startSearch": "Enter a search term to begin"
+    },
+    "tips": {
+      "title": "Search Tips",
+      "tip1": "• Use specific keywords for better results",
+      "tip2": "• Combine filters for more precise searches",
+      "tip3": "• You can search by file name or document content",
+      "tip4": "• Tags help you organize and find documents quickly"
+    },
+    "alerts": {
+      "dateUnavailable": "Date not available",
+      "viewError": "Could not view the document.",
+      "downloadSuccess": "Download complete",
+      "downloadError": "Could not download the document.",
+      "deleteConfirmTitle": "Delete",
+      "deleteConfirmText": "This action cannot be undone.",
+      "deleteSuccess": "Document Deleted",
+      "deleteError": "Could not delete the document.",
+      "searchError": "A problem occurred while searching for documents."
+    }
+  },
+  "chat": {
+    "docsContext": "documents · Online",
+    "subtitleFallback": "Curiman Brokers Group Assistant",
+    "close": "Close",
+    "emptyTitle": "How can I help you?",
+    "emptySubtitle": "I analyze policies, legal documents, and contracts instantly.",
+    "sources": "sources",
+    "inputPlaceholder": "Type your query…",
+    "inputLabel": "Your query",
+    "send": "Send",
+    "inputHint": "Enter to send · Shift+Enter new line",
+    "systemOnline": "System online",
+    "errorMessage": "Sorry, there was an error processing your question. Please verify you have uploaded documents and try again."
+  },
+  "register": {
+    "title": "Create an Account",
+    "subtitle": "Join and start managing your documents.",
+    "name": "Full Name",
+    "namePlaceholder": "Your name",
+    "email": "Email Address",
+    "emailPlaceholder": "you@email.com",
+    "password": "Password",
+    "passwordPlaceholder": "At least 8 characters",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Repeat your password",
+    "termsPre": "I accept the",
+    "termsLink": "terms and conditions",
+    "termsAnd": "and the",
+    "privacyLink": "privacy policy",
+    "submit": "Create Account",
+    "submitting": "Creating account...",
+    "orContinueWith": "Or continue with",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in",
+    "errors": {
+      "nameRequired": "Name is required.",
+      "nameMinLength": "Name must be at least 2 characters.",
+      "nameMaxLength": "Name cannot exceed 50 characters.",
+      "namePattern": "Name cannot contain numbers.",
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Enter a valid email address.",
+      "emailMaxLength": "Email cannot exceed 100 characters.",
+      "passwordRequired": "Password is required.",
+      "passwordMinLength": "Password must be at least 8 characters.",
+      "weakPassword": "Must include uppercase, lowercase, numbers, and symbols.",
+      "passwordMismatch": "Passwords do not match.",
+      "confirmRequired": "You must confirm the password.",
+      "termsRequired": "You must accept the terms and conditions.",
+      "registerErrorHeader": "Registration error.",
+      "invalidData": "Invalid data. Please check the form.",
+      "conflict": "This email is already registered.",
+      "unprocessable": "Invalid data format. Check the fields.",
+      "serverError": "Server error. Try again later."
+    },
+    "success": {
+      "registerSuccess": "Successful registration!"
+    }
+  },
+  "forgotPassword": {
+    "backToLogin": "Back to login",
+    "title": "Forgot your password?",
+    "subtitle": "Don't worry, we'll send you instructions to recover it",
+    "email": "Email address",
+    "emailPlaceholder": "you@email.com",
+    "emailHint": "Enter the email associated with your account",
+    "submit": "Send instructions",
+    "submitting": "Sending...",
+    "noAccount": "Don't have an account?",
+    "register": "Sign up",
+    "errors": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Enter a valid email",
+      "emailWarning": "Please enter a valid email.",
+      "emailNotFound": "Email not found",
+      "sendError": "Error sending email.",
+      "verifyError": "Error verifying email."
+    },
+    "success": {
+      "sendSuccess": "Reset email sent."
+    }
+  },
+  "checkEmail": {
+    "title": "Check your email!",
+    "subtitle": "We have sent you a link to reset your password.",
+    "step1": "Open your inbox",
+    "step2": "Look for the Virtual AI Assistant email",
+    "step3": "Click on the link to reset your password",
+    "notReceived": "Didn't receive the email?",
+    "resend": "Resend email",
+    "resendIn": "Resend in {{seconds}}s",
+    "backToLogin": "Back to login",
+    "errors": {
+      "noConnectionHeader": "No connection",
+      "noConnection": "Could not connect to the server. Check your connection.",
+      "attention": "Attention",
+      "resendErrorHeader": "Error",
+      "resendError": "An error occurred while resending the email. Please try again."
+    },
+    "success": {
+      "resendSuccessHeader": "Email resent",
+      "resendSuccess": "The reset email has been sent again."
+    }
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "subtitle": "Enter your new password",
+    "newPassword": "New Password",
+    "passwordPlaceholder": "••••••••",
+    "confirmPassword": "Confirm Password",
+    "strength": "Strength:",
+    "mismatch": "Passwords do not match",
+    "requirements": "The password must contain:",
+    "reqLength": "At least 8 characters",
+    "reqUppercase": "One uppercase letter",
+    "reqLowercase": "One lowercase letter",
+    "reqNumber": "One number",
+    "submit": "Update Password",
+    "submitting": "Updating...",
+    "errors": {
+      "invalidToken": "Invalid or expired token",
+      "invalidFields": "Please correctly complete the fields.",
+      "mismatchAlert": "Passwords do not match.",
+      "invalidData": "Invalid data format.",
+      "updateErrorHeader": "Error updating password.",
+      "updateError": "Try again."
+    },
+    "success": {
+      "updateSuccess": "Password updated successfully"
+    },
+    "strengthLabels": {
+      "veryWeak": "Very weak",
+      "weak": "Weak",
+      "fair": "Fair",
+      "strong": "Strong",
+      "veryStrong": "Very strong"
+    }
+  },
+  "passwordChanged": {
+    "title": "Password Updated!",
+    "subtitle": "Your password has been changed successfully",
+    "securityHeader": "Enhanced security",
+    "securityDesc": "Your account is now protected with a secure new password. Make sure to keep it in a safe place.",
+    "tipsHeader": "Security tips:",
+    "tip1": "Do not share your password with anyone",
+    "tip2": "Use different passwords for each service",
+    "tip3": "Consider using a password manager",
+    "tip4": "Enable two-factor authentication",
+    "login": "Log in",
+    "supportPrefix": "If you did not request this change, contact",
+    "supportLink": "technical support",
+    "supportSuffix": "immediately"
+  },
+  "users": {
+    "title": "User Management",
+    "subtitle": "Manage users, roles, permissions, and system access",
+    "searchPlaceholder": "Search by name or email...",
+    "filters": {
+      "allRoles": "All roles",
+      "admin": "Administrator",
+      "editor": "Editor",
+      "user": "User",
+      "allStatus": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "loading": "Loading users...",
+    "table": {
+      "title": "User List",
+      "user": "User",
+      "role": "Role",
+      "status": "Status",
+      "documents": "Documents",
+      "lastActivity": "Last Activity",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "noActivity": "No activity"
+    },
+    "documentsCount": "documents",
+    "menu": {
+      "viewDocs": "View Documents",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "delete": "Delete User"
+    },
+    "empty": {
+      "title": "No users found",
+      "subtitle": "Try with other search terms or filters"
+    },
+    "docsDialog": {
+      "title": "Documents of",
+      "subtitle": "List of documents uploaded by this user",
+      "view": "View",
+      "viewTooltip": "View document",
+      "viewedTooltip": "Document viewed",
+      "noDocs": "This user has not uploaded any documents",
+      "close": "Close"
+    },
+    "deleteDialog": {
+      "title": "Confirm Deletion",
+      "confirmText1": "Are you sure you want to delete",
+      "confirmText2": "from the database?",
+      "warning": "This action cannot be undone.",
+      "listTitle": "The following will be permanently deleted:",
+      "itemProfile": "User profile",
+      "itemDocs": "associated documents",
+      "itemHistory": "Activity history",
+      "itemSettings": "Settings and preferences",
+      "deleteBtn": "Delete User",
+      "cancelBtn": "Cancel"
+    },
+    "stats": {
+      "total": "Total Users",
+      "active": "Active Users",
+      "inactive": "Inactive Users",
+      "admins": "Administrators"
+    },
+    "time": {
+      "justNow": "Just now",
+      "ago": "Ago",
+      "minute": "minute",
+      "hour": "hour",
+      "yesterday": "Yesterday",
+      "day": "day",
+      "s": "s"
+    },
+    "alerts": {
+      "error": "Error",
+      "loadErrorDesc": "Could not load users",
+      "roleUpdated": "Role updated successfully",
+      "roleErrorDesc": "Could not update role",
+      "userActivated": "User Activated",
+      "userDeactivated": "User Deactivated",
+      "statusErrorDesc": "Could not change user status",
+      "deletedTitle": "User Deleted",
+      "deletedDesc": "User deleted successfully",
+      "deleteErrorDesc": "Could not delete user",
+      "viewDocErrorTitle": "Could not display the document."
+    }
+  },
+  "security": {
+    "title": "Security",
+    "subtitle": "Manage your account security and protect your information",
+    "status": {
+      "secureTitle": "Secure Account",
+      "secureDesc": "Your account is protected. All security measures are active."
+    },
+    "password": {
+      "title": "Change Password",
+      "currentLabel": "Current Password",
+      "currentPlaceholder": "••••••••",
+      "newLabel": "New Password",
+      "newPlaceholder": "Minimum 6 characters",
+      "confirmLabel": "Confirm New Password",
+      "confirmPlaceholder": "Repeat new password",
+      "mismatch": "Passwords do not match",
+      "updateBtn": "Update Password"
+    },
+    "twoFactor": {
+      "title": "Two-Factor Authentication",
+      "subtitle": "Two-Step Verification",
+      "description": "Add an extra layer of security to your account. Requires a verification code in addition to your password when signing in.",
+      "activeTitle": "2FA Active",
+      "activeDesc": "Your account is protected with two-factor authentication.",
+      "viewCodesBtn": "View backup codes"
+    },
+    "preferences": {
+      "title": "Security Preferences",
+      "emailNotifs": "Email Notifications",
+      "emailNotifsDesc": "Receive security alerts by email",
+      "loginAlerts": "Login Alerts",
+      "loginAlertsDesc": "Notify me when new logins are detected"
+    },
+    "sessions": {
+      "title": "Active Sessions",
+      "closeAllBtn": "Close All",
+      "currentSession": "Current Session",
+      "closeSessionBtn": "Close Session"
+    },
+    "alerts": {
+      "loadPrefsError": "Error loading preferences",
+      "check2FAError": "Could not verify 2FA status",
+      "loadSessionsError": "Error loading active sessions",
+      "fillAllFields": "Please fill in all fields",
+      "minLength": "New password must be at least 6 characters",
+      "passwordsMismatch": "Passwords do not match",
+      "passwordSuccess": "Password updated successfully",
+      "passwordError": "Error updating password",
+      "disable2FATitle": "Disable two-step authentication",
+      "disable2FADesc": "Are you sure you want to disable 2FA?",
+      "codePrompt": "Enter your authentication code (TOTP or backup):",
+      "invalidCode": "Invalid or canceled code",
+      "disable2FASuccess": "2FA successfully disabled",
+      "disable2FAError": "Error disabling 2FA",
+      "enable2FASuccess": "2FA successfully enabled",
+      "emailNotifsOn": "Email notifications enabled",
+      "emailNotifsOff": "Email notifications disabled",
+      "loginAlertsOn": "Login alerts enabled",
+      "loginAlertsOff": "Login alerts disabled",
+      "updatePrefsError": "Error updating preferences",
+      "closeSessionTitle": "Close session",
+      "closeSessionDesc": "Are you sure you want to close this session?",
+      "closeSessionSuccess": "Session successfully closed",
+      "closeSessionError": "Error closing session",
+      "closeAllTitle": "Close all sessions",
+      "closeAllDesc": "Do you want to close all other active sessions? You will need to log in again on those devices.",
+      "closeAllSuccess": "session(s) closed successfully",
+      "closeAllError": "Error closing sessions",
+      "getBackupCodesError": "Error getting backup codes",
+      "setup2faError": "Error starting 2FA setup",
+      "secretCopied": "Secret code copied",
+      "backupCopied": "Backup codes copied",
+      "codesDownloaded": "Codes downloaded",
+      "enter6digits": "Please enter the 6-digit code",
+      "codeVerified": "Code verified!",
+      "wrongCode": "Incorrect code. Please try again",
+      "setup2faSuccess": "Two-factor authentication successfully enabled",
+      "cancelConfirm": "Are you sure you want to cancel the 2FA setup?"
+    },
+    "setup2fa": {
+      "title": "Set Up Two-Factor Authentication",
+      "step1Desc": "Scan the QR code with your authentication app",
+      "step2Desc": "Verify your setup by entering the code",
+      "step3Desc": "Save these backup codes in a safe place",
+      "scan": "Scan",
+      "verify": "Verify",
+      "backup": "Backup",
+      "recommendedApps": "Recommended apps:",
+      "manualCode": "Or enter this code manually:",
+      "continue": "Continue",
+      "cancel": "Cancel",
+      "enterCodeTitle": "Enter verification code",
+      "enterCodeDesc": "Open your authentication app and enter the 6-digit code",
+      "backBtn": "Back",
+      "verifyBtn": "Verify",
+      "important": "Important!",
+      "backupDesc": "Save these codes in a safe place. You can use them if you lose access to your authentication app. Each code can only be used once.",
+      "copied": "Copied",
+      "copy": "Copy",
+      "download": "Download",
+      "finish": "Finish Setup",
+      "downloadContentTitle": "BACKUP CODES - AI VIRTUAL ASSISTANT\n\nSave these codes securely.\nEach code can only be used once.\n\n",
+      "downloadContentFooter": "\n\nGenerated on: "
+    },
+    "time": {
+      "activeNow": "Active now",
+      "agoMinute": "{{count}} minute ago",
+      "agoMinutes": "{{count}} minutes ago",
+      "agoHour": "{{count}} hour ago",
+      "agoHours": "{{count}} hours ago",
+      "agoDay": "{{count}} day ago",
+      "agoDays": "{{count}} days ago"
+    }
+  },
+  "landing": {
+    "nav": {
+      "company": "History",
+      "features": "AI Assistant",
+      "roles": "Solutions",
+      "platform": "PLATFORM →"
+    },
+    "mobileMenu": {
+      "company": "History",
+      "features": "AI Assistant",
+      "roles": "Solutions",
+      "enterPlatform": "Enter Platform"
+    },
+    "hero": {
+      "title1": "Curim AI",
+      "title2": "Assistant",
+      "subtitle": "It's not just a tool, it's your strategic partner who understands your documents better than anyone.",
+      "startNow": "Start Now",
+      "ourTrajectory": "Our History"
+    },
+    "partners": {
+      "trustedBy": "Trusted by"
+    },
+    "company": {
+      "badge": "History and Leadership",
+      "title": "The #1 Hispanic Agency <br> in the United States.",
+      "description": "Founded in 2014, Curiman Brokers Group has revolutionized the financial market. Our mission is simple: <strong class=\"text-gray-900 dark:text-gray-200\">empower the Hispanic community</strong> through knowledge and cutting-edge technology.",
+      "stats": {
+        "states": "US States",
+        "agents": "Expert Agents"
+      },
+      "badgeCard": {
+        "title": "Hispanic Leadership",
+        "desc": "Nationally recognized for our excellence and commitment to the community."
+      },
+      "ranking": {
+        "value": "#1",
+        "label": "National Ranking"
+      }
+    },
+    "featuresSection": {
+      "badge": "Cutting-edge Technology",
+      "title": "Curim AI Assistant",
+      "subtitle": "It's not just a tool, it's your strategic partner who understands your documents better than anyone."
+    },
+    "features": {
+      "upload": {
+        "title": "Instant Upload",
+        "desc": "Upload PDF, DOCX, and TXT files with just drag and drop. Everything is stored securely in the cloud."
+      },
+      "search": {
+        "title": "Smart Search",
+        "desc": "Find specific information within your documents using semantic search. Not just keywords, but by meaning."
+      },
+      "voice": {
+        "title": "Voice Assistant",
+        "desc": "Interact with your documents naturally. Ask your voice assistant and get accurate answers instantly."
+      },
+      "history": {
+        "title": "Organized History",
+        "desc": "Access a complete history of all your interactions and searches. Never lose track of your queries."
+      },
+      "summary": {
+        "title": "Automatic Summaries",
+        "desc": "Ask AI to generate summaries of extensive documents. Extract key points and save hours of reading."
+      },
+      "security": {
+        "title": "Robust Security",
+        "desc": "Your documents and data are protected with military-grade encryption. Your privacy is our top priority."
+      }
+    },
+    "rolesSection": {
+      "badge": "Total Adaptability",
+      "title": "Solutions by Role"
+    },
+    "personas": {
+      "agents": {
+        "title": "Insurance Agents",
+        "description": "Optimize policy management and customer service with instant access to critical data.",
+        "benefits": [
+          "Fast coverage summaries",
+          "Specific clause search",
+          "Voice assistant in the field"
+        ]
+      },
+      "directors": {
+        "title": "Agency Directors",
+        "description": "Oversee corporate knowledge and accelerate new agent training.",
+        "benefits": [
+          "Centralized regulations",
+          "AI productivity analysis",
+          "Documented onboarding"
+        ]
+      },
+      "compliance": {
+        "title": "Compliance Teams",
+        "description": "Ensure every document complies with current state and federal regulations.",
+        "benefits": [
+          "AI document audit",
+          "Risk detection",
+          "Compliance reports"
+        ]
+      },
+      "support": {
+        "title": "Customer Support",
+        "description": "Resolve complex insured queries in seconds by consulting the knowledge base.",
+        "benefits": [
+          "Accurate responses",
+          "Reduced wait times",
+          "Customer satisfaction"
+        ]
+      }
+    },
+    "cta": {
+      "title": "Boost Your Agency Today.",
+      "button": "Access Platform"
+    },
+    "footer": {
+      "description": "Technological innovation for the Hispanic insurance market in the United States.",
+      "company": "Company",
+      "companyLinks": {
+        "about": "About Curiman Group",
+        "mission": "Our Mission",
+        "careers": "Careers"
+      },
+      "product": "Product",
+      "productLinks": {
+        "features": "Features",
+        "security": "Security",
+        "faq": "FAQ"
+      },
+      "legal": "Legal",
+      "legalLinks": {
+        "privacy": "Privacy",
+        "terms": "Terms"
+      },
+      "copyright": "© 2025 CURIM AI. Powered by Curiman Brokers Group."
+    }
+  }
+}

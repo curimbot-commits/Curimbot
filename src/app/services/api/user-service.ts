@@ -19,7 +19,7 @@ import {
   SessionStatsResponse
 } from '../../domain/models/user.model';
 import { AuthHeaderService } from './auth-header.service';
-import { environment } from 'src/environments/environment.development';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'

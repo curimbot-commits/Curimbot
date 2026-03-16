@@ -7,13 +7,14 @@ import { catchError, map, Observable, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Auth as AuthService } from '../../components/authentication/auth/auth';
 import { AuthHeaderService } from './auth-header.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class Api {
 
-  private readonly API_URL = 'http://127.0.0.1:8000'
+  private readonly API_URL = environment.apiUrl;
   private readonly DOCUMENTS_URL = `${this.API_URL}/documents`;
 
   constructor(

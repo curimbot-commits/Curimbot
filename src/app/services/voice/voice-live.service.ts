@@ -2,6 +2,7 @@ import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export type ConnectionStatus =
   | 'DISCONNECTED' | 'CONNECTING' | 'CONNECTED' | 'RECONNECTING' | 'FAILED';
@@ -117,7 +118,7 @@ export class VoiceLiveService implements OnDestroy {
 
   private async fetchApiKey(): Promise<string> {
     const r = await firstValueFrom(
-      this.http.get<{ api_key: string }>('/api/v1/voice/token')
+      this.http.get<{ api_key: string }>(`${environment.apiUrl}/api/v1/voice/token`)
     );
     if (!r?.api_key) throw new Error('No se pudo obtener el token de voz');
     return r.api_key;
@@ -175,7 +176,7 @@ export class VoiceLiveService implements OnDestroy {
     try {
       const resp = await firstValueFrom(
         this.http.post<{ context: string | null; found: boolean }>(
-          '/api/v1/voice/context',
+          `${environment.apiUrl}/api/v1/voice/context`,
           { query }
         )
       );

@@ -20,7 +20,7 @@ import {
   UserRole,
   Login2FARequest,
 } from '../../../domain/models/user.model';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
 
 /**

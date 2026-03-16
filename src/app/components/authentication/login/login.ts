@@ -18,6 +18,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { LucideAngularModule } from 'lucide-angular';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { environment } from 'src/environments/environment';
 
 /**
  * Componente de inicio de sesión.
@@ -350,10 +351,10 @@ export class Login implements OnInit, OnDestroy {
   }
   // Botones de login 
   loginWithGoogle(): void {
-    window.location.href = 'http://localhost:8000/auth/google/login';
+    window.location.href = `${environment.apiUrl}/auth/google/login`;
   }
 
   loginWithGitHub(): void {
-    window.location.href = 'http://localhost:8000/auth/github/login';
+    window.location.href = `${environment.apiUrl}/auth/github/login`;
   }
 }

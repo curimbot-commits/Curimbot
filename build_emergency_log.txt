@@ -1,8 +1,0 @@
-
-> frontend-app@0.0.0 build
-> ng build --verbose
-
-[33m>[39m Building...
-fatal error: all goroutines are asleep - deadlock!
-
-goroutine 1 [chan receive]:

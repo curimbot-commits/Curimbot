@@ -1,7 +1,7 @@
 # Dockerfile frontend
 
 # Etapa de construcción
-FROM node:20.19.0 as build
+FROM node:22.12.0 as build
 
 WORKDIR /app
 

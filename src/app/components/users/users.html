@@ -51,8 +51,8 @@
         <p class="text-gray-600 mt-4">{{ 'users.loading' | translate }}</p>
     </div>
 
-    <!-- Users Table -->
-    <div *ngIf="!isLoading" class="border border-gray-200 rounded-xl overflow-hidden">
+    <!-- Users Table (Desktop) -->
+    <div *ngIf="!isLoading" class="hidden md:block border border-gray-200 rounded-xl overflow-hidden">
         <div class="p-6 border-b border-gray-200 bg-gray-50 flex items-center space-x-3">
             <div class="p-2 bg-[#02ab74] rounded-lg">
                 <lucide-angular name="users" class="w-6 h-6 text-white"></lucide-angular>
@@ -88,17 +88,14 @@
                         </td>
                         <td class="px-6 py-4">
                             <div class="relative w-36">
-                                <!-- Select con estilos según el rol -->
                                 <select [(ngModel)]="user.role" (change)="handleChangeRole(user.id, user.role)"
                                     [ngClass]="getRoleBadgeClasses(user.role)"
                                     class="appearance-none w-full pr-10 py-2 pl-3 text-sm font-medium focus:outline-none focus:ring-2 border rounded-lg transition">
                                     <option [ngValue]="UserRole.ADMIN">{{ 'users.filters.admin' | translate }}</option>
                                     <option [ngValue]="UserRole.USER">{{ 'users.filters.user' | translate }}</option>
                                 </select>
-
-                                <!-- Icono personalizado del dropdown -->
                                 <lucide-angular name="ChevronDown"
-                                    class="w-4 h-4 absolute top-1/2 right-2 -translate-y-1/4 pointer-events-none">
+                                    class="w-4 h-4 absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none">
                                 </lucide-angular>
                             </div>
                         </td>
@@ -122,38 +119,29 @@
 
                         <td class="px-6 py-4 text-sm text-gray-600">{{ user.lastActivity }}</td>
 
-                        <td class="px-6 py-4 text-right flex items-center justify-center">
+                        <td class="px-6 py-4 text-right">
                             <div class="relative inline-block text-left" (clickOutside)="closeMenu()">
-                                <!-- Botón con ícono centrado -->
                                 <button (click)="toggleMenu(user.id)"
                                     class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition"
                                     aria-haspopup="true" aria-expanded="true">
                                     <lucide-angular name="MoreVertical" class="w-5 h-5 text-gray-600"></lucide-angular>
                                 </button>
 
-                                <!-- Contenido del menú -->
                                 <div *ngIf="openMenuId === user.id"
                                     class="absolute right-0 z-10 mt-2 w-52 origin-top-right rounded-md bg-white border border-gray-200 shadow-lg">
                                     <div class="py-1 text-sm">
-                                        <!-- Ver documentos -->
                                         <button (click)="handleViewDocuments(user); closeMenu()"
                                             class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-gray-700">
                                             <lucide-angular name="Eye" class="w-4 h-4"></lucide-angular>
                                             {{ 'users.menu.viewDocs' | translate }}
                                         </button>
-
-                                        <!-- Activar / Desactivar -->
                                         <button (click)="handleToggleStatus(user.id); closeMenu()"
                                             class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-gray-700">
                                             <lucide-angular [name]="user.is_active ? 'UserX' : 'UserCheck'"
                                                 class="w-4 h-4"></lucide-angular>
                                             {{ user.is_active ? ('users.menu.deactivate' | translate) : ('users.menu.activate' | translate) }}
                                         </button>
-
-                                        <!-- Separador -->
                                         <div class="border-t my-1"></div>
-
-                                        <!-- Eliminar usuario -->
                                         <button (click)="openDeleteDialog(user); closeMenu()"
                                             class="w-full text-left px-4 py-2 hover:bg-red-50 flex items-center gap-2 text-red-600">
                                             <lucide-angular name="Trash2" class="w-4 h-4"></lucide-angular>
@@ -172,6 +160,69 @@
             <lucide-angular name="users" class="w-12 h-12 text-gray-400 mx-auto mb-4"></lucide-angular>
             <h3 class="text-[#070025] mb-2">{{ 'users.empty.title' | translate }}</h3>
             <p class="text-gray-600">{{ 'users.empty.subtitle' | translate }}</p>
+        </div>
+    </div>
+
+    <!-- Users Cards (Mobile) -->
+    <div *ngIf="!isLoading" class="md:hidden space-y-4">
+        <div *ngFor="let user of filteredUsers" class="p-4 border border-gray-200 rounded-xl bg-white shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <app-profile-avatar [size]="2.5" [showEditControls]="false" [userData]="user"
+                        [userPhotoUrl]="user.profile_photo_url">
+                    </app-profile-avatar>
+                    <div>
+                        <p class="text-[#070025] font-semibold text-sm">{{ user.name }}</p>
+                        <p class="text-[11px] text-gray-500 truncate max-w-[150px]">{{ user.email }}</p>
+                    </div>
+                </div>
+                <div class="flex gap-1">
+                    <button (click)="handleToggleStatus(user.id)" 
+                            class="p-2 rounded-lg transition-colors"
+                            [ngClass]="user.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'">
+                        <lucide-angular [name]="user.is_active ? 'UserCheck' : 'UserX'" class="w-5 h-5"></lucide-angular>
+                    </button>
+                    <button (click)="openDeleteDialog(user)" class="p-2 rounded-lg bg-red-50 text-red-600">
+                        <lucide-angular name="Trash2" class="w-5 h-5"></lucide-angular>
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">{{ 'users.table.role' | translate }}</p>
+                    <select [(ngModel)]="user.role" (change)="handleChangeRole(user.id, user.role)"
+                            class="w-full bg-transparent border-none p-0 text-sm font-bold focus:ring-0">
+                        <option [ngValue]="UserRole.ADMIN">{{ 'users.filters.admin' | translate }}</option>
+                        <option [ngValue]="UserRole.USER">{{ 'users.filters.user' | translate }}</option>
+                    </select>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">{{ 'users.table.documents' | translate }}</p>
+                    <button (click)="handleViewDocuments(user)" class="text-[#02ab74] text-sm font-bold flex items-center gap-1">
+                        <lucide-angular name="FileText" class="w-3 h-3"></lucide-angular>
+                        {{ user.documentsCount }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] text-gray-500 pt-1">
+                <div class="flex items-center gap-1">
+                    <lucide-angular name="Clock" class="w-3 h-3"></lucide-angular>
+                    {{ user.lastActivity }}
+                </div>
+                <span class="px-2 py-0.5 rounded-full font-bold" [ngClass]="{
+                    'bg-green-100 text-green-700': user.is_active,
+                    'bg-gray-100 text-gray-700': !user.is_active
+                }">
+                    {{ user.is_active ? ('users.status.active' | translate) : ('users.status.inactive' | translate) }}
+                </span>
+            </div>
+        </div>
+
+        <div *ngIf="filteredUsers.length === 0" class="py-12 text-center">
+            <lucide-angular name="users" class="w-12 h-12 text-gray-300 mx-auto mb-2"></lucide-angular>
+            <p class="text-gray-500 font-medium">{{ 'users.empty.title' | translate }}</p>
         </div>
     </div>
 

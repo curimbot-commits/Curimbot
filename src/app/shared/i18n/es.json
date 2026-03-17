@@ -156,7 +156,9 @@
     "pushNotifsDesc": "Recibe notificaciones en tiempo real",
     "weeklySummary": "Resumen Semanal",
     "weeklySummaryDesc": "Recibe un resumen de actividad cada semana",
+    "summaryFormat": "Formato del reporte",
     "testEmail": "Enviar Email de Prueba",
+
     "preferences": "Preferencias",
     "language": "Idioma",
     "theme": "Tema de Interfaz",
@@ -670,6 +672,7 @@
       "title": "Sesiones Activas",
       "closeAllBtn": "Cerrar Todas",
       "currentSession": "Sesión Actual",
+      "on": "en",
       "closeSessionBtn": "Cerrar Sesión"
     },
     "alerts": {

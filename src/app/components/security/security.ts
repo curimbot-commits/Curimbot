@@ -10,8 +10,9 @@ import { TwoFactorSetupDialog } from "./two-factor-setup-dialog/two-factor-setup
 import { ZardSwitchComponent } from "@shared/components/switch/switch.component";
 import { UserPreferencesService } from 'src/app/services/api/user-preferences.service';
 import { UserService } from 'src/app/services/api/user-service';
+import { SessionService } from 'src/app/services/api/session.service';
 import { AlertService } from '@shared/components/alert/alert.service';
-import { ActiveSession } from 'src/app/domain/models/user.model';
+import { ActiveSession } from 'src/app/domain/models/session.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 /**
@@ -79,6 +80,7 @@ export class Security implements OnInit, OnDestroy {
 
   constructor(
     private userService: UserService,
+    private sessionService: SessionService,
     private preferencesService: UserPreferencesService,
     private alertService: AlertService,
     private translate: TranslateService
@@ -150,7 +152,7 @@ export class Security implements OnInit, OnDestroy {
   loadActiveSessions(): void {
     this.isLoadingSessions = true;
 
-    this.userService.getActiveSessions()
+    this.sessionService.getActiveSessions()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (sessions) => {
@@ -335,7 +337,7 @@ export class Security implements OnInit, OnDestroy {
 
     if (!confirmed) return;
 
-    this.userService.revokeSession(sessionId)
+    this.sessionService.revokeSession(sessionId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -362,13 +364,13 @@ export class Security implements OnInit, OnDestroy {
 
     if (!confirmed) return;
 
-    this.userService.revokeAllSessions(true)
+    this.sessionService.revokeOtherSessions()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.activeSessions = this.activeSessions.filter(s => s.current);
+          this.activeSessions = this.activeSessions.filter(s => s.is_current);
           this.alertService.success(
-            `${response.count} ${this.translate.instant('security.alerts.closeAllSuccess')}`,
+            this.translate.instant('security.alerts.closeAllSuccess'),
             '',
             3000
           );

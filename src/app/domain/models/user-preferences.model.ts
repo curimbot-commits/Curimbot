@@ -11,12 +11,20 @@ export enum ThemeEnum {
     AUTO = 'auto'
 }
 
+export enum WeeklySummaryFormatEnum {
+    PDF = 'pdf',
+    EXCEL = 'excel'
+}
+
+
 export interface NotificationPreferencesUpdate {
     email_notifications?: boolean;
     push_notifications?: boolean;
     weekly_summary?: boolean;
+    weekly_summary_format?: WeeklySummaryFormatEnum;
     login_alerts?: boolean;
 }
+
 
 export interface InterfacePreferencesUpdate {
     language?: LanguageEnum;
@@ -37,6 +45,7 @@ export interface UserPreferencesResponse {
     email_notifications: boolean;
     push_notifications: boolean;
     weekly_summary: boolean;
+    weekly_summary_format: WeeklySummaryFormatEnum;
     language: LanguageEnum;
     theme: ThemeEnum;
     profile_photo_url?: string;
@@ -45,6 +54,7 @@ export interface UserPreferencesResponse {
     updated_at: string;
     convocatoria_enabled: boolean; 
 }
+
 
 export interface LanguageOption {
     code: LanguageEnum;

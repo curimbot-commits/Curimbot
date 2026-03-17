@@ -60,13 +60,33 @@
         <z-switch [ngModel]="pushNotifications"
           (checkChange)="pushNotifications = $event; updateNotificationPreferences()" />
       </div>
-      <div class="flex items-center justify-between py-3">
-        <div>
-          <p class="text-[#070025]">{{ 'settings.weeklySummary' | translate }}</p>
-          <p class="text-sm text-gray-600">{{ 'settings.weeklySummaryDesc' | translate }}</p>
+      <div class="py-3 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-[#070025]">{{ 'settings.weeklySummary' | translate }}</p>
+            <p class="text-sm text-gray-600">{{ 'settings.weeklySummaryDesc' | translate }}</p>
+          </div>
+          <z-switch [ngModel]="weeklySummary" (checkChange)="weeklySummary = $event; updateNotificationPreferences()" />
         </div>
-        <z-switch [ngModel]="weeklySummary" (checkChange)="weeklySummary = $event; updateNotificationPreferences()" />
+        
+        <!-- Formato de Resumen (Solo si está activado) -->
+        <div *ngIf="weeklySummary" class="mt-4 pl-4 border-l-2 border-[#02ab74] space-y-3 animate-in fade-in slide-in-from-left-2 duration-300">
+          <p class="text-sm font-medium text-gray-700 mb-2">{{ 'settings.summaryFormat' | translate }}</p>
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2 cursor-pointer group">
+              <input type="radio" name="summaryFormat" value="pdf" [(ngModel)]="weeklySummaryFormat" (change)="updateNotificationPreferences()"
+                class="w-4 h-4 text-[#02ab74] border-gray-300 focus:ring-[#02ab74] focus:ring-offset-0">
+              <span class="text-sm text-gray-600 group-hover:text-[#070025] transition-colors">PDF</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer group">
+              <input type="radio" name="summaryFormat" value="excel" [(ngModel)]="weeklySummaryFormat" (change)="updateNotificationPreferences()"
+                class="w-4 h-4 text-[#02ab74] border-gray-300 focus:ring-[#02ab74] focus:ring-offset-0">
+              <span class="text-sm text-gray-600 group-hover:text-[#070025] transition-colors">Excel</span>
+            </label>
+          </div>
+        </div>
       </div>
+
       <div class="flex justify-end">
         <button (click)="sendTestEmail()" class="border border-gray-500 p-2 rounded hover:bg-gray-100">
           {{ 'settings.testEmail' | translate }}

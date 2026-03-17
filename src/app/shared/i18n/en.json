@@ -156,7 +156,9 @@
     "pushNotifsDesc": "Receive real-time notifications",
     "weeklySummary": "Weekly Summary",
     "weeklySummaryDesc": "Receive a weekly activity summary",
+    "summaryFormat": "Report Format",
     "testEmail": "Send Test Email",
+
     "preferences": "Preferences",
     "language": "Language",
     "theme": "Interface Theme",
@@ -655,6 +657,7 @@
       "title": "Active Sessions",
       "closeAllBtn": "Close All",
       "currentSession": "Current Session",
+      "on": "on",
       "closeSessionBtn": "Close Session"
     },
     "alerts": {

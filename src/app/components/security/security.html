@@ -179,16 +179,16 @@
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
                         <div class="flex items-center space-x-2 mb-2">
-                            <h3 class="text-[#070025] font-medium">{{ session.device }}</h3>
-                            <span *ngIf="session.current"
+                            <h3 class="text-[#070025] font-medium">{{ session.browser }} {{ 'security.sessions.on' | translate }} {{ session.os }}</h3>
+                            <span *ngIf="session.is_current"
                                 class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">
                                 {{ 'security.sessions.currentSession' | translate }}
                             </span>
                         </div>
-                        <p class="text-sm text-gray-600 mb-1">{{ session.location }}</p>
-                        <p class="text-sm text-gray-500">{{ session.lastActive }}</p>
+                        <p class="text-sm text-gray-600 mb-1">{{ session.location || 'Unknown Location' }} • {{ session.ip_address }}</p>
+                        <p class="text-sm text-gray-500">{{ formatLastActive(session.last_active) }}</p>
                     </div>
-                    <button *ngIf="!session.current" (click)="closeSession(session.id)"
+                    <button *ngIf="!session.is_current" (click)="closeSession(session.id)"
                         class="px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm">
                         {{ 'security.sessions.closeSessionBtn' | translate }}
                     </button>

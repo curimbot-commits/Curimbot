@@ -15,9 +15,11 @@ import {
   UserPreferencesResponse,
   LanguageEnum,
   ThemeEnum,
+  WeeklySummaryFormatEnum,
   LanguageOption,
   ThemeOption
 } from '../../domain/models/user-preferences.model';
+
 import { UserInfoResponse } from '../../domain/models/user.model';
 import { UserPreferencesService } from 'src/app/services/api/user-preferences.service';
 import { ThemeService, AppTheme } from 'src/app/services/theme/theme.service';
@@ -65,7 +67,9 @@ export class Settings implements OnInit, OnDestroy {
   emailNotifications = true;
   pushNotifications = false;
   weeklySummary = true;
+  weeklySummaryFormat = WeeklySummaryFormatEnum.PDF;
   convocatoriaEnabled: boolean | null = null;
+
 
   selectedLanguage = LanguageEnum.ES;
   selectedTheme = ThemeEnum.LIGHT;
@@ -173,7 +177,9 @@ export class Settings implements OnInit, OnDestroy {
           this.emailNotifications = prefs.email_notifications;
           this.pushNotifications = prefs.push_notifications;
           this.weeklySummary = prefs.weekly_summary;
+          this.weeklySummaryFormat = prefs.weekly_summary_format;
           this.selectedLanguage = prefs.language;
+
           this.selectedTheme = prefs.theme;
           this.convocatoriaEnabled = prefs.convocatoria_enabled;
 
@@ -218,8 +224,10 @@ export class Settings implements OnInit, OnDestroy {
     const preferences = {
       email_notifications: this.emailNotifications,
       push_notifications: this.pushNotifications,
-      weekly_summary: this.weeklySummary
+      weekly_summary: this.weeklySummary,
+      weekly_summary_format: this.weeklySummaryFormat
     };
+
 
     this.preferencesService.updateNotificationPreferences(preferences)
       .pipe(takeUntil(this.destroy$))

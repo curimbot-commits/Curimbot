@@ -2,20 +2,20 @@
     <!-- Vista de gestión de documentos -->
     <section id="documentos-view" class="block">
         <div class="mb-4 sm:mb-6">
-            <h1 id="document-title" class="text-[#070025] dark:text-white mb-1 sm:mb-2 text-xl sm:text-2xl font-bold">{{ 'document.title' | translate }}</h1>
-            <p class="text-gray-600 dark:text-gray-400 text-sm sm:text-base">{{ 'document.subtitle' | translate }}</p>
+            <h1 id="document-title" class="text-[#070025] mb-1 sm:mb-2 text-xl sm:text-2xl font-bold">{{ 'document.title' | translate }}</h1>
+            <p class="text-gray-600 text-sm sm:text-base">{{ 'document.subtitle' | translate }}</p>
         </div>
 
         <!-- Área de carga de archivos -->
-        <div class="bg-gray-50/50 dark:bg-gray-800/50 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-6 sm:p-10 text-center mb-6 sm:mb-8 cursor-pointer transition-all duration-300 hover:border-[#02ab74] hover:bg-[#02ab74]/5 dark:hover:bg-[#02ab74]/10"
+        <div class="bg-gray-50/50 border-2 border-dashed border-gray-300 rounded-xl p-6 sm:p-10 text-center mb-6 sm:mb-8 cursor-pointer transition-all duration-300 hover:border-[#02ab74] hover:bg-[#02ab74]/5"
             [class.border-[#02ab74]]="isDragOver" [class.bg-[#02ab74]/10]="isDragOver" (dragover)="onDragOver($event)"
             (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
 
             <div class="flex justify-center items-center mb-3 sm:mb-4">
                 <lucide-angular name="cloud-upload" class="w-12 h-12 sm:w-16 sm:h-16 text-[#02ab74]"></lucide-angular>
             </div>
-            <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">{{ 'document.upload.dragDrop' | translate }}</h3>
-            <p class="text-gray-500 dark:text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">{{ 'document.upload.or' | translate }}</p>
+            <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">{{ 'document.upload.dragDrop' | translate }}</h3>
+            <p class="text-gray-500 mb-3 sm:mb-4 text-sm sm:text-base">{{ 'document.upload.or' | translate }}</p>
             <button
                 class="w-full sm:w-auto bg-[#02ab74] text-white border-none py-2.5 sm:py-3 px-6 rounded-lg cursor-pointer text-sm sm:text-base font-semibold inline-flex items-center justify-center gap-2 transition-transform hover:scale-105 shadow-md"
                 (click)="openFileInput()">
@@ -23,33 +23,33 @@
                 {{ 'document.upload.select' | translate }}
             </button>
             <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" multiple />
-            <p class="mt-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400">{{ 'document.upload.supported' | translate }}</p>
+            <p class="mt-4 text-xs sm:text-sm text-gray-500">{{ 'document.upload.supported' | translate }}</p>
         </div>
 
         <!-- Filtros de documentos -->
         <div class="grid grid-cols-2 sm:flex flex-wrap gap-2 sm:gap-4 mb-6">
             <button
-                class="w-full sm:w-auto py-2 px-3 sm:px-4 rounded-full border border-gray-200 dark:border-gray-600 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
+                class="w-full sm:w-auto py-2 px-3 sm:px-4 rounded-full border border-gray-200 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
                 (click)="filterDocuments('all')"
-                [ngClass]="activeFilter === 'all' ? 'bg-[#02ab74] text-white border-[#02ab74]' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200'">
-                <lucide-angular name="folder" class="w-4 h-4" [ngClass]="activeFilter === 'all' ? 'text-white' : 'text-gray-400 dark:text-gray-400'"></lucide-angular> <span class="truncate">{{ 'document.filters.all' | translate }}</span>
+                [ngClass]="activeFilter === 'all' ? 'bg-[#02ab74] text-white border-[#02ab74]' : 'bg-white text-gray-700'">
+                <lucide-angular name="folder" class="w-4 h-4" [ngClass]="activeFilter === 'all' ? 'text-white' : 'text-gray-400'"></lucide-angular> <span class="truncate">{{ 'document.filters.all' | translate }}</span>
             </button>
             <button
-                class="w-full sm:w-auto py-2 px-3 sm:px-4 rounded-full border border-gray-200 dark:border-gray-600 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
+                class="w-full sm:w-auto py-2 px-3 sm:px-4 rounded-full border border-gray-200 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
                 (click)="filterDocuments('pdf')"
-                [ngClass]="activeFilter === 'pdf' ? 'bg-[#02ab74] text-white border-[#02ab74]' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200'">
+                [ngClass]="activeFilter === 'pdf' ? 'bg-[#02ab74] text-white border-[#02ab74]' : 'bg-white text-gray-700'">
                 <lucide-angular name="file-text" class="w-4 h-4" [ngClass]="activeFilter === 'pdf' ? 'text-white' : 'text-red-500'"></lucide-angular> <span class="truncate">{{ 'document.filters.pdf' | translate }}</span>
             </button>
             <button
-                class="w-full sm:w-auto py-2 px-3 sm:px-4 rounded-full border border-gray-200 dark:border-gray-600 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
+                class="w-full sm:w-auto py-2 px-3 sm:px-4 rounded-full border border-gray-200 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
                 (click)="filterDocuments('docx')"
-                [ngClass]="activeFilter === 'docx' ? 'bg-[#02ab74] text-white border-[#02ab74]' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200'">
+                [ngClass]="activeFilter === 'docx' ? 'bg-[#02ab74] text-white border-[#02ab74]' : 'bg-white text-gray-700'">
                 <lucide-angular name="file-text" class="w-4 h-4" [ngClass]="activeFilter === 'docx' ? 'text-white' : 'text-blue-500'"></lucide-angular> <span class="truncate">{{ 'document.filters.docx' | translate }}</span>
             </button>
             <button
-                class="w-full sm:w-auto py-2 px-3 sm:px-4 rounded-full border border-gray-200 dark:border-gray-600 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
+                class="w-full sm:w-auto py-2 px-3 sm:px-4 rounded-full border border-gray-200 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
                 (click)="filterDocuments('txt')"
-                [ngClass]="activeFilter === 'txt' ? 'bg-[#02ab74] text-white border-[#02ab74]' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200'">
+                [ngClass]="activeFilter === 'txt' ? 'bg-[#02ab74] text-white border-[#02ab74]' : 'bg-white text-gray-700'">
                 <lucide-angular name="file-text" class="w-4 h-4" [ngClass]="activeFilter === 'txt' ? 'text-white' : 'text-green-500'"></lucide-angular> <span class="truncate">{{ 'document.filters.txt' | translate }}</span>
             </button>
         </div>
@@ -61,7 +61,7 @@
             <div *ngIf="loading" class="col-span-full text-center py-8">
                 <i class="fas fa-spinner fa-spin"></i> {{ 'document.list.loading' | translate }}
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md transition-all duration-300 flex flex-col hover:-translate-y-1 hover:shadow-lg"
+            <div class="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 flex flex-col hover:-translate-y-1 hover:shadow-lg"
                 *ngFor="let document of (documents ? paginatedDocuments : [])">
 
                 <div class="p-4 text-white flex items-center gap-2.5" [ngClass]="{
@@ -73,16 +73,16 @@
                     <h4 class="font-semibold">{{ document.file_type.toUpperCase() }}</h4>
                 </div>
 
-                <div class="p-4 flex-grow text-gray-800 dark:text-gray-100">
+                <div class="p-4 flex-grow text-gray-800">
                     <h5 class="font-semibold mb-2 truncate" [title]="document.filename">{{ document.filename
                         }}</h5>
-                    <div class="flex justify-between text-gray-600 dark:text-gray-400 text-sm">
+                    <div class="flex justify-between text-gray-600 text-sm">
                         <span *ngIf="document?.size">{{ formatBytesToMB(document.size) }}</span>
                         <span>{{ document.created_at | date:'short':' -0500' }}</span>
                     </div>
                 </div>
 
-                <div class="py-3 px-4 flex justify-end gap-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="py-3 px-4 flex justify-end gap-4 border-t border-gray-200">
                     <button
                         class="p-2 -m-2 bg-transparent border-none text-gray-400 cursor-pointer text-lg transition-colors duration-300 hover:text-[#02ab74]"
                         (click)="viewDocument(document)"
@@ -108,10 +108,10 @@
         <!-- Panel "No hay documentos" -->
         <ng-template #noDocuments>
             <div
-                class="p-12 border border-gray-200 dark:border-gray-700 rounded-xl text-center mt-10 flex flex-col items-center justify-center">
+                class="p-12 border border-gray-200 rounded-xl text-center mt-10 flex flex-col items-center justify-center">
                 <div class="text-center">
                     <lucide-angular name="Inbox" class="w-12 h-12 text-gray-400 mx-auto mb-2"></lucide-angular>
-                    <p class="text-gray-500 dark:text-gray-400 font-medium">
+                    <p class="text-gray-500 font-medium">
                         {{ loading ? ('document.list.loading' | translate) : ('document.list.noDocs' | translate) }}
                     </p>
                     <p class="text-sm text-gray-400 mt-1" *ngIf="!loading">
@@ -128,19 +128,19 @@
         <div class="mt-8 flex justify-center w-full overflow-x-auto pb-2">
             <nav class="flex items-center gap-1 sm:gap-2">
                 <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 0"
-                    class="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 flex-shrink-0">
+                    class="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:bg-gray-50 text-gray-700 flex-shrink-0">
                     <span class="hidden sm:inline">{{ 'document.pagination.previous' | translate }}</span>
                     <lucide-angular name="chevron-left" class="w-4 h-4 sm:hidden"></lucide-angular>
                 </button>
                 <button *ngFor="let page of getPages()" (click)="onPageChange(page)" [ngClass]="{
                         'bg-[#02ab74] text-white border-[#02ab74]': currentPage === page - 1,
-                        'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600': currentPage !== page - 1
+                        'bg-white text-gray-800 border-gray-300': currentPage !== page - 1
                     }"
-                    class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border rounded-lg transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex-shrink-0">
+                    class="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border rounded-lg transition-all duration-200 hover:bg-gray-100 flex-shrink-0">
                     {{ page }}
                 </button>
                 <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage >= totalPages - 1"
-                    class="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 flex-shrink-0">
+                    class="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:bg-gray-50 text-gray-700 flex-shrink-0">
                     <span class="hidden sm:inline">{{ 'document.pagination.next' | translate }}</span>
                     <lucide-angular name="chevron-right" class="w-4 h-4 sm:hidden"></lucide-angular>
                 </button>

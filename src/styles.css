@@ -178,22 +178,105 @@ body.dark::-webkit-scrollbar-thumb:hover { background: #028a5f; }
 
 
 /* ==============================================================
-   MODO OSCURO - TAILWIND 'dark:' maneja los colores en los templates.
-   Solo se mantienen aquí las reglas que Tailwind no puede manejar:
-   como variables CSS y scrollbar.
+   ESTRATEGIAS DE TEMA (MODO CLARO / OSCURO)
    ============================================================== */
+
+/* --- TEMA OSCURO GLOBAL --- */
 html.dark {
     color-scheme: dark;
 }
 
-/* Scrollbar en dark mode */
-html.dark ::-webkit-scrollbar-track { background: #1f2937; }
-html.dark ::-webkit-scrollbar-thumb { background: #02ab74; }
-html.dark ::-webkit-scrollbar-thumb:hover { background: #028a5f; }
+/* Fondos Principales */
+html.dark body,
+html.dark .content,
+html.dark .bg-gray-50,
+html.dark .bg-\[\#f8f9fa\],
+html.dark .bg-\[\#f5f6fa\] {
+    background-color: #0f172a !important; /* slate-900 */
+}
 
-/* ── Transición suave al cambiar de tema ── */
-html, body, nav, main, header, section, div, button, input, select, textarea {
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+/* Tarjetas y Contenedores */
+html.dark .bg-white,
+html.dark .sidebar,
+html.dark header.md\:hidden,
+html.dark .border.border-gray-200.rounded-xl {
+    background-color: #1e293b !important; /* slate-800 */
+    border-color: #334155 !important;    /* slate-700 */
+}
+
+/* Textos Principales */
+html.dark .text-\[\#070025\],
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6 {
+    color: #f8fafc !important; /* slate-50 */
+}
+
+/* Textos Secundarios */
+html.dark .text-gray-700,
+html.dark .text-gray-600,
+html.dark .text-gray-500,
+html.dark p, html.dark span:not(.text-white) {
+    color: #cbd5e1 !important; /* slate-300 */
+}
+
+/* Bordes y Divisores */
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-gray-300,
+html.dark .divide-gray-200 > * + * {
+    border-color: #334155 !important; /* slate-700 */
+}
+
+/* Inputs, Selects y Textareas */
+html.dark input,
+html.dark select,
+html.dark textarea,
+html.dark .bg-white.border-gray-300 {
+    background-color: #0f172a !important; /* slate-900 */
+    color: #f8fafc !important;           /* slate-50 */
+    border-color: #475569 !important;    /* slate-600 */
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+    color: #64748b !important; /* slate-500 */
+}
+
+/* Botones e Interacciones */
+html.dark .hover\:bg-gray-50:hover,
+html.dark .hover\:bg-gray-100:hover,
+html.dark .bg-gray-50\/50,
+html.dark .bg-gray-50\.50 {
+    background-color: #334155 !important; /* slate-700 */
+}
+
+/* Paginación y Filtros (No Activos) */
+html.dark .rounded-full.border,
+html.dark nav.flex button:not([class*="bg-\[#02ab74\]"]) {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+    border-color: #334155 !important;
+}
+
+/* Badges y Alertas */
+html.dark .bg-green-50, html.dark .bg-green-100 { background-color: rgba(6, 78, 59, 0.4) !important; color: #6ee7b7 !important; }
+html.dark .bg-blue-50, html.dark .bg-blue-100 { background-color: rgba(30, 58, 138, 0.4) !important; color: #93c5fd !important; }
+html.dark .bg-red-50, html.dark .bg-red-100 { background-color: rgba(127, 29, 29, 0.4) !important; color: #fca5a5 !important; }
+
+/* Especial Sidebar */
+html.dark nav.sidebar button:hover {
+    background-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+/* Scrollbars */
+html.dark ::-webkit-scrollbar-track { background: #0f172a; }
+html.dark ::-webkit-scrollbar-thumb { background: #334155; border: 2px solid #0f172a; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* Suavizado Global */
+* {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.1s ease;
 }
 
 

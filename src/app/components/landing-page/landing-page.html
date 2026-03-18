@@ -46,7 +46,7 @@
 
             <!-- Login CTA -->
             <button (click)="goToLogin()"
-                class="ml-2 px-8 py-3 bg-gradient-to-r from-[#02ab74] via-[#02ab74] to-[#7209b7] text-white text-[10px] font-black rounded-xl shadow-xl hover:shadow-[#02ab74]/40 transition-all hover:-translate-y-1 active:translate-y-0 uppercase tracking-[0.15em]">
+                class="ml-2 px-8 py-3 bg-[#02ab74] hover:bg-[#028a5f] text-white text-[10px] font-black rounded-xl shadow-xl hover:shadow-[#02ab74]/40 transition-all hover:-translate-y-1 active:translate-y-0 uppercase tracking-[0.15em]">
                 {{ 'landing.nav.platform' | translate }}
             </button>
         </nav>
@@ -73,7 +73,7 @@
             <a href="#roles" (click)="closeMobileMenu()" class="text-base font-bold hover:text-[#02ab74] transition-colors">{{ 'landing.mobileMenu.roles' | translate }}</a>
             <hr class="border-gray-100 dark:border-white/10">
             <button (click)="goToLogin()"
-                class="w-full py-3 bg-gradient-to-r from-[#02ab74] to-[#7209b7] text-white font-bold rounded-xl shadow-lg hover:opacity-90 transition-opacity">
+                class="w-full py-3 bg-[#02ab74] hover:bg-[#028a5f] text-white font-bold rounded-xl shadow-lg transition-all active:scale-95">
                 {{ 'landing.mobileMenu.enterPlatform' | translate }}
             </button>
         </nav>

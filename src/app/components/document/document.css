@@ -3,7 +3,6 @@
     background: var(--light-color);
     border: 2px dashed #ccc;
     border-radius: 10px;
-    padding: 2rem;
     text-align: center;
     margin-bottom: 2rem;
     transition: all 0.3s ease;
@@ -43,13 +42,7 @@
     color: var(--small-text-color, #6c757d);
 }
 
-/* Filters */
-.filters {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
+/* Filters are handled via Tailwind grid utilities in HTML */
 
 .filter-btn {
   padding: 8px 15px;

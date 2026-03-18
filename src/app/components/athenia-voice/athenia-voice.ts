@@ -39,7 +39,7 @@ export interface ChatMessage {
   standalone: true,
   imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './athenia-voice.html',
-  styleUrls: ['./athenia-voice.scss'],
+  styleUrls: ['./athenia-voice.css'],
 })
 export class AtheniaVoice implements OnInit, OnDestroy {
   @ViewChild('threeCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;

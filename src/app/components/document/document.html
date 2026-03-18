@@ -27,30 +27,30 @@
         </div>
 
         <!-- Filtros de documentos -->
-        <div class="flex flex-wrap gap-2 sm:gap-4 mb-6">
+        <div class="grid grid-cols-2 sm:flex flex-wrap gap-2 sm:gap-4 mb-6">
             <button
-                class="flex-1 sm:flex-none py-2 px-4 rounded-full border border-gray-200 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
+                class="w-full sm:w-auto py-2 px-3 sm:px-4 rounded-full border border-gray-200 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
                 (click)="filterDocuments('all')"
                 [ngClass]="activeFilter === 'all' ? 'bg-[#02ab74] text-white border-[#02ab74]' : 'bg-white text-gray-700'">
-                <lucide-angular name="folder" class="w-4 h-4" [ngClass]="activeFilter === 'all' ? 'text-white' : 'text-gray-400'"></lucide-angular> {{ 'document.filters.all' | translate }}
+                <lucide-angular name="folder" class="w-4 h-4" [ngClass]="activeFilter === 'all' ? 'text-white' : 'text-gray-400'"></lucide-angular> <span class="truncate">{{ 'document.filters.all' | translate }}</span>
             </button>
             <button
-                class="flex-1 sm:flex-none py-2 px-4 rounded-full border border-gray-200 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
+                class="w-full sm:w-auto py-2 px-3 sm:px-4 rounded-full border border-gray-200 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
                 (click)="filterDocuments('pdf')"
                 [ngClass]="activeFilter === 'pdf' ? 'bg-[#02ab74] text-white border-[#02ab74]' : 'bg-white text-gray-700'">
-                <lucide-angular name="file-text" class="w-4 h-4" [ngClass]="activeFilter === 'pdf' ? 'text-white' : 'text-red-500'"></lucide-angular> {{ 'document.filters.pdf' | translate }}
+                <lucide-angular name="file-text" class="w-4 h-4" [ngClass]="activeFilter === 'pdf' ? 'text-white' : 'text-red-500'"></lucide-angular> <span class="truncate">{{ 'document.filters.pdf' | translate }}</span>
             </button>
             <button
-                class="flex-1 sm:flex-none py-2 px-4 rounded-full border border-gray-200 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
+                class="w-full sm:w-auto py-2 px-3 sm:px-4 rounded-full border border-gray-200 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
                 (click)="filterDocuments('docx')"
                 [ngClass]="activeFilter === 'docx' ? 'bg-[#02ab74] text-white border-[#02ab74]' : 'bg-white text-gray-700'">
-                <lucide-angular name="file-text" class="w-4 h-4" [ngClass]="activeFilter === 'docx' ? 'text-white' : 'text-blue-500'"></lucide-angular> {{ 'document.filters.docx' | translate }}
+                <lucide-angular name="file-text" class="w-4 h-4" [ngClass]="activeFilter === 'docx' ? 'text-white' : 'text-blue-500'"></lucide-angular> <span class="truncate">{{ 'document.filters.docx' | translate }}</span>
             </button>
             <button
-                class="flex-1 sm:flex-none py-2 px-4 rounded-full border border-gray-200 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
+                class="w-full sm:w-auto py-2 px-3 sm:px-4 rounded-full border border-gray-200 cursor-pointer flex justify-center items-center gap-2 transition-all duration-300 text-xs sm:text-sm font-medium shadow-sm hover:shadow"
                 (click)="filterDocuments('txt')"
                 [ngClass]="activeFilter === 'txt' ? 'bg-[#02ab74] text-white border-[#02ab74]' : 'bg-white text-gray-700'">
-                <lucide-angular name="file-text" class="w-4 h-4" [ngClass]="activeFilter === 'txt' ? 'text-white' : 'text-green-500'"></lucide-angular> {{ 'document.filters.txt' | translate }}
+                <lucide-angular name="file-text" class="w-4 h-4" [ngClass]="activeFilter === 'txt' ? 'text-white' : 'text-green-500'"></lucide-angular> <span class="truncate">{{ 'document.filters.txt' | translate }}</span>
             </button>
         </div>
 
@@ -74,7 +74,7 @@
                 </div>
 
                 <div class="p-4 flex-grow text-gray-800">
-                    <h5 class="font-semibold mb-2 whitespace-nowrap overflow-hidden text-ellipsis">{{ document.filename
+                    <h5 class="font-semibold mb-2 truncate" [title]="document.filename">{{ document.filename
                         }}</h5>
                     <div class="flex justify-between text-gray-600 text-sm">
                         <span *ngIf="document?.size">{{ formatBytesToMB(document.size) }}</span>

@@ -216,8 +216,18 @@ html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark 
 html.dark .text-gray-700,
 html.dark .text-gray-600,
 html.dark .text-gray-500,
-html.dark p, html.dark span:not(.text-white) {
+html.dark p, 
+html.dark .text-gray-400 {
     color: #cbd5e1 !important; /* slate-300 */
+}
+
+/* Forzar fondos en gradientes comunes de la landing/login */
+html.dark .from-white,
+html.dark .from-gray-50,
+html.dark .to-gray-50,
+html.dark .to-white {
+    --tw-gradient-from: #0f172a !important;
+    --tw-gradient-to: #1e293b !important;
 }
 
 /* Bordes y Divisores */
@@ -239,7 +249,7 @@ html.dark .bg-white.border-gray-300 {
 }
 html.dark input::placeholder,
 html.dark textarea::placeholder {
-    color: #64748b !important; /* slate-500 */
+    color: #94a3b8 !important; /* slate-400 (Más claro para legibilidad) */
 }
 
 /* Botones e Interacciones */

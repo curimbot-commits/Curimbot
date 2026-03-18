@@ -124,6 +124,10 @@ body::-webkit-scrollbar-thumb:hover {
     min-height: 100vh;
 }
 
+html.dark .content {
+    background: #111827; /* gray-900 */
+}
+
 /* ==============================================================
    MODO OSCURO LEGACY (CSS Variables, compatibilidad con CSS custom)
    ============================================================== */

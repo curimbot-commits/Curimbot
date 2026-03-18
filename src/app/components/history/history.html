@@ -1,19 +1,19 @@
 <div class="max-w-7xl mx-auto w-full p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
   <!-- Header -->
   <div>
-    <h1 class="text-[#070025] mb-2 text-2xl font-bold">{{ 'history.title' | translate }}</h1>
-    <p class="text-gray-600 mb-6">
+    <h1 class="text-[#070025] dark:text-white mb-2 text-2xl font-bold">{{ 'history.title' | translate }}</h1>
+    <p class="text-gray-600 dark:text-gray-400 mb-6">
       {{ 'history.subtitle' | translate }}
     </p>
   </div>
 
   <!-- Stats -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div *ngFor="let stat of stats" class="p-6 border border-gray-200 rounded-xl">
+    <div *ngFor="let stat of stats" class="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm text-gray-600 mb-1">{{ stat.label }}</p>
-          <p class="text-[#070025] text-2xl font-bold">{{ stat.value }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">{{ stat.label }}</p>
+          <p class="text-[#070025] dark:text-white text-2xl font-bold">{{ stat.value }}</p>
         </div>
         <div [class]="'p-3 rounded-lg ' + stat.color">
           <lucide-angular [name]="stat.icon" class="w-6 h-6 text-white"></lucide-angular>
@@ -23,7 +23,7 @@
   </div>
 
   <!-- Filters and Search -->
-  <div class="p-6 border border-gray-200 rounded-xl">
+  <div class="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800">
     <div class="flex flex-col sm:flex-row gap-4">
       <div class="flex-1 relative">
         <lucide-angular name="search" class="absolute left-2 top-1/2 -translate-y-1/4 w-5 h-5 text-gray-400"></lucide-angular>
@@ -32,7 +32,7 @@
           [placeholder]="'history.searchPlaceholder' | translate"
           [(ngModel)]="searchQuery"
           (input)="filterActivities()"
-          class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:border-[#02ab74] focus:ring-1 focus:ring-[#02ab74] focus:outline-none"
+          class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:border-[#02ab74] focus:ring-1 focus:ring-[#02ab74] focus:outline-none"
         />
       </div>
       <div class="sm:w-64">
@@ -40,7 +40,7 @@
           <select
             [(ngModel)]="filterType"
             (change)="filterActivities()"
-            class="w-full appearance-none pl-10 pr-10 py-2 rounded-lg border border-gray-200 focus:border-[#02ab74] focus:ring-1 focus:ring-[#02ab74] focus:outline-none bg-white"
+            class="w-full appearance-none pl-10 pr-10 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-[#02ab74] focus:ring-1 focus:ring-[#02ab74] focus:outline-none"
           >
             <option value="all">{{ 'history.filters.all' | translate }}</option>
             <option value="upload">{{ 'history.filters.upload' | translate }}</option>
@@ -48,9 +48,9 @@
             <option value="delete">{{ 'history.filters.delete' | translate }}</option>
             <option value="error">{{ 'history.filters.error' | translate }}</option>
           </select>
-          <lucide-angular name="filter" class="absolute left-2 top-1/2 -translate-y-1/4 w-4 h-4 text-gray-600 pointer-events-none"></lucide-angular>
+          <lucide-angular name="filter" class="absolute left-2 top-1/2 -translate-y-1/4 w-4 h-4 text-gray-600 dark:text-gray-400 pointer-events-none"></lucide-angular>
           <div class="absolute right-3  top-1/2 -translate-y-1/4 pointer-events-none">
-            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
           </div>
@@ -62,31 +62,31 @@
   <!-- Loading Indicator -->
   <div *ngIf="loading" class="text-center py-12">
     <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#02ab74]"></div>
-    <p class="text-gray-600 mt-4">{{ 'history.loading' | translate }}</p>
+    <p class="text-gray-600 dark:text-gray-400 mt-4">{{ 'history.loading' | translate }}</p>
   </div>
 
   <!-- Error Message -->
-  <div *ngIf="errorMessage && !loading" class="p-6 border border-red-200 rounded-xl bg-red-50">
+  <div *ngIf="errorMessage && !loading" class="p-6 border border-red-200 dark:border-red-800 rounded-xl bg-red-50 dark:bg-red-900/20">
     <div class="flex items-center space-x-3">
       <lucide-angular name="x-circle" class="w-5 h-5 text-red-500"></lucide-angular>
-      <p class="text-red-700">{{ errorMessage }}</p>
+      <p class="text-red-700 dark:text-red-400">{{ errorMessage }}</p>
     </div>
   </div>
 
   <!-- Activity Timeline -->
-  <div *ngIf="!loading && !errorMessage" class="border border-gray-200 rounded-xl overflow-hidden">
-    <div class="p-6 border-b border-gray-200 bg-gray-50">
+  <div *ngIf="!loading && !errorMessage" class="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+    <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
       <div class="flex items-center space-x-3">
         <div class="p-2 bg-[#02ab74] rounded-lg">
           <lucide-angular name="history" class="w-5 h-5 text-white"></lucide-angular>
         </div>
-        <h2 class="text-[#070025] text-xl font-semibold">{{ 'history.recentActivity' | translate }}</h2>
+        <h2 class="text-[#070025] dark:text-white text-xl font-semibold">{{ 'history.recentActivity' | translate }}</h2>
       </div>
     </div>
 
-    <div class="divide-y divide-gray-200">
+    <div class="divide-y divide-gray-200 dark:divide-gray-700">
       <ng-container *ngIf="paginatedActivities.length > 0; else noResults">
-        <div *ngFor="let activity of paginatedActivities" class="p-4 sm:p-6 hover:bg-gray-50 transition-colors">
+        <div *ngFor="let activity of paginatedActivities" class="p-4 sm:p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors bg-white dark:bg-gray-800">
           <div class="flex items-start space-x-4">
             <!-- Icon -->
             <div [class]="'p-3 rounded-lg flex-shrink-0 ' + getActivityColor(activity.action)">
@@ -96,16 +96,16 @@
             <!-- Content -->
             <div class="flex-1 min-w-0">
               <div class="flex items-start justify-between mb-1">
-                <h3 class="text-[#070025] font-semibold">{{ getActionLabel(activity.action) }}</h3>
+                <h3 class="text-[#070025] dark:text-white font-semibold">{{ getActionLabel(activity.action) }}</h3>
                 <lucide-angular 
                   [name]="getStatusIcon(activity.action)" 
                   [class]="'w-5 h-5 flex-shrink-0 ml-2 ' + getStatusColor(activity.action)"
                 ></lucide-angular>
               </div>
-              <p class="text-gray-600 mb-2 break-words">
+              <p class="text-gray-600 dark:text-gray-400 mb-2 break-words">
                 {{ activity.document_name || ('history.unnamedDoc' | translate) }}
               </p>
-              <div class="flex items-center text-sm text-gray-500">
+              <div class="flex items-center text-sm text-gray-500 dark:text-gray-500">
                 <lucide-angular name="clock" class="w-4 h-4 mr-1"></lucide-angular>
                 {{ activity.timestamp | date:'d MMM yyyy, HH:mm' }}
               </div>
@@ -115,12 +115,12 @@
       </ng-container>
 
       <ng-template #noResults>
-        <div class="p-12 text-center">
-          <div class="inline-flex p-4 bg-gray-100 rounded-full mb-4">
+        <div class="p-12 text-center bg-white dark:bg-gray-800">
+          <div class="inline-flex p-4 bg-gray-100 dark:bg-gray-700 rounded-full mb-4">
             <lucide-angular name="search" class="w-8 h-8 text-gray-400"></lucide-angular>
           </div>
-          <h3 class="text-[#070025] text-lg font-semibold mb-2">{{ 'history.empty.title' | translate }}</h3>
-          <p class="text-gray-600">
+          <h3 class="text-[#070025] dark:text-white text-lg font-semibold mb-2">{{ 'history.empty.title' | translate }}</h3>
+          <p class="text-gray-600 dark:text-gray-400">
             {{ 'history.empty.subtitle' | translate }}
           </p>
         </div>
@@ -128,9 +128,9 @@
     </div>
 
   <!-- Pagination -->
-    <div *ngIf="totalPages > 1" class="p-4 sm:p-6 border-t border-gray-200 bg-gray-50">
+    <div *ngIf="totalPages > 1" class="p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p class="text-xs sm:text-sm text-gray-600 block text-center sm:text-left w-full sm:w-auto">
+        <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 block text-center sm:text-left w-full sm:w-auto">
           {{ 'history.pagination.info' | translate:{current: currentPage, total: totalPages, count: filteredActivities.length} }}
         </p>
 
@@ -139,7 +139,7 @@
           <button 
             (click)="goToPage(currentPage - 1)"
             [disabled]="currentPage === 1"
-            class="p-2 border border-gray-200 rounded-lg text-gray-600 hover:border-[#02ab74] hover:text-[#02ab74] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="p-2 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300 hover:border-[#02ab74] hover:text-[#02ab74] dark:hover:border-[#02ab74] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             [title]="'history.pagination.prevDesc' | translate">
             <lucide-angular name="chevron-left" class="w-5 h-5"></lucide-angular>
           </button>
@@ -150,7 +150,7 @@
               (click)="goToPage(page)"
               [class]="page === currentPage 
                 ? 'w-10 h-10 rounded-lg bg-[#02ab74] text-white font-medium transition-colors' 
-                : 'w-10 h-10 rounded-lg border border-gray-200 text-gray-600 hover:border-[#02ab74] hover:text-[#02ab74] transition-colors'"
+                : 'w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-[#02ab74] hover:text-[#02ab74] transition-colors'"
             >
               {{ page }}
             </button>
@@ -160,7 +160,7 @@
           <button 
             (click)="goToPage(currentPage + 1)"
             [disabled]="currentPage === totalPages"
-            class="p-2 border border-gray-200 rounded-lg text-gray-600 hover:border-[#02ab74] hover:text-[#02ab74] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="p-2 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300 hover:border-[#02ab74] hover:text-[#02ab74] dark:hover:border-[#02ab74] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             [title]="'history.pagination.nextDesc' | translate">
             <lucide-angular name="chevron-right" class="w-5 h-5"></lucide-angular>
           </button>
@@ -170,18 +170,18 @@
   </div>
 
   <!-- Export Options -->
-  <div class="p-6 border border-gray-200 rounded-xl">
+  <div class="p-6 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800">
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div>
-        <h3 class="text-[#070025] font-semibold mb-1">{{ 'history.export.title' | translate }}</h3>
-        <p class="text-sm text-gray-600">
+        <h3 class="text-[#070025] dark:text-white font-semibold mb-1">{{ 'history.export.title' | translate }}</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
           {{ 'history.export.subtitle' | translate }}
         </p>
       </div>
       <div class="flex gap-3">
         <button 
           (click)="exportPDF()"
-          class="px-4 py-2 border border-gray-200 rounded-lg hover:border-[#02ab74] hover:text-[#02ab74] transition-colors"
+          class="px-4 py-2 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:border-[#02ab74] hover:text-[#02ab74] transition-colors"
         >
           {{ 'history.export.pdfBtn' | translate }}
         </button>
@@ -194,4 +194,5 @@
       </div>
     </div>
   </div>
+
 </div>

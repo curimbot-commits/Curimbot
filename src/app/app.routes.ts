@@ -20,6 +20,7 @@ import { PasswordChanged as PasswordChangedComponent } from './components/authen
 import { TwoVerification as TwoVerificationComponent } from './components/authentication/login/two-verification/two-verification';
 import { Users as usersComponent } from './components/users/users';
 import { AtheniaVoice as CurimComponent } from './components/athenia-voice/athenia-voice';
+import { NotFoundComponent } from './components/not-found/not-found';
 
 // CONVOCATORIAS
 
@@ -169,7 +170,12 @@ export const routes: Routes = [
   // ========================================
   //  RUTA 404
   // ========================================
-  { path: '**', redirectTo: '/' },
+  { 
+    path: '404', 
+    component: NotFoundComponent,
+    title: '404 - Página no encontrada'
+  },
+  { path: '**', redirectTo: '404' },
 ];
 
 @NgModule({

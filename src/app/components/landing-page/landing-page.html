@@ -1,7 +1,7 @@
 <!-- SECCIÓN: NAVBAR / HEADER DINÁMICO -->
 <header class="fixed top-0 z-30 w-full transition-all duration-500 border-b" [ngClass]="isScrolled ? 
-    'bg-gradient-to-br from-[rgba(7,0,37,0.85)] to-[rgba(2,171,116,0.75)] backdrop-blur-xl border-gray-100/30 shadow-lg py-3' : 
-    'bg-gradient-to-br from-[rgba(7,0,37,0.75)] to-[rgba(2,171,116,0.65)] border-transparent py-5 backdrop-blur-sm'">
+    'bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-gray-200/20 dark:border-gray-100/30 shadow-lg py-3' : 
+    'bg-transparent border-transparent py-5 backdrop-blur-sm'">
 
     <div class="container mx-auto px-6 flex items-center justify-between">
         <!-- Logo -->
@@ -51,27 +51,29 @@
             </button>
         </nav>
 
-        <!-- Mobile toggle (ajustado a blanco para que contraste) -->
+        <!-- Mobile toggle -->
         <div class="flex lg:hidden items-center gap-6">
-            <button (click)="toggleTheme()" class="p-2 rounded-lg text-white">
+            <button (click)="toggleTheme()" class="p-2 rounded-lg transition-colors"
+                [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
                 <lucide-angular [name]="themeIcon" class="w-5 h-5"></lucide-angular>
             </button>
-            <button (click)="toggleMobileMenu()" class="p-2 rounded-lg text-white">
+            <button (click)="toggleMobileMenu()" class="p-2 rounded-lg transition-colors"
+                [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
                 <lucide-angular [name]="mobileMenuOpen ? 'x' : 'menu'" class="w-6 h-6"></lucide-angular>
             </button>
         </div>
     </div>
 
-    <!-- Mobile menu (ajustado a gradiente oscuro para coherencia) -->
+    <!-- Mobile menu -->
     <div *ngIf="mobileMenuOpen"
-        class="lg:hidden absolute top-full left-0 w-full bg-gradient-to-br from-[rgba(7,0,37,0.95)] to-[rgba(2,171,116,0.85)] border-b border-white/10 p-6 shadow-2xl animate-fade-in-down backdrop-blur-lg">
-        <nav class="flex flex-col gap-5 text-white">
-            <a href="#company" (click)="closeMobileMenu()" class="text-base font-bold">{{ 'landing.mobileMenu.company' | translate }}</a>
-            <a href="#features" (click)="closeMobileMenu()" class="text-base font-bold">{{ 'landing.mobileMenu.features' | translate }}</a>
-            <a href="#roles" (click)="closeMobileMenu()" class="text-base font-bold">{{ 'landing.mobileMenu.roles' | translate }}</a>
-            <hr class="border-white/10">
+        class="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/10 p-6 shadow-2xl animate-fade-in-down backdrop-blur-lg">
+        <nav class="flex flex-col gap-5 text-gray-900 dark:text-white">
+            <a href="#company" (click)="closeMobileMenu()" class="text-base font-bold hover:text-[#02ab74] transition-colors">{{ 'landing.mobileMenu.company' | translate }}</a>
+            <a href="#features" (click)="closeMobileMenu()" class="text-base font-bold hover:text-[#02ab74] transition-colors">{{ 'landing.mobileMenu.features' | translate }}</a>
+            <a href="#roles" (click)="closeMobileMenu()" class="text-base font-bold hover:text-[#02ab74] transition-colors">{{ 'landing.mobileMenu.roles' | translate }}</a>
+            <hr class="border-gray-100 dark:border-white/10">
             <button (click)="goToLogin()"
-                class="w-full py-3 bg-gradient-to-r from-[#02ab74] to-[#7209b7] text-white font-bold rounded-xl shadow-lg">
+                class="w-full py-3 bg-gradient-to-r from-[#02ab74] to-[#7209b7] text-white font-bold rounded-xl shadow-lg hover:opacity-90 transition-opacity">
                 {{ 'landing.mobileMenu.enterPlatform' | translate }}
             </button>
         </nav>

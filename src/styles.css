@@ -176,149 +176,20 @@ body.dark::-webkit-scrollbar-thumb { background: #02ab74; }
 body.dark::-webkit-scrollbar-thumb:hover { background: #028a5f; }
 
 
+
 /* ==============================================================
-   MODO OSCURO CON TAILWIND
-   Sobreescribimos las clases más usadas de Tailwind en toda la app
-   usando html.dark como selector de máxima especificidad.
+   MODO OSCURO - TAILWIND 'dark:' maneja los colores en los templates.
+   Solo se mantienen aquí las reglas que Tailwind no puede manejar:
+   como variables CSS y scrollbar.
    ============================================================== */
 html.dark {
     color-scheme: dark;
 }
 
-/* ==============================================================
-   REGLAS PARA MODO LUZ (PRO-VISIBILIDAD)
-   ============================================================== */
-html:not(.dark) .text-gray-300,
-html:not(.dark) .text-gray-400,
-html:not(.dark) .text-gray-500 {
-    color: #374151 !important; /* gray-700 (Más oscuro) */
-}
-
-html:not(.dark) .text-gray-600 {
-    color: #1f2937 !important; /* gray-800 */
-}
-
-html:not(.dark) .text-gray-700,
-html:not(.dark) .text-gray-800,
-html:not(.dark) .text-gray-900 {
-    color: #030712 !important; /* slate-950 (Máximo contraste) */
-}
-
-html:not(.dark) .bg-white {
-    background-color: #ffffff !important;
-}
-
-html:not(.dark) .bg-gray-50 {
-    background-color: #f9fafb !important;
-}
-
-/* Evitar que enlaces en header/footer se vuelvan invisibles si heredan blanco */
-html:not(.dark) .nav-link-custom {
-    color: #1f2937;
-}
-
-html:not(.dark) .footer-link {
-    color: #4b5563;
-}
-
-/* ── Fondos principales ── */
-html.dark, 
-html.dark body,
-html.dark .content,
-html.dark .bg-white            { background-color: #111827 !important; } /* gray-900 */
-html.dark .bg-gray-50          { background-color: #111827 !important; } /* gray-900 */
-html.dark .bg-gray-100         { background-color: #1f2937 !important; } /* gray-800 */
-html.dark .bg-gray-200         { background-color: #374151 !important; } /* gray-700 */
-html.dark .bg-\[\#f8f9fa\]      { background-color: #111827 !important; } /* gray-900 (Main content) */
-html.dark .bg-\[\#f5f6fa\]      { background-color: #111827 !important; } /* gray-900 */
-
-/* ── Textos e Iconos ── */
-html.dark .text-black          { color: #f9fafb !important; }
-html.dark .text-gray-900       { color: #f9fafb !important; }
-html.dark .text-gray-800       { color: #f3f4f6 !important; }
-html.dark .text-gray-700       { color: #e5e7eb !important; }
-html.dark .text-gray-600       { color: #d1d5db !important; }
-html.dark .text-gray-500       { color: #9ca3af !important; }
-html.dark .text-gray-400       { color: #6b7280 !important; }
-html.dark .text-\[\#070025\]   { color: #f9fafb !important; }
-html.dark .text-black .lucide { color: #f9fafb !important; }
-
-/* ── Bordes ── */
-html.dark .border-gray-100   { border-color: #374151 !important; }
-html.dark .border-gray-200   { border-color: #374151 !important; }
-html.dark .border-gray-300   { border-color: #4b5563 !important; }
-
-/* ── Dividores (divide-y) ── */
-html.dark .divide-gray-200 > * + * { border-color: #374151 !important; }
-
-/* ── Inputs y Selects ── */
-html.dark input,
-html.dark select,
-html.dark textarea {
-    background-color: #374151 !important;
-    color: #f3f4f6 !important;
-    border-color: #4b5563 !important;
-}
-html.dark input::placeholder,
-html.dark textarea::placeholder { color: #6b7280 !important; }
-
-/* ── Sidebar ── */
-html.dark nav.sidebar {
-    background-color: #1f2937 !important;
-    border-color: #374151 !important;
-}
-html.dark nav.sidebar button { color: #d1d5db !important; }
-html.dark nav.sidebar button:hover { background-color: #374151 !important; color: #f9fafb !important; }
-html.dark nav.sidebar .border-b { border-color: #374151 !important; }
-html.dark nav.sidebar .bg-gray-50 { background-color: #111827 !important; }
-html.dark nav.sidebar .bg-gray-50\/50 { background-color: #111827 !important; }
-
-/* ── Topbar móvil ── */
-html.dark header.md\:hidden { background-color: #1f2937 !important; border-color: #374151 !important; }
-html.dark header.md\:hidden h1 { color: #f9fafb !important; }
-html.dark header.md\:hidden button { color: #d1d5db !important; }
-
-/* ── Tablas ── */
-html.dark thead,
-html.dark .bg-gray-50.border-b { background-color: #111827 !important; }
-html.dark tbody tr:hover { background-color: #1f2937 !important; }
-html.dark td, html.dark th { color: #d1d5db !important; border-color: #374151 !important; }
-
-/* ── Tarjetas y paneles ── */
-html.dark .border.border-gray-200.rounded-xl { background-color: #1f2937 !important; }
-html.dark .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important; }
-html.dark .shadow-md { box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important; }
-
-/* ── Área de arrastre (upload) ── */
-html.dark .border-dashed { background-color: #1f2937 !important; border-color: #4b5563 !important; }
-html.dark .border-dashed h3 { color: #e5e7eb !important; }
-
-/* ── Badges y Pills ── */
-html.dark .bg-green-100 { background-color: #064e3b !important; }
-html.dark .text-green-700 { color: #34d399 !important; }
-html.dark .bg-red-50 { background-color: #450a0a !important; }
-html.dark .text-red-600, html.dark .text-red-700 { color: #f87171 !important; }
-html.dark .border-red-200 { border-color: #7f1d1d !important; }
-html.dark .bg-blue-50 { background-color: #1e3a5f !important; }
-html.dark .text-blue-700 { color: #60a5fa !important; }
-html.dark .bg-purple-50 { background-color: #3b0764 !important; }
-
-/* ── Paginación ── */
-html.dark nav.flex button:not([class*="bg-\[#02ab74\]"]):not([disabled]) {
-    background-color: #1f2937 !important;
-    border-color: #4b5563 !important;
-    color: #d1d5db !important;
-}
-html.dark nav.flex button:hover { background-color: #374151 !important; }
-
-/* ── Filtros de tipo de archivo ── */
-html.dark .rounded-full.border { background-color: #1f2937 !important; color: #d1d5db !important; }
-
-/* ── Modales y Diálogos ── */
-html.dark .bg-white.rounded-lg,
-html.dark .bg-white.rounded-xl,
-html.dark .bg-white.rounded-t-2xl { background-color: #1f2937 !important; }
-html.dark .bg-gray-50.px-6 { background-color: #111827 !important; }
+/* Scrollbar en dark mode */
+html.dark ::-webkit-scrollbar-track { background: #1f2937; }
+html.dark ::-webkit-scrollbar-thumb { background: #02ab74; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #028a5f; }
 
 /* ── Transición suave al cambiar de tema ── */
 html, body, nav, main, header, section, div, button, input, select, textarea {

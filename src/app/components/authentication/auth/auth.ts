@@ -201,7 +201,9 @@ export class Auth {
         }),
         catchError((error) => {
           if (error?.requires2FA) return throwError(() => error);
-          return this.handleError(error);
+          // ✅ Devolvemos el error original para que login.ts pueda manejar
+          // los códigos de estado (401, 423, 0, etc.) con sus propias traducciones.
+          return throwError(() => error);
         })
       );
   }
@@ -544,7 +546,11 @@ export class Auth {
           errorMessage = 'Servicio no disponible';
           break;
         default:
-          errorMessage = error.error?.detail || `Error del servidor: ${error.status}`;
+          if (error.status === 0) {
+            errorMessage = 'No se pudo establecer conexión con el servidor. Verifica tu red.';
+          } else {
+            errorMessage = error.error?.detail || `Error del servidor: ${error.status}`;
+          }
       }
     }
 

@@ -209,10 +209,11 @@ export class Users implements OnInit, OnDestroy {
           if (index !== -1) {
             this.users[index] = { ...this.users[index], role: updatedUser.new_role as UserRole };
           }
-          this.alertService.success(this.translate.instant('users.alerts.roleUpdated'), '', 3000);
+          this.alertService.success(this.translate.instant('users.alerts.roleUpdated', { name: this.users[index].name, role: this.getRoleLabel(updatedUser.new_role) }), '', 3000);
         },
         error: () => {
-          this.alertService.error(this.translate.instant('users.alerts.error'), this.translate.instant('users.alerts.roleErrorDesc'), 3000);
+          const user = this.users.find(u => u.id === userId);
+          this.alertService.error(this.translate.instant('users.alerts.error'), this.translate.instant('users.alerts.roleErrorDesc', { name: user?.name || 'Usuario' }), 3000);
           this.loadUsers();
         }
       });
@@ -236,7 +237,7 @@ export class Users implements OnInit, OnDestroy {
             u.id === userId ? { ...u, is_active: newStatus } : u
           );
           this.alertService[newStatus ? 'success' : 'warning'](
-            newStatus ? this.translate.instant('users.alerts.userActivated') : this.translate.instant('users.alerts.userDeactivated'), '', 3000
+            newStatus ? this.translate.instant('users.alerts.userActivated', { name: user.name }) : this.translate.instant('users.alerts.userDeactivated', { name: user.name }), '', 3000
           );
         },
         error: () => {
@@ -266,12 +267,12 @@ export class Users implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.users = this.users.filter(u => u.id !== this.userToDelete!.id);
-          this.alertService.success(this.translate.instant('users.alerts.deletedTitle'), this.translate.instant('users.alerts.deletedDesc'), 3000);
+          this.alertService.success(this.translate.instant('users.alerts.deletedTitle'), this.translate.instant('users.alerts.deletedDesc', { name: this.userToDelete?.name }), 3000);
           this.userToDelete = null;
           this.showDeleteDialog = false;
         },
         error: () => {
-          this.alertService.error(this.translate.instant('users.alerts.error'), this.translate.instant('users.alerts.deleteErrorDesc'), 5000);
+          this.alertService.error(this.translate.instant('users.alerts.error'), this.translate.instant('users.alerts.deleteErrorDesc', { name: this.userToDelete?.name }), 5000);
           this.showDeleteDialog = false;
         }
       });

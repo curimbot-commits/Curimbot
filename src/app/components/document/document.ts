@@ -240,7 +240,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
           document.body.removeChild(a);
           window.URL.revokeObjectURL(url);
 
-          this.alertService.success(this.translate.instant('document.alerts.downloadComplete'), '');
+          this.alertService.success(this.translate.instant('document.alerts.downloadComplete', { name: doc.filename }), '');
         },
         error: () => {
           this.alertService.error(this.translate.instant('document.alerts.downloadError'), '');
@@ -252,7 +252,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
    * Elimina un documento tras confirmación.
    */
   deleteDocument(document: DocumentWithMetadata): void {
-    this.alertService.confirm(`${this.translate.instant('document.alerts.deleteConfirm')} ${document.filename}?`, '').then((confirmed) => {
+    this.alertService.confirm(this.translate.instant('document.alerts.deleteConfirm', { name: document.filename }), '').then((confirmed) => {
       if (!confirmed) return;
 
       this.documentService
@@ -261,7 +261,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
         .subscribe({
           next: () => {
             this.documents = this.documents.filter((doc) => +doc.id !== +document.id);
-            this.alertService.success(`${document.filename} ${this.translate.instant('document.alerts.deleteSuccess')}`, '');
+            this.alertService.success(this.translate.instant('document.alerts.deleteSuccess', { name: document.filename }), '');
           },
           error: () => {
             this.alertService.error(this.translate.instant('document.alerts.deleteError'), '');
@@ -284,7 +284,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
           this.viewedDocuments.add(+doc.id);
         },
         error: () => {
-          this.alertService.error(this.translate.instant('document.alerts.viewError'), '');
+          this.alertService.error(this.translate.instant('document.alerts.viewError', { name: doc.filename }), '');
         },
       });
   }

@@ -108,7 +108,7 @@ export class UserService {
 
   /** Deletes a user (admin only) */
   deleteUser(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.AUTH_URL}/${id}`, {
+    return this.http.delete<void>(`${this.AUTH_URL}/users/${id}`, {
       headers: this.authHeaderService.getAuthHeaders()
     });
   }

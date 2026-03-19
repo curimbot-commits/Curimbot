@@ -293,7 +293,10 @@ export class Login implements OnInit, OnDestroy {
           duration = 5000;
       }
     } else if (err instanceof Error) {
-      errorTitle = err.message || this.translate.instant('login.errors.unexpectedErrorTitle');
+      // Si recibimos un Error (de Auth.handleError o Api.handleError), intentamos traducir su mensaje
+      // ya que ahora devolvemos claves de traducción.
+      const translatedMsg = this.translate.instant(err.message);
+      errorTitle = translatedMsg || err.message || this.translate.instant('login.errors.unexpectedErrorTitle');
     }
 
     this.alertService.error(errorTitle, '', duration);

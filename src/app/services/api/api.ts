@@ -29,20 +29,40 @@ export class Api {
    * @returns Un observable con el error.
   **/
   private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'Error desconocido. Por favor, inténtalo de nuevo.';
+    let errorKey = 'login.errors.unexpectedErrorTitle';
+
     if (error.error instanceof ErrorEvent) {
-      errorMessage = `Error del cliente: ${error.error.message}`;
-    } else {
-      errorMessage = `Error del servidor: ${error.status} - ${error.message}`;
-      if (error.status === 401) {
-        errorMessage = 'Credenciales incorrectas o token inválido.';
-      } else if (error.status === 403) {
-        errorMessage = 'No tienes permisos para realizar esta acción.';
-      } else if (error.status === 404) {
-        errorMessage = 'Recurso no encontrado.';
-      }
+      return throwError(() => new Error(error.error.message));
     }
-    return throwError(() => new Error(errorMessage));
+
+    switch (error.status) {
+      case 0:
+        errorKey = 'login.errors.connectionErrorTitle';
+        break;
+      case 401:
+        errorKey = 'login.errors.invalidCredentialsTitle';
+        break;
+      case 403:
+        errorKey = 'login.errors.forbiddenAccessTitle';
+        break;
+      case 404:
+        errorKey = 'login.errors.resourceNotFoundTitle';
+        break;
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        errorKey = 'login.errors.serverErrorTitle';
+        break;
+      default:
+        errorKey = 'login.errors.unexpectedErrorTitle';
+    }
+
+    const customError: any = new Error(errorKey);
+    customError.status = error.status;
+    customError.originalError = error;
+    
+    return throwError(() => customError);
   }
 
   /**

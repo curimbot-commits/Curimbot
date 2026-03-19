@@ -515,46 +515,50 @@ export class Auth {
    * Maneja errores HTTP de forma centralizada.
    */
   private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'Error desconocido. Por favor, inténtalo de nuevo.';
+    let errorKey = 'login.errors.unexpectedErrorTitle';
 
     if (error.error instanceof ErrorEvent) {
-      errorMessage = `Error del cliente: ${error.error.message}`;
-    } else {
-      switch (error.status) {
-        case 400:
-          errorMessage = error.error?.detail || 'Solicitud inválida';
-          break;
-        case 401:
-          errorMessage = 'Credenciales incorrectas o sesión expirada';
-          break;
-        case 403:
-          errorMessage = error.error?.detail || 'No tienes permisos para realizar esta acción';
-          break;
-        case 404:
-          errorMessage = 'Recurso no encontrado';
-          break;
-        case 409:
-          errorMessage = error.error?.detail || 'El usuario ya existe';
-          break;
-        case 423:
-          errorMessage = error.error?.detail || 'Cuenta bloqueada por múltiples intentos fallidos';
-          break;
-        case 500:
-          errorMessage = 'Error interno del servidor';
-          break;
-        case 503:
-          errorMessage = 'Servicio no disponible';
-          break;
-        default:
-          if (error.status === 0) {
-            errorMessage = 'No se pudo establecer conexión con el servidor. Verifica tu red.';
-          } else {
-            errorMessage = error.error?.detail || `Error del servidor: ${error.status}`;
-          }
-      }
+      // Error del lado del cliente
+      return throwError(() => new Error(error.error.message));
     }
 
-    return throwError(() => new Error(errorMessage));
+    // Mapear estados HTTP a claves de traducción
+    switch (error.status) {
+      case 0:
+        errorKey = 'login.errors.connectionErrorTitle';
+        break;
+      case 401:
+        errorKey = 'login.errors.invalidCredentialsTitle';
+        break;
+      case 403:
+        errorKey = 'login.errors.forbiddenAccessTitle';
+        break;
+      case 404:
+        errorKey = 'login.errors.resourceNotFoundTitle';
+        break;
+      case 423:
+        errorKey = 'login.errors.accountLockedTitle';
+        break;
+      case 429:
+        errorKey = 'login.errors.tooManyAttemptsTitle';
+        break;
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        errorKey = 'login.errors.serverErrorTitle';
+        break;
+      default:
+        errorKey = 'login.errors.unexpectedErrorTitle';
+    }
+
+    // Devolvemos el error original pero adjuntamos la clave de traducción sugerida
+    // si el componente simplemente quiere mostrar el mensaje de error.
+    const customError: any = new Error(errorKey);
+    customError.status = error.status;
+    customError.originalError = error;
+    
+    return throwError(() => customError);
   }
 
   /**

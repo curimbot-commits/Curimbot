@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
 export interface AlertConfig {
     id: string;
@@ -21,6 +21,7 @@ export class AlertService {
     private readonly MAX_ALERTS = 3;
     private alertsSubject = new BehaviorSubject<AlertConfig[]>([]);
     public alerts$: Observable<AlertConfig[]> = this.alertsSubject.asObservable();
+    private translate = inject(TranslateService);
 
     constructor() { }
 
@@ -100,8 +101,13 @@ export class AlertService {
      * Muestra una alerta personalizada
      */
     show(config: Omit<AlertConfig, 'id'> & { id?: string }): void {
+        const translatedTitle = this.translate.instant(config.title);
+        const translatedDescription = config.description ? this.translate.instant(config.description) : '';
+
         const alert: AlertConfig = {
             ...config,
+            title: translatedTitle,
+            description: translatedDescription,
             id: config.id || this.generateId(),
             appearance: config.appearance || 'fill',
             duration: config.duration ?? 3000,

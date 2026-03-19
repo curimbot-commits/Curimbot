@@ -360,7 +360,8 @@ export class History implements OnInit {
         headStyles: { fillColor: [2, 171, 116] } 
       });
 
-      doc.save('historial_actividad.pdf');
+      const filename = `historial_actividad_${this.getCurrentTimestampForFilename()}.pdf`;
+      doc.save(filename);
       this.alertService.success(this.translate.instant('history.alerts.pdfSuccess'), '');
     } catch (error) {
       console.error('Error exportando PDF:', error);
@@ -395,7 +396,7 @@ export class History implements OnInit {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.setAttribute('href', url);
-      link.setAttribute('download', 'historial_actividad.csv');
+      link.setAttribute('download', `historial_actividad_${this.getCurrentTimestampForFilename()}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -422,5 +423,17 @@ export class History implements OnInit {
     const pad = (n: number) => String(n).padStart(2, '0');
     return `${utcMinus5.getFullYear()}-${pad(utcMinus5.getMonth() + 1)}-${pad(utcMinus5.getDate())} ` +
            `${pad(utcMinus5.getHours())}:${pad(utcMinus5.getMinutes())}:${pad(utcMinus5.getSeconds())}`;
+  }
+
+  /**
+   * Obtiene timestamp compacto para nombres de archivo
+   */
+  private getCurrentTimestampForFilename(): string {
+    const now = new Date();
+    const utcMinus5 = new Date(now.getTime() - 5 * 60 * 60 * 1000);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    
+    return `${utcMinus5.getFullYear()}${pad(utcMinus5.getMonth() + 1)}${pad(utcMinus5.getDate())}_` +
+           `${pad(utcMinus5.getHours())}${pad(utcMinus5.getMinutes())}${pad(utcMinus5.getSeconds())}`;
   }
 }

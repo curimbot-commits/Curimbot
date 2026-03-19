@@ -27,7 +27,7 @@ import { environment } from 'src/environments/environment';
 export class UserService {
   private readonly API_URL = environment.apiUrl;
   private readonly AUTH_URL = `${this.API_URL}/auth`;
-  private readonly SESION = `${this.API_URL}/sessions`;
+  private readonly SESION = `${this.AUTH_URL}/sessions`;
 
   constructor(
     private http: HttpClient,

@@ -1160,15 +1160,16 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
    * Aplica ajuste de zona horaria UTC-5
    * @returns Fecha formateada con guiones (ej: "23-oct-2025")
    */
-  getCurrentDate(): string {
+  getCurrentTimestamp(): string {
     const today = new Date();
     const utcMinus5 = new Date(today.getTime() - (5 * 60 * 60 * 1000));
-
-    return utcMinus5.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    }).replace(/ /g, '-');
+    
+    // Formato: YYYYMMDD_HHMMSS
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const datePart = `${utcMinus5.getFullYear()}${pad(utcMinus5.getMonth() + 1)}${pad(utcMinus5.getDate())}`;
+    const timePart = `${pad(utcMinus5.getHours())}${pad(utcMinus5.getMinutes())}${pad(utcMinus5.getSeconds())}`;
+    
+    return `${datePart}_${timePart}`;
   }
 
   // ==================== MÉTODOS DE EXPORTACIÓN ====================
@@ -1215,7 +1216,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     const link = document.createElement('a');
     link.setAttribute('href', url);
     const filename = this.isAdmin ? 'actividades_todos_usuarios' : 'actividades';
-    link.setAttribute('download', `${filename}_${this.getCurrentDate()}.csv`);
+    link.setAttribute('download', `${filename}_${this.getCurrentTimestamp()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

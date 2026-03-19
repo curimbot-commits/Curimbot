@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { Api as DocumentService } from '../../services/api/api';
 import { DocumentWithMetadata, Document } from '../../domain/models/document.model';
 import { Subject } from 'rxjs';
-import { takeUntil, switchMap } from 'rxjs/operators';
+import { takeUntil, switchMap, finalize } from 'rxjs/operators';
 import { LucideAngularModule } from 'lucide-angular';
 import { AlertService } from '@shared/components/alert/alert.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -97,12 +97,14 @@ export class DocumentComponent implements OnInit, OnDestroy {
     const files = Array.from(input.files);
     this.alertService.info(this.translate.instant('document.alerts.uploading'), '', 3000);
 
+    this.loading = true;
     this.documentService
       .uploadDocuments(files)
       .pipe(
         takeUntil(this.destroy$),
         switchMap(() => new Promise(resolve => setTimeout(resolve, 1500))),
         switchMap(() => this.documentService.listDocuments()),
+        finalize(() => this.loading = false)
       )
       .subscribe({
         next: (response) => {
@@ -142,12 +144,14 @@ export class DocumentComponent implements OnInit, OnDestroy {
     const files = Array.from(event.dataTransfer.files);
     this.alertService.info(this.translate.instant('document.alerts.uploading'), '');
 
+    this.loading = true;
     this.documentService
       .uploadDocuments(files)
       .pipe(
         takeUntil(this.destroy$),
         switchMap(() => new Promise(resolve => setTimeout(resolve, 1500))),
         switchMap(() => this.documentService.listDocuments()),
+        finalize(() => this.loading = false)
       )
       .subscribe({
         next: (response) => {

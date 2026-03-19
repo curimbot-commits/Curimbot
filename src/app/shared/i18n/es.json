@@ -244,18 +244,18 @@
       "next": "Siguiente"
     },
     "alerts": {
-      "uploading": "Subiendo archivos...",
-      "uploadSuccess": "¡Archivos subidos!",
-      "uploadError": "No se pudieron subir los archivos.",
-      "sessionExpired": "Sesión expirada. Por favor, inicia sesión nuevamente.",
-      "loadError": "Error al cargar documentos.",
-      "filterError": "Error al filtrar documentos. Inténtalo nuevamente.",
-      "downloadComplete": "Descarga completada",
-      "downloadError": "No se pudo descargar el documento.",
-      "deleteConfirm": "¿Deseas eliminar",
-      "deleteSuccess": "ha sido eliminado.",
-      "deleteError": "No se pudo eliminar el documento.",
-      "viewError": "No se pudo visualizar el documento."
+      "uploading": "Subiendo archivos al sistema...",
+      "uploadSuccess": "Documentos subidos y procesados correctamente.",
+      "uploadError": "Hubo un problema al subir los archivos. Por favor, verifica el formato.",
+      "sessionExpired": "Su sesión ha expirado por inactividad. Inicie sesión de nuevo por seguridad.",
+      "loadError": "No se pudo actualizar la lista de documentos.",
+      "filterError": "Error al aplicar los filtros de búsqueda.",
+      "downloadComplete": "El documento se ha descargado exitosamente.",
+      "downloadError": "No se pudo obtener el archivo para descarga.",
+      "deleteConfirm": "¿Está seguro de que desea eliminar permanentemente",
+      "deleteSuccess": "ha sido eliminado del sistema.",
+      "deleteError": "No se pudo eliminar el documento en este momento.",
+      "viewError": "El visor de documentos no pudo cargar el archivo."
     }
   },
   "chat": {
@@ -622,17 +622,17 @@
       "s": "s"
     },
     "alerts": {
-      "error": "Error",
-      "loadErrorDesc": "No se pudieron cargar los usuarios",
-      "roleUpdated": "Rol actualizado exitosamente",
-      "roleErrorDesc": "No se pudo actualizar el rol",
-      "userActivated": "Usuario Activado",
-      "userDeactivated": "Usuario Desactivado",
-      "statusErrorDesc": "No se pudo cambiar el estado del usuario",
+      "error": "Error de Administración",
+      "loadErrorDesc": "No se pudo recuperar la lista de usuarios.",
+      "roleUpdated": "El rol del usuario ha sido actualizado correctamente.",
+      "roleErrorDesc": "No se pudo cambiar el rol del usuario.",
+      "userActivated": "La cuenta del usuario ha sido reactivada.",
+      "userDeactivated": "La cuenta del usuario ha sido desactivada temporalmente.",
+      "statusErrorDesc": "Hubo un problema al cambiar el estado de la cuenta.",
       "deletedTitle": "Usuario Eliminado",
-      "deletedDesc": "Usuario eliminado exitosamente",
-      "deleteErrorDesc": "No se pudo eliminar el usuario",
-      "viewDocErrorTitle": "No se pudo visualizar el documento."
+      "deletedDesc": "El usuario y todos sus datos asociados fueron eliminados.",
+      "deleteErrorDesc": "No se pudo completar la eliminación del usuario.",
+      "viewDocErrorTitle": "No se pudo abrir el documento solicitado."
     }
   },
   "security": {

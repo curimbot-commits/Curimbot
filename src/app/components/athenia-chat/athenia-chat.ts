@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, SecurityContext } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { Subject, takeUntil } from 'rxjs';
 import { AtheniaService, ConversationMessage, AtheniaQueryRequest, AtheniaResponse } from 'src/app/services/api/athenia.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-athenia-chat',
@@ -20,6 +21,7 @@ export class AtheniaChat implements OnInit, OnDestroy {
 
   private atheniaService = inject(AtheniaService);
   private translate = inject(TranslateService);
+  private sanitizer = inject(DomSanitizer);
   private destroy$ = new Subject<void>();
 
   messages: ConversationMessage[] = [];
@@ -145,6 +147,36 @@ export class AtheniaChat implements OnInit, OnDestroy {
       const element = this.messagesContainer.nativeElement;
       element.scrollTop = element.scrollHeight;
     }
+  }
+
+  /**
+   * Formatea contenido Markdown básico a HTML seguro (punto 2 de refinamiento)
+  **/
+  formatContent(content: string): SafeHtml {
+    if (!content) return '';
+    
+    // Escapar HTML básico para seguridad inicial
+    let html = content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // Negritas: **texto** or __texto__
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+
+    // Itálica: *texto* or _texto_
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+
+    // Listas: - item or * item
+    html = html.replace(/^\s*[-*]\s+(.*)$/gm, '<li>$1</li>');
+    html = html.replace(/(<li>.*<\/li>)/gms, '<ul class="list-disc ml-4 my-2">$1</ul>');
+
+    // Saltos de línea
+    html = html.replace(/\n/g, '<br>');
+
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
   /**

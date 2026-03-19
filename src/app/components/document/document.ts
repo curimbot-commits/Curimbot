@@ -101,6 +101,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
       .uploadDocuments(files)
       .pipe(
         takeUntil(this.destroy$),
+        switchMap(() => new Promise(resolve => setTimeout(resolve, 1500))),
         switchMap(() => this.documentService.listDocuments()),
       )
       .subscribe({
@@ -145,6 +146,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
       .uploadDocuments(files)
       .pipe(
         takeUntil(this.destroy$),
+        switchMap(() => new Promise(resolve => setTimeout(resolve, 1500))),
         switchMap(() => this.documentService.listDocuments()),
       )
       .subscribe({

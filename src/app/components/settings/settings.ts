@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 
 import { ZardSwitchComponent } from '@shared/components/switch/switch.component';
 import { ProfileAvatar } from '@shared/components/profile-avatar/profile-avatar';
@@ -124,7 +124,24 @@ export class Settings implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadUserData();
     this.loadPreferences();
+    this.setupAutoSave();
     this.mediaQueryList.addEventListener('change', this.systemThemeChangeHandler);
+  }
+
+  /** Configura el auto-guardado para el formulario de perfil */
+  private setupAutoSave(): void {
+    this.profileForm.valueChanges
+      .pipe(
+        takeUntil(this.destroy$),
+        // Debounce para evitar peticiones excesivas mientras el usuario escribe
+        debounceTime(1000),
+        distinctUntilChanged()
+      )
+      .subscribe(() => {
+        if (this.profileForm.valid && this.profileForm.dirty) {
+          this.saveProfile();
+        }
+      });
   }
 
   ngOnDestroy(): void {

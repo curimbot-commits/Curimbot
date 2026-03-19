@@ -266,6 +266,17 @@ export class Security implements OnInit, OnDestroy {
     this.alertService.success(this.translate.instant('security.alerts.enable2FASuccess'), '', 3000);
   }
 
+  /**
+   * Callback ejecutado al cancelar la configuración de 2FA
+   * Resetea el estado para asegurar que el switch de la UI refleje la realidad
+   */
+  onSetupCancelled(): void {
+    this.showSetupDialog = false;
+    this.twoFactorEnabled = false;
+    // Re-verificar con el servidor para estar 100% seguros
+    this.check2FAStatus();
+  }
+
   // ==================== MÉTODOS DE PREFERENCIAS DE NOTIFICACIONES ====================
 
   /**

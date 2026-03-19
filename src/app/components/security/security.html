@@ -111,4 +111,4 @@
 
 </div>
 
-<app-two-factor-setup-dialog [open]="showSetupDialog" (openChange)="showSetupDialog = $event" (setupComplete)="handleSetupComplete()"></app-two-factor-setup-dialog>
+<app-two-factor-setup-dialog [open]="showSetupDialog" (openChange)="showSetupDialog = $event" (setupComplete)="handleSetupComplete()" (setupCancelled)="onSetupCancelled()"></app-two-factor-setup-dialog>

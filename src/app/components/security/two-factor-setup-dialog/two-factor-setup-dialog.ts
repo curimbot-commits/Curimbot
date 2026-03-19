@@ -21,6 +21,7 @@ export class TwoFactorSetupDialog implements OnChanges {
   @Input() open = false;
   @Output() openChange = new EventEmitter<boolean>();
   @Output() setupComplete = new EventEmitter<void>();
+  @Output() setupCancelled = new EventEmitter<void>();
 
   step: SetupStep = 'qr';
   verificationCode = ['', '', '', '', '', ''];
@@ -179,6 +180,7 @@ export class TwoFactorSetupDialog implements OnChanges {
 
   handleCancel(): void {
     if (confirm(this.translate.instant('security.alerts.cancelConfirm'))) {
+      this.setupCancelled.emit();
       this.closeDialog();
     }
   }

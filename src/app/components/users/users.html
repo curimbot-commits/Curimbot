@@ -87,15 +87,15 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                             <div class="relative w-36">
+                             <div class="relative w-full max-w-[140px]">
                                 <select [(ngModel)]="user.role" (change)="handleChangeRole(user.id, user.role)"
                                     [ngClass]="getRoleBadgeClasses(user.role)"
-                                    class="appearance-none w-full pr-10 py-2 pl-3 text-sm font-medium focus:outline-none focus:ring-2 border rounded-lg transition cursor-pointer">
+                                    class="appearance-none w-full pr-10 py-1.5 pl-3 text-xs font-bold focus:outline-none focus:ring-2 border rounded-lg transition cursor-pointer">
                                     <option [ngValue]="UserRole.ADMIN">{{ 'users.filters.admin' | translate }}</option>
                                     <option [ngValue]="UserRole.USER">{{ 'users.filters.user' | translate }}</option>
                                 </select>
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                    <lucide-angular name="chevron-down" class="w-4 h-4 text-gray-400 opacity-70"></lucide-angular>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                    <lucide-angular name="chevron-down" class="w-3.5 h-3.5 text-gray-500 opacity-60"></lucide-angular>
                                 </div>
                             </div>
                         </td>

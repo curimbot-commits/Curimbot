@@ -3,350 +3,361 @@
     'bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-gray-200/20 dark:border-gray-100/30 shadow-lg py-3' : 
     'bg-transparent border-transparent py-5 backdrop-blur-sm'">
 
-    <div class="container mx-auto px-6 flex items-center justify-between">
-        <!-- Logo -->
-        <div class="flex items-center gap-3 group cursor-pointer" (click)="scrollToTop()">
-            <div
-                class="p-2.5 bg-gradient-to-br from-[#02ab74] via-[#02ab74] to-[#7209b7] rounded-xl shadow-lg transition-transform group-hover:scale-110">
-                <lucide-angular class="w-6 h-6 text-white" name="bot"></lucide-angular>
-            </div>
-            <div class="flex flex-col">
-                <span class="text-xl font-black tracking-tighter leading-none"
-                    [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">CURIM AI</span>
-                <span class="text-[10px] font-black tracking-[0.2em] uppercase opacity-70"
-                    [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white/80'">By Curiman
-                    Brokers Group</span>
-            </div>
-        </div>
+  <div class="container mx-auto px-6 flex items-center justify-between">
+    <!-- Logo -->
+    <div class="flex items-center gap-3 group cursor-pointer" (click)="scrollToTop()">
+      <div
+        class="p-2.5 bg-gradient-to-br from-[#02ab74] via-[#02ab74] to-[#7209b7] rounded-xl shadow-lg transition-transform group-hover:scale-110">
+        <lucide-angular class="w-6 h-6 text-white" name="bot"></lucide-angular>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-xl font-black tracking-tighter leading-none"
+        [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">CURIM AI</span>
+        <span class="text-[10px] font-black tracking-[0.2em] uppercase opacity-70"
+          [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white/80'">By Curiman
+        Brokers Group</span>
+      </div>
+    </div>
 
-        <!-- Resto del nav (desktop) -->
-        <nav class="hidden lg:flex items-center gap-10 text-xs font-black uppercase tracking-widest">
-            <a href="#company" class="nav-link-custom transition-colors"
-                [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
-                {{ 'landing.nav.company' | translate }}
-            </a>
-            <a href="#features" class="nav-link-custom transition-colors"
-                [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
-                {{ 'landing.nav.features' | translate }}
-            </a>
-            <a href="#roles" (click)="scrollToSection($event, 'roles')" class="nav-link-custom transition-colors"
-                [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
-                {{ 'landing.nav.roles' | translate }}
-            </a>
+    <!-- Resto del nav (desktop) -->
+    <nav class="hidden lg:flex items-center gap-10 text-xs font-black uppercase tracking-widest">
+      <a href="#company" class="nav-link-custom transition-colors"
+        [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
+        {{ 'landing.nav.company' | translate }}
+      </a>
+      <a href="#features" class="nav-link-custom transition-colors"
+        [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
+        {{ 'landing.nav.features' | translate }}
+      </a>
+      <a href="#roles" (click)="scrollToSection($event, 'roles')" class="nav-link-custom transition-colors"
+        [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
+        {{ 'landing.nav.roles' | translate }}
+      </a>
 
-            <div class="w-px h-5 bg-white/20 mx-2"></div>
+      <div class="w-px h-5 bg-white/20 mx-2"></div>
 
-            <!-- Theme Toggle -->
-            <button (click)="toggleTheme()"
+      <!-- Theme Toggle -->
+      <button (click)="toggleTheme()"
                 class="p-2.5 rounded-xl transition-all hover:scale-110 active:scale-95 shadow-sm border" [ngClass]="isScrolled ? 
         'bg-white dark:bg-gray-800 text-gray-800 dark:text-yellow-400 border-gray-200 dark:border-gray-700' : 
         'bg-white/10 text-white backdrop-blur-md border-white/20'">
-                <lucide-angular [name]="themeIcon" class="w-4 h-4"></lucide-angular>
-            </button>
+        <lucide-angular [name]="themeIcon" class="w-4 h-4"></lucide-angular>
+      </button>
 
-            <!-- Login CTA -->
-            <button (click)="goToLogin()"
-                class="ml-2 px-8 py-3 bg-[#02ab74] hover:bg-[#028a5f] text-white text-[10px] font-black rounded-xl shadow-xl hover:shadow-[#02ab74]/40 transition-all hover:-translate-y-1 active:translate-y-0 uppercase tracking-[0.15em]">
-                {{ 'landing.nav.platform' | translate }}
-            </button>
-        </nav>
+      <!-- Login CTA -->
+      <button (click)="goToLogin()"
+        class="ml-2 px-8 py-3 bg-[#02ab74] hover:bg-[#028a5f] text-white text-[10px] font-black rounded-xl shadow-xl hover:shadow-[#02ab74]/40 transition-all hover:-translate-y-1 active:translate-y-0 uppercase tracking-[0.15em]">
+        {{ 'landing.nav.platform' | translate }}
+      </button>
+    </nav>
 
-        <!-- Mobile toggle -->
-        <div class="flex lg:hidden items-center gap-6">
-            <button (click)="toggleTheme()" class="p-2 rounded-lg transition-colors"
-                [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
-                <lucide-angular [name]="themeIcon" class="w-5 h-5"></lucide-angular>
-            </button>
-            <button (click)="toggleMobileMenu()" class="p-2 rounded-lg transition-colors"
-                [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
-                <lucide-angular [name]="mobileMenuOpen ? 'x' : 'menu'" class="w-6 h-6"></lucide-angular>
-            </button>
-        </div>
+    <!-- Mobile toggle -->
+    <div class="flex lg:hidden items-center gap-6">
+      <button (click)="toggleTheme()" class="p-2 rounded-lg transition-colors"
+        [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
+        <lucide-angular [name]="themeIcon" class="w-5 h-5"></lucide-angular>
+      </button>
+      <button (click)="toggleMobileMenu()" class="p-2 rounded-lg transition-colors"
+        [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
+        <lucide-angular [name]="mobileMenuOpen ? 'x' : 'menu'" class="w-6 h-6"></lucide-angular>
+      </button>
     </div>
+  </div>
 
-    <!-- Mobile menu -->
-    <div *ngIf="mobileMenuOpen"
-        class="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/10 p-6 shadow-2xl animate-fade-in-down backdrop-blur-lg">
-        <nav class="flex flex-col gap-5 text-gray-900 dark:text-white">
-            <a href="#company" (click)="closeMobileMenu()" class="text-base font-bold hover:text-[#02ab74] transition-colors">{{ 'landing.mobileMenu.company' | translate }}</a>
-            <a href="#features" (click)="closeMobileMenu()" class="text-base font-bold hover:text-[#02ab74] transition-colors">{{ 'landing.mobileMenu.features' | translate }}</a>
-            <a href="#roles" (click)="closeMobileMenu()" class="text-base font-bold hover:text-[#02ab74] transition-colors">{{ 'landing.mobileMenu.roles' | translate }}</a>
-            <hr class="border-gray-100 dark:border-white/10">
-            <button (click)="goToLogin()"
-                class="w-full py-3 bg-[#02ab74] hover:bg-[#028a5f] text-white font-bold rounded-xl shadow-lg transition-all active:scale-95">
-                {{ 'landing.mobileMenu.enterPlatform' | translate }}
-            </button>
-        </nav>
+  <!-- Mobile menu -->
+  @if (mobileMenuOpen) {
+    <div
+      class="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/10 p-6 shadow-2xl animate-fade-in-down backdrop-blur-lg">
+      <nav class="flex flex-col gap-5 text-gray-900 dark:text-white">
+        <a href="#company" (click)="closeMobileMenu()" class="text-base font-bold hover:text-[#02ab74] transition-colors">{{ 'landing.mobileMenu.company' | translate }}</a>
+        <a href="#features" (click)="closeMobileMenu()" class="text-base font-bold hover:text-[#02ab74] transition-colors">{{ 'landing.mobileMenu.features' | translate }}</a>
+        <a href="#roles" (click)="closeMobileMenu()" class="text-base font-bold hover:text-[#02ab74] transition-colors">{{ 'landing.mobileMenu.roles' | translate }}</a>
+        <hr class="border-gray-100 dark:border-white/10">
+        <button (click)="goToLogin()"
+          class="w-full py-3 bg-[#02ab74] hover:bg-[#028a5f] text-white font-bold rounded-xl shadow-lg transition-all active:scale-95">
+          {{ 'landing.mobileMenu.enterPlatform' | translate }}
+        </button>
+      </nav>
     </div>
+  }
 </header>
 
 <main>
-    <!-- HERO SECTION: REFINADO Y PROFESIONAL -->
-    <section class="relative min-h-[110vh] flex items-center justify-center overflow-hidden bg-black">
-        <!-- Video Background Restaurado -->
-        <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover">
-            <source src="assets/videos/012.mp4" type="video/mp4">
-        </video>
+  <!-- HERO SECTION: REFINADO Y PROFESIONAL -->
+  <section class="relative min-h-[110vh] flex items-center justify-center overflow-hidden bg-black">
+    <!-- Video Background Restaurado -->
+    <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover">
+      <source src="/assets/videos/012.mp4" type="video/mp4">
+    </video>
 
-        <!-- Overlays para atmósfera: REFORZADOS -->
-        <div class="absolute inset-0 z-0">
-            <div class="absolute inset-0 bg-gradient-to-br from-[#02ab74]/60 via-black/80 to-[#7209b7]/60 opacity-90">
+    <!-- Overlays para atmósfera: REFORZADOS -->
+    <div class="absolute inset-0 z-0">
+      <div class="absolute inset-0 bg-gradient-to-br from-[#02ab74]/60 via-black/80 to-[#7209b7]/60 opacity-90">
+      </div>
+      <div class="absolute inset-0 backdrop-blur-[2px]"></div>
+    </div>
+
+    <div class="container mx-auto px-6 relative z-10 text-center">
+
+
+      <h1 class="gsap-hero-title text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter leading-[0.85] mb-12">
+        {{ 'landing.hero.title1' | translate }} <br>
+        <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#02ab74] via-[#4cc9f0] to-[#7209b7] drop-shadow-[0_0_30px_rgba(2,171,116,0.5)]">
+          {{ 'landing.hero.title2' | translate }}
+        </span>
+      </h1>
+
+      <p
+        class="gsap-hero-sub text-base md:text-xl text-white/60 max-w-2xl mx-auto mb-12 leading-relaxed font-medium">
+        {{ 'landing.hero.subtitle' | translate }}
+      </p>
+
+      <div class="gsap-hero-btns flex flex-col sm:flex-row items-center justify-center gap-6">
+        <button (click)="goToLogin()"
+          class="px-8 py-3.5 bg-[#02ab74] hover:bg-[#028a5e] text-white text-sm font-black rounded-full shadow-xl transition-all hover:scale-105 active:scale-95 uppercase tracking-widest">
+          {{ 'landing.hero.startNow' | translate }}
+        </button>
+        <a href="#company"
+          class="px-8 py-3.5 bg-white/5 backdrop-blur-md text-white text-sm font-black rounded-full border border-white/10 hover:bg-white/10 transition-all uppercase tracking-widest">
+          {{ 'landing.hero.ourTrajectory' | translate }}
+        </a>
+      </div>
+    </div>
+
+    <!-- Scroll down indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/20 animate-bounce">
+      <lucide-angular name="chevron-down" class="w-6 h-6"></lucide-angular>
+    </div>
+  </section>
+
+  <!-- LOGO SLIDER SECTION: PARTNERS -->
+  <section
+    class="py-16 bg-white dark:bg-gray-950 border-y border-gray-100 dark:border-gray-900 transition-colors overflow-hidden">
+    <div class="container mx-auto px-6 mb-10 text-center">
+      <span
+      class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-600 block mb-2">{{ 'landing.partners.trustedBy' | translate }}</span>
+    </div>
+
+    <div class="relative flex overflow-x-hidden">
+      <div class="py-12 animate-marquee whitespace-nowrap flex items-center gap-24">
+        @for (partner of partners; track partner) {
+          <div
+            class="flex items-center gap-3 group grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+            <!-- Placeholder de logo profesional si no hay imagen -->
+            <lucide-angular name="shield-check" class="w-6 h-6 text-[#02ab74]"></lucide-angular>
+            <span class="text-xl font-bold text-gray-900 dark:text-white tracking-tighter">{{ partner.name
+            }}</span>
+          </div>
+        }
+        <!-- Duplicate for infinite scroll -->
+        @for (partner of partners; track partner) {
+          <div
+            class="flex items-center gap-3 group grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+            <lucide-angular name="shield-check" class="w-6 h-6 text-[#02ab74]"></lucide-angular>
+            <span class="text-xl font-bold text-gray-900 dark:text-white tracking-tighter">{{ partner.name
+            }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPANY SECTION: CURIMAN BROKERS GROUP -->
+  <section id="company" class="py-24 bg-white dark:bg-[#080808] transition-colors relative">
+    <div class="container mx-auto px-6 relative z-10">
+      <div class="grid lg:grid-cols-2 gap-20 items-center">
+        <div class="animate-on-scroll">
+          <span
+          class="text-[#02ab74] font-black tracking-[0.3em] uppercase text-[10px] block mb-6">{{ 'landing.company.badge' | translate }}</span>
+          <h2
+            class="text-4xl md:text-5xl font-black text-gray-900 dark:text-white leading-[1.1] mb-8 tracking-tighter" [innerHTML]="'landing.company.title' | translate">
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-400 mb-10 leading-relaxed font-medium" [innerHTML]="'landing.company.description' | translate">
+          </p>
+
+          <div class="grid sm:grid-cols-2 gap-4 mb-10">
+            <div
+              class="p-6 rounded-3xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 transition-all hover:border-[#02ab74]/30">
+              <span class="block text-3xl font-black text-[#02ab74] mb-1">50</span>
+              <span
+              class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">{{ 'landing.company.stats.states' | translate }}</span>
             </div>
-            <div class="absolute inset-0 backdrop-blur-[2px]"></div>
-        </div>
-
-        <div class="container mx-auto px-6 relative z-10 text-center">
-
-
-            <h1 class="gsap-hero-title text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter leading-[0.85] mb-12">
-    {{ 'landing.hero.title1' | translate }} <br>
-    <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#02ab74] via-[#4cc9f0] to-[#7209b7] drop-shadow-[0_0_30px_rgba(2,171,116,0.5)]">
-        {{ 'landing.hero.title2' | translate }}
-    </span>
-</h1>
-
-            <p
-                class="gsap-hero-sub text-base md:text-xl text-white/60 max-w-2xl mx-auto mb-12 leading-relaxed font-medium">
-                {{ 'landing.hero.subtitle' | translate }}
-            </p>
-
-            <div class="gsap-hero-btns flex flex-col sm:flex-row items-center justify-center gap-6">
-                <button (click)="goToLogin()"
-                    class="px-8 py-3.5 bg-[#02ab74] hover:bg-[#028a5e] text-white text-sm font-black rounded-full shadow-xl transition-all hover:scale-105 active:scale-95 uppercase tracking-widest">
-                    {{ 'landing.hero.startNow' | translate }}
-                </button>
-                <a href="#company"
-                    class="px-8 py-3.5 bg-white/5 backdrop-blur-md text-white text-sm font-black rounded-full border border-white/10 hover:bg-white/10 transition-all uppercase tracking-widest">
-                    {{ 'landing.hero.ourTrajectory' | translate }}
-                </a>
+            <div
+              class="p-6 rounded-3xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 transition-all hover:border-[#7209b7]/30">
+              <span class="block text-3xl font-black text-[#7209b7] mb-1">3K+</span>
+              <span
+              class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">{{ 'landing.company.stats.agents' | translate }}</span>
             </div>
+          </div>
         </div>
 
-        <!-- Scroll down indicator -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/20 animate-bounce">
-            <lucide-angular name="chevron-down" class="w-6 h-6"></lucide-angular>
-        </div>
-    </section>
-
-    <!-- LOGO SLIDER SECTION: PARTNERS -->
-    <section
-        class="py-16 bg-white dark:bg-gray-950 border-y border-gray-100 dark:border-gray-900 transition-colors overflow-hidden">
-        <div class="container mx-auto px-6 mb-10 text-center">
-            <span
-                class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-600 block mb-2">{{ 'landing.partners.trustedBy' | translate }}</span>
-        </div>
-
-        <div class="relative flex overflow-x-hidden">
-            <div class="py-12 animate-marquee whitespace-nowrap flex items-center gap-24">
-                <div *ngFor="let partner of partners"
-                    class="flex items-center gap-3 group grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-                    <!-- Placeholder de logo profesional si no hay imagen -->
-                    <lucide-angular name="shield-check" class="w-6 h-6 text-[#02ab74]"></lucide-angular>
-                    <span class="text-xl font-bold text-gray-900 dark:text-white tracking-tighter">{{ partner.name
-                        }}</span>
-                </div>
-                <!-- Duplicate for infinite scroll -->
-                <div *ngFor="let partner of partners"
-                    class="flex items-center gap-3 group grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-                    <lucide-angular name="shield-check" class="w-6 h-6 text-[#02ab74]"></lucide-angular>
-                    <span class="text-xl font-bold text-gray-900 dark:text-white tracking-tighter">{{ partner.name
-                        }}</span>
-                </div>
+        <div class="relative animate-on-scroll delay-200">
+          <div
+            class="aspect-square bg-gradient-to-br from-[#02ab74] to-[#7209b7] rounded-[4rem] shadow-3xl overflow-hidden relative group">
+            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-700">
             </div>
-        </div>
-    </section>
-
-    <!-- COMPANY SECTION: CURIMAN BROKERS GROUP -->
-    <section id="company" class="py-24 bg-white dark:bg-[#080808] transition-colors relative">
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="grid lg:grid-cols-2 gap-20 items-center">
-                <div class="animate-on-scroll">
-                    <span
-                        class="text-[#02ab74] font-black tracking-[0.3em] uppercase text-[10px] block mb-6">{{ 'landing.company.badge' | translate }}</span>
-                    <h2
-                        class="text-4xl md:text-5xl font-black text-gray-900 dark:text-white leading-[1.1] mb-8 tracking-tighter" [innerHTML]="'landing.company.title' | translate">
-                    </h2>
-                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-10 leading-relaxed font-medium" [innerHTML]="'landing.company.description' | translate">
-                    </p>
-
-                    <div class="grid sm:grid-cols-2 gap-4 mb-10">
-                        <div
-                            class="p-6 rounded-3xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 transition-all hover:border-[#02ab74]/30">
-                            <span class="block text-3xl font-black text-[#02ab74] mb-1">50</span>
-                            <span
-                                class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">{{ 'landing.company.stats.states' | translate }}</span>
-                        </div>
-                        <div
-                            class="p-6 rounded-3xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 transition-all hover:border-[#7209b7]/30">
-                            <span class="block text-3xl font-black text-[#7209b7] mb-1">3K+</span>
-                            <span
-                                class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">{{ 'landing.company.stats.agents' | translate }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="relative animate-on-scroll delay-200">
-                    <div
-                        class="aspect-square bg-gradient-to-br from-[#02ab74] to-[#7209b7] rounded-[4rem] shadow-3xl overflow-hidden relative group">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-700">
-                        </div>
-                        <div
-                            class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center text-white">
-                            <lucide-angular name="award" class="w-16 h-16 mb-6 opacity-80"></lucide-angular>
-                            <h3 class="text-2xl font-black mb-4">{{ 'landing.company.badgeCard.title' | translate }}</h3>
-                            <p class="text-sm font-medium opacity-70">{{ 'landing.company.badgeCard.desc' | translate }}</p>
-                        </div>
-                    </div>
-                    <!-- Refined Badge -->
-                    <div
-                        class="absolute -bottom-10 -right-10 bg-white dark:bg-gray-900 p-10 rounded-full shadow-2xl border border-gray-100 dark:border-white/5 hidden lg:flex items-center justify-center w-40 h-40">
-                        <div class="text-center">
-                            <span class="block text-5xl font-black text-[#02ab74] leading-none mb-1">{{ 'landing.company.ranking.value' | translate }}</span>
-                            <span
-                                class="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest leading-none">{{ 'landing.company.ranking.label' | translate }}</span>
-                        </div>
-                    </div>
-                </div>
+            <div
+              class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center text-white">
+              <lucide-angular name="award" class="w-16 h-16 mb-6 opacity-80"></lucide-angular>
+              <h3 class="text-2xl font-black mb-4">{{ 'landing.company.badgeCard.title' | translate }}</h3>
+              <p class="text-sm font-medium opacity-70">{{ 'landing.company.badgeCard.desc' | translate }}</p>
             </div>
-        </div>
-    </section>
-
-    <!-- FEATURES SECTION: EL ASISTENTE IA -->
-    <section id="features" class="py-24 bg-gray-50 dark:bg-[#0a0a0a] transition-colors">
-        <div class="container mx-auto px-6 text-center mb-20 animate-on-scroll">
-            <span class="section-badge !bg-[#02ab74]/10 !text-[#02ab74]">{{ 'landing.featuresSection.badge' | translate }}</span>
-            <h2 class="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mt-4 tracking-tighter">{{ 'landing.featuresSection.title' | translate }}</h2>
-            <p class="text-gray-600 dark:text-gray-400 mt-6 max-w-2xl mx-auto font-medium">{{ 'landing.featuresSection.subtitle' | translate }}</p>
-        </div>
-
-        <div class="container mx-auto px-6">
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div *ngFor="let feature of features"
-                    class="gsap-feature-card p-10 bg-white dark:bg-white/5 rounded-[2.5rem] border border-gray-100 dark:border-white/10 transition-all hover:shadow-2xl hover:shadow-[#02ab74]/10 hover:-translate-y-2 group">
-                    <div
-                        class="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-white/10 border border-gray-100 dark:border-white/10 flex items-center justify-center mb-8 text-xl text-[#02ab74] transition-transform group-hover:scale-110">
-                        <i [class]="feature.icon"></i>
-                    </div>
-                    <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white tracking-tight">{{ 'landing.features.' + feature.key + '.title' | translate }}
-                    </h3>
-                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed text-sm font-medium">{{ 'landing.features.' + feature.key + '.desc' | translate }}</p>
-                </div>
+          </div>
+          <!-- Refined Badge -->
+          <div
+            class="absolute -bottom-10 -right-10 bg-white dark:bg-gray-900 p-10 rounded-full shadow-2xl border border-gray-100 dark:border-white/5 hidden lg:flex items-center justify-center w-40 h-40">
+            <div class="text-center">
+              <span class="block text-5xl font-black text-[#02ab74] leading-none mb-1">{{ 'landing.company.ranking.value' | translate }}</span>
+              <span
+              class="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest leading-none">{{ 'landing.company.ranking.label' | translate }}</span>
             </div>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- ROLES SECTION: REDISEÑADO CON ESTILO PREMIUM -->
-    <section id="roles" class="py-24 bg-white dark:bg-[#080808] transition-colors relative overflow-hidden">
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="text-center mb-20 animate-on-scroll">
-                <span class="text-[#7209b7] font-black tracking-[0.3em] uppercase text-[10px] block mb-4">{{ 'landing.rolesSection.badge' | translate }}</span>
-                <h2 class="text-4xl font-black text-gray-900 dark:text-white tracking-tighter">{{ 'landing.rolesSection.title' | translate }}</h2>
+  <!-- FEATURES SECTION: EL ASISTENTE IA -->
+  <section id="features" class="py-24 bg-gray-50 dark:bg-[#0a0a0a] transition-colors">
+    <div class="container mx-auto px-6 text-center mb-20 animate-on-scroll">
+      <span class="section-badge !bg-[#02ab74]/10 !text-[#02ab74]">{{ 'landing.featuresSection.badge' | translate }}</span>
+      <h2 class="text-4xl md:text-6xl font-black text-gray-900 dark:text-white mt-4 tracking-tighter">{{ 'landing.featuresSection.title' | translate }}</h2>
+      <p class="text-gray-600 dark:text-gray-400 mt-6 max-w-2xl mx-auto font-medium">{{ 'landing.featuresSection.subtitle' | translate }}</p>
+    </div>
+
+    <div class="container mx-auto px-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (feature of features; track feature) {
+          <div
+            class="gsap-feature-card p-10 bg-white dark:bg-white/5 rounded-[2.5rem] border border-gray-100 dark:border-white/10 transition-all hover:shadow-2xl hover:shadow-[#02ab74]/10 hover:-translate-y-2 group">
+            <div
+              class="w-14 h-14 rounded-2xl bg-gray-50 dark:bg-white/10 border border-gray-100 dark:border-white/10 flex items-center justify-center mb-8 text-xl text-[#02ab74] transition-transform group-hover:scale-110">
+              <i [class]="feature.icon"></i>
             </div>
+            <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white tracking-tight">{{ 'landing.features.' + feature.key + '.title' | translate }}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed text-sm font-medium">{{ 'landing.features.' + feature.key + '.desc' | translate }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div *ngFor="let persona of personas"
-                    class="gsap-role-card bg-gray-50 dark:bg-white/5 p-10 rounded-[3rem] border border-transparent dark:border-white/5 hover:border-[#02ab74]/40 hover:bg-white dark:hover:bg-white/10 hover:shadow-2xl transition-all group flex flex-col items-center text-center">
-                    <div
-                        class="w-16 h-16 rounded-full bg-white dark:bg-white/10 shadow-lg flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                        <lucide-angular [name]="persona.icon"
-                            class="w-7 h-7 text-[#02ab74]"></lucide-angular>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white tracking-tight leading-none">{{ 'landing.personas.' + persona.key + '.title' | translate }}</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-8 font-medium leading-relaxed">{{ 'landing.personas.' + persona.key + '.description' | translate }}</p>
+  <!-- ROLES SECTION: REDISEÑADO CON ESTILO PREMIUM -->
+  <section id="roles" class="py-24 bg-white dark:bg-[#080808] transition-colors relative overflow-hidden">
+    <div class="container mx-auto px-6 relative z-10">
+      <div class="text-center mb-20 animate-on-scroll">
+        <span class="text-[#7209b7] font-black tracking-[0.3em] uppercase text-[10px] block mb-4">{{ 'landing.rolesSection.badge' | translate }}</span>
+        <h2 class="text-4xl font-black text-gray-900 dark:text-white tracking-tighter">{{ 'landing.rolesSection.title' | translate }}</h2>
+      </div>
 
-                    <div class="w-full pt-8 border-t border-gray-200 dark:border-white/10 mt-auto">
-                        <ul class="space-y-3">
-                            <li *ngFor="let benefit of ('landing.personas.' + persona.key + '.benefits' | translate)"
-                                class="flex items-center justify-center gap-2 text-[11px] font-black text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                <span class="w-1 h-1 rounded-full bg-[#02ab74]"></span>
-                                {{ benefit }}
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        @for (persona of personas; track persona) {
+          <div
+            class="gsap-role-card bg-gray-50 dark:bg-white/5 p-10 rounded-[3rem] border border-transparent dark:border-white/5 hover:border-[#02ab74]/40 hover:bg-white dark:hover:bg-white/10 hover:shadow-2xl transition-all group flex flex-col items-center text-center">
+            <div
+              class="w-16 h-16 rounded-full bg-white dark:bg-white/10 shadow-lg flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+              <lucide-angular [name]="persona.icon"
+              class="w-7 h-7 text-[#02ab74]"></lucide-angular>
             </div>
-        </div>
-    </section>
+            <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white tracking-tight leading-none">{{ 'landing.personas.' + persona.key + '.title' | translate }}</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-8 font-medium leading-relaxed">{{ 'landing.personas.' + persona.key + '.description' | translate }}</p>
+            <div class="w-full pt-8 border-t border-gray-200 dark:border-white/10 mt-auto">
+              <ul class="space-y-3">
+                @for (benefit of ('landing.personas.' + persona.key + '.benefits' | translate); track benefit) {
+                  <li
+                    class="flex items-center justify-center gap-2 text-[11px] font-black text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    <span class="w-1 h-1 rounded-full bg-[#02ab74]"></span>
+                    {{ benefit }}
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
 
-    <!-- CTA FINAL: DISCRETO Y PROFESIONAL -->
-    <section class="py-24 bg-[#0a0a0a] relative">
-        <div class="container mx-auto px-6 text-center animate-on-scroll">
-            <h2 class="text-3xl md:text-5xl font-black text-white mb-10 tracking-tighter">{{ 'landing.cta.title' | translate }}
-            </h2>
-            <button (click)="goToLogin()"
-                class="px-10 py-4 bg-[#02ab74] hover:bg-[#028a5e] text-white text-xs font-black rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95 uppercase tracking-[0.2em]">
-                {{ 'landing.cta.button' | translate }}
-            </button>
-        </div>
-    </section>
+  <!-- CTA FINAL: DISCRETO Y PROFESIONAL -->
+  <section class="py-24 bg-[#0a0a0a] relative">
+    <div class="container mx-auto px-6 text-center animate-on-scroll">
+      <h2 class="text-3xl md:text-5xl font-black text-white mb-10 tracking-tighter">{{ 'landing.cta.title' | translate }}
+      </h2>
+      <button (click)="goToLogin()"
+        class="px-10 py-4 bg-[#02ab74] hover:bg-[#028a5e] text-white text-xs font-black rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95 uppercase tracking-[0.2em]">
+        {{ 'landing.cta.button' | translate }}
+      </button>
+    </div>
+  </section>
 </main>
 
 <footer
-    class="bg-white dark:bg-black text-gray-900 dark:text-white pt-24 pb-12 transition-colors border-t border-gray-100 dark:border-white/5">
-    <div class="container mx-auto px-6">
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
-            <div class="col-span-1 lg:col-span-1">
-                <div class="flex items-center gap-3 mb-8">
-                    <div class="p-1.5 bg-[#02ab74] rounded-lg">
-                        <lucide-angular class="w-5 h-5 text-white" name="bot"></lucide-angular>
-                    </div>
-                    <span class="text-xl font-black tracking-tighter">CURIM AI</span>
-                </div>
-                <p class="text-gray-700 dark:text-gray-400 text-sm font-medium leading-relaxed mb-8">
-                    {{ 'landing.footer.description' | translate }}
-                </p>
-                <div class="flex gap-4">
-                    <a href="#"
-                        class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-700 dark:text-white hover:bg-[#02ab74] hover:text-white transition-all"><lucide-angular
-                            name="instagram" class="w-5 h-5"></lucide-angular></a>
-                    <a href="#"
-                        class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-700 dark:text-white hover:bg-[#02ab74] hover:text-white transition-all"><lucide-angular
-                            name="linkedin" class="w-5 h-5"></lucide-angular></a>
-                    <a href="#"
-                        class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-700 dark:text-white hover:bg-[#02ab74] hover:text-white transition-all"><lucide-angular
-                            name="github" class="w-5 h-5"></lucide-angular></a>
-                </div>
-            </div>
-
-            <div>
-                <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-900 dark:text-gray-400">{{ 'landing.footer.company' | translate }}
-                </h4>
-                <ul class="space-y-4 text-sm font-bold text-gray-700 dark:text-gray-300">
-                    <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.companyLinks.about' | translate }}</a>
-                    </li>
-                    <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.companyLinks.mission' | translate }}</a></li>
-                    <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.companyLinks.careers' | translate }}</a></li>
-                </ul>
-            </div>
-
-            <div>
-                <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-900 dark:text-gray-400">{{ 'landing.footer.product' | translate }}
-                </h4>
-                <ul class="space-y-4 text-sm font-bold text-gray-700 dark:text-gray-300">
-                    <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.productLinks.features' | translate }}</a></li>
-                    <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.productLinks.security' | translate }}</a></li>
-                    <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.productLinks.faq' | translate }}</a></li>
-                </ul>
-            </div>
-
-            <div>
-                <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-900 dark:text-gray-400">{{ 'landing.footer.legal' | translate }}
-                </h4>
-                <ul class="space-y-4 text-sm font-bold text-gray-700 dark:text-gray-300">
-                    <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.legalLinks.privacy' | translate }}</a></li>
-                    <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.legalLinks.terms' | translate }}</a></li>
-                </ul>
-            </div>
+  class="bg-white dark:bg-black text-gray-900 dark:text-white pt-24 pb-12 transition-colors border-t border-gray-100 dark:border-white/5">
+  <div class="container mx-auto px-6">
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+      <div class="col-span-1 lg:col-span-1">
+        <div class="flex items-center gap-3 mb-8">
+          <div class="p-1.5 bg-[#02ab74] rounded-lg">
+            <lucide-angular class="w-5 h-5 text-white" name="bot"></lucide-angular>
+          </div>
+          <span class="text-xl font-black tracking-tighter">CURIM AI</span>
         </div>
-
-        <div
-            class="pt-12 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-            <span class="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">{{ 'landing.footer.copyright' | translate }}</span>
-            <div class="flex gap-8 text-[9px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-[0.2em]">
-                <span>ISO 27001</span>
-                <span>GDPR</span>
-                <span>SOC 2</span>
-            </div>
+        <p class="text-gray-700 dark:text-gray-400 text-sm font-medium leading-relaxed mb-8">
+          {{ 'landing.footer.description' | translate }}
+        </p>
+        <div class="flex gap-4">
+          <a href="#"
+            class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-700 dark:text-white hover:bg-[#02ab74] hover:text-white transition-all"><lucide-angular
+          name="instagram" class="w-5 h-5"></lucide-angular></a>
+          <a href="#"
+            class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-700 dark:text-white hover:bg-[#02ab74] hover:text-white transition-all"><lucide-angular
+          name="linkedin" class="w-5 h-5"></lucide-angular></a>
+          <a href="#"
+            class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-700 dark:text-white hover:bg-[#02ab74] hover:text-white transition-all"><lucide-angular
+          name="github" class="w-5 h-5"></lucide-angular></a>
         </div>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-900 dark:text-gray-400">{{ 'landing.footer.company' | translate }}
+        </h4>
+        <ul class="space-y-4 text-sm font-bold text-gray-700 dark:text-gray-300">
+          <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.companyLinks.about' | translate }}</a>
+        </li>
+        <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.companyLinks.mission' | translate }}</a></li>
+        <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.companyLinks.careers' | translate }}</a></li>
+      </ul>
     </div>
+
+    <div>
+      <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-900 dark:text-gray-400">{{ 'landing.footer.product' | translate }}
+      </h4>
+      <ul class="space-y-4 text-sm font-bold text-gray-700 dark:text-gray-300">
+        <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.productLinks.features' | translate }}</a></li>
+        <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.productLinks.security' | translate }}</a></li>
+        <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.productLinks.faq' | translate }}</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-900 dark:text-gray-400">{{ 'landing.footer.legal' | translate }}
+      </h4>
+      <ul class="space-y-4 text-sm font-bold text-gray-700 dark:text-gray-300">
+        <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.legalLinks.privacy' | translate }}</a></li>
+        <li><a href="#" class="footer-link hover:text-[#02ab74] transition-colors">{{ 'landing.footer.legalLinks.terms' | translate }}</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div
+    class="pt-12 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+    <span class="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest">{{ 'landing.footer.copyright' | translate }}</span>
+    <div class="flex gap-8 text-[9px] font-black text-gray-400 dark:text-gray-600 uppercase tracking-[0.2em]">
+      <span>ISO 27001</span>
+      <span>GDPR</span>
+      <span>SOC 2</span>
+    </div>
+  </div>
+</div>
 </footer>

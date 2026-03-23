@@ -2,7 +2,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { LucideAngularModule } from "lucide-angular";
 import { UserService } from 'src/app/services/api/user-service'
-import { CommonModule } from '@angular/common';
+
 import { NgOtpInputComponent } from "ng-otp-input";
 import { AlertService } from '@shared/components/alert/alert.service';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +12,7 @@ type SetupStep = 'qr' | 'verify' | 'backup';
 
 @Component({
   selector: 'app-two-factor-setup-dialog',
-  imports: [LucideAngularModule, FormsModule, CommonModule, NgOtpInputComponent, TranslateModule],
+  imports: [LucideAngularModule, FormsModule, NgOtpInputComponent, TranslateModule],
   templateUrl: './two-factor-setup-dialog.html',
   styleUrl: './two-factor-setup-dialog.css'
 })

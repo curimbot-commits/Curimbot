@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
-import { CommonModule } from '@angular/common';
+
 import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, SecurityContext } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { Subject, takeUntil } from 'rxjs';
 import { AtheniaService, ConversationMessage, AtheniaQueryRequest, AtheniaResponse } from 'src/app/services/api/athenia.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-athenia-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, TranslateModule],
+  imports: [FormsModule, LucideAngularModule, TranslateModule],
   templateUrl: './athenia-chat.html',
   styleUrl: './athenia-chat.css'
 })
@@ -21,7 +20,6 @@ export class AtheniaChat implements OnInit, OnDestroy {
 
   private atheniaService = inject(AtheniaService);
   private translate = inject(TranslateService);
-  private sanitizer = inject(DomSanitizer);
   private destroy$ = new Subject<void>();
 
   messages: ConversationMessage[] = [];
@@ -150,12 +148,13 @@ export class AtheniaChat implements OnInit, OnDestroy {
   }
 
   /**
-   * Formatea contenido Markdown básico a HTML seguro (punto 2 de refinamiento)
+   * Formatea contenido Markdown básico a HTML
+   * Angular sanitiza automáticamente cuando se usa [innerHTML]
   **/
-  formatContent(content: string): SafeHtml {
+  formatContent(content: string): string {
     if (!content) return '';
     
-    // Escapar HTML básico para seguridad inicial
+    // Escapar HTML básico para seguridad inicial y visualizar tags
     let html = content
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -176,7 +175,7 @@ export class AtheniaChat implements OnInit, OnDestroy {
     // Saltos de línea
     html = html.replace(/\n/g, '<br>');
 
-    return this.sanitizer.bypassSecurityTrustHtml(html);
+    return html;
   }
 
   /**

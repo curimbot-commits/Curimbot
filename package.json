@@ -42,7 +42,6 @@
     "@ngx-translate/http-loader": "^17.0.0",
     "@splinetool/loader": "^1.10.57",
     "@splinetool/react-spline": "^4.1.0",
-    "axios": "^1.12.2",
     "bootstrap": "^5.3.8",
     "chart.js": "^4.5.1",
     "class-variance-authority": "^0.7.1",

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @angular-eslint/prefer-inject */
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from "lucide-angular";
 import { Subject, takeUntil } from 'rxjs';
@@ -10,9 +10,9 @@ import { TwoFactorSetupDialog } from "./two-factor-setup-dialog/two-factor-setup
 import { ZardSwitchComponent } from "@shared/components/switch/switch.component";
 import { UserPreferencesService } from 'src/app/services/api/user-preferences.service';
 import { UserService } from 'src/app/services/api/user-service';
-import { SessionService } from 'src/app/services/api/session.service';
+
 import { AlertService } from '@shared/components/alert/alert.service';
-import { ActiveSession } from 'src/app/domain/models/session.model';
+import { ActiveSession } from 'src/app/domain/models/user.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 /**
@@ -22,16 +22,17 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
  */
 @Component({
   selector: 'app-security',
+  standalone: true,
   imports: [
     FormsModule,
-    CommonModule,
     LucideAngularModule,
     TwoFactorSetupDialog,
     ZardSwitchComponent,
     TranslateModule
-  ],
+],
   templateUrl: './security.html',
-  styleUrls: ['./security.css']
+  styleUrls: ['./security.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Security implements OnInit, OnDestroy {
 
@@ -80,7 +81,6 @@ export class Security implements OnInit, OnDestroy {
 
   constructor(
     private userService: UserService,
-    private sessionService: SessionService,
     private preferencesService: UserPreferencesService,
     private alertService: AlertService,
     private translate: TranslateService
@@ -152,10 +152,10 @@ export class Security implements OnInit, OnDestroy {
   loadActiveSessions(): void {
     this.isLoadingSessions = true;
 
-    this.sessionService.getActiveSessions()
+    this.userService.getActiveSessions()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (sessions) => {
+        next: (sessions: ActiveSession[]) => {
           this.activeSessions = sessions;
           this.isLoadingSessions = false;
         },
@@ -206,7 +206,7 @@ export class Security implements OnInit, OnDestroy {
           this.confirmPassword = '';
           this.passwordError = '';
         },
-        error: (error) => {
+        error: (error: any) => {
           const message = error.error?.detail || this.translate.instant('security.alerts.passwordError');
           this.passwordError = message;
           this.alertService.error(message, '', 4000);
@@ -348,14 +348,14 @@ export class Security implements OnInit, OnDestroy {
 
     if (!confirmed) return;
 
-    this.sessionService.revokeSession(sessionId)
+    this.userService.revokeSession(sessionId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.activeSessions = this.activeSessions.filter(s => s.id !== sessionId);
           this.alertService.success(this.translate.instant('security.alerts.closeSessionSuccess'), '', 2000);
         },
-        error: (error) => {
+        error: (error: any) => {
           const message = error.error?.detail || this.translate.instant('security.alerts.closeSessionError');
           this.alertService.error(message, '', 3000);
         }
@@ -375,10 +375,10 @@ export class Security implements OnInit, OnDestroy {
 
     if (!confirmed) return;
 
-    this.sessionService.revokeOtherSessions()
+    this.userService.revokeAllSessions()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response) => {
+        next: (response: any) => {
           this.activeSessions = this.activeSessions.filter(s => s.is_current);
           this.alertService.success(
             this.translate.instant('security.alerts.closeAllSuccess'),
@@ -386,7 +386,7 @@ export class Security implements OnInit, OnDestroy {
             3000
           );
         },
-        error: (error) => {
+        error: (error: any) => {
           const message = error.error?.detail || this.translate.instant('security.alerts.closeAllError');
           this.alertService.error(message, '', 3000);
         }

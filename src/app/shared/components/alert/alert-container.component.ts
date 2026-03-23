@@ -1,6 +1,6 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ZardAlertComponent } from './alert.component';
 import { ZardAlertConfirmComponent } from './alert-confirm.component';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -10,19 +10,19 @@ import { LucideAngularModule } from 'lucide-angular';
 @Component({
   selector: 'app-alert-container',
   standalone: true,
-  imports: [CommonModule, ZardAlertComponent, ZardAlertConfirmComponent, LucideAngularModule],
+  imports: [ZardAlertComponent, ZardAlertConfirmComponent, LucideAngularModule],
   template: `
     <div class="alert-container-wrapper">
       <div class="alert-stack"
-           [class.is-expanded]="isExpanded"
-           (mouseenter)="onMouseEnter()"
-           (mouseleave)="onMouseLeave()">
-        <ng-container *ngFor="let alert of alerts; let i = index; trackBy: trackById">
+        [class.is-expanded]="isExpanded"
+        (mouseenter)="onMouseEnter()"
+        (mouseleave)="onMouseLeave()">
+        @for (alert of alerts; track trackById(i, alert); let i = $index) {
           <div class="alert-wrapper"
-               [@alertAnimation]
-               [style.z-index]="alerts.length - i"
-               [style.transform]="getStackTransform(i)"
-               [class.is-stacked]="!isExpanded && i > 0">
+            [@alertAnimation]
+            [style.z-index]="alerts.length - i"
+            [style.transform]="getStackTransform(i)"
+            [class.is-stacked]="!isExpanded && i > 0">
             <div class="alert-item">
               @if (alert.type === 'confirm') {
                 <app-z-alert-confirm
@@ -44,15 +44,15 @@ import { LucideAngularModule } from 'lucide-angular';
                   (click)="dismiss(alert.id)"
                   aria-label="Cerrar alerta"
                   type="button"
-                >
+                  >
                 </button>
               }
             </div>
           </div>
-        </ng-container>
+        }
       </div>
     </div>
-  `,
+    `,
   styles: [`
     .alert-container-wrapper {
       position: fixed;

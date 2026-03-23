@@ -13,7 +13,6 @@ import { jwtDecode } from 'jwt-decode';
 import {
   User,
   UserCreate,
-  Token,
   UserInfoResponse,
   LoginStatsResponse,
   UserManagementResponse,
@@ -34,8 +33,6 @@ export class Auth {
   // ==================== CONFIGURACIÓN Y CONSTANTES ====================
   private readonly API_URL = environment.apiUrl;
   private readonly AUTH_URL = `${this.API_URL}/auth`;
-  private readonly TOKEN_KEY = 'authToken';
-  private readonly REFRESH_TOKEN_KEY = 'refreshToken';
 
   // ==================== ESTADO REACTIVO ====================
   private currentUserSubject = new BehaviorSubject<User | null>(null);
@@ -58,72 +55,25 @@ export class Auth {
 
   /**
    * Inicializa el estado de autenticación al cargar el servicio.
-   * Verifica tokens en localStorage y restaura sesión si son válidos.
+   * Llama al backend para obtener el perfil mediante la cookie.
    */
   private initializeAuth(): void {
-    const token = this.getToken();
-    if (token && !this.isTokenExpired(token)) {
-      try {
-        const user = this.decodeToken(token);
-        this.currentUserSubject.next(user);
+    this.getUserProfile().subscribe({
+      next: (user) => {
+        this.currentUserSubject.next(this.mapUserInfoToUser(user));
         this.isAuthenticatedSubject.next(true);
-      } catch {
+      },
+      error: () => {
         this.clearSession();
       }
-    } else {
-      this.clearSession();
-    }
+    });
   }
 
   /**
-   * Decodifica un token JWT y extrae la información del usuario.
-   * Valida campos requeridos y rol.
+   * Almacena datos del usuario reactivo localmente tras un inicio de sesión.
+   * Ya NO maneja tokens porque el backend emplea cookies HttpOnly.
    */
-  private decodeToken(token: string): User {
-    const decoded: any = jwtDecode(token);
-
-    if (!decoded.sub) throw new Error('Token inválido: falta ID de usuario');
-    if (!decoded.role) throw new Error('Token inválido: falta rol de usuario');
-    if (!decoded.email) throw new Error('Token inválido: falta email');
-
-    if (!this.isValidUserRole(decoded.role)) {
-      throw new Error(`Rol inválido: ${decoded.role}`);
-    }
-
-    return {
-      id: parseInt(decoded.sub, 10),
-      name: decoded.name || decoded.email,
-      email: decoded.email,
-      role: decoded.role,
-      is_active: decoded.is_active ?? true,
-      two_factor_enabled: decoded.two_factor_enabled || false,
-      created_at: decoded.iat
-        ? new Date(decoded.iat * 1000).toISOString()
-        : new Date().toISOString(),
-      last_login: decoded.last_login ?? null,
-    };
-  }
-
-  /**
-   * Verifica si un token JWT ha expirado.
-   */
-  private isTokenExpired(token: string): boolean {
-    try {
-      const decoded: any = jwtDecode(token);
-      return decoded.exp ? decoded.exp * 1000 < Date.now() : false;
-    } catch {
-      return true;
-    }
-  }
-
-  /**
-   * Almacena tokens y actualiza el estado de autenticación.
-   */
-  private setAuthData(accessToken: string, refreshToken: string): void {
-    localStorage.setItem(this.TOKEN_KEY, accessToken);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
-    const user = this.decodeToken(accessToken);
-    this.currentUserSubject.next(user);
+  private setAuthData(): void {
     this.isAuthenticatedSubject.next(true);
   }
 
@@ -132,11 +82,9 @@ export class Auth {
    * Elimina tokens y datos relacionados del almacenamiento.
    */
   private clearSession(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     sessionStorage.removeItem('temp_2fa_auth');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('userRole');
+    sessionStorage.removeItem('currentUser');
+    sessionStorage.removeItem('userRole');
     sessionStorage.removeItem('userSession');
 
     this.currentUserSubject.next(null);
@@ -170,18 +118,18 @@ export class Auth {
     email: string,
     password: string,
     enforceSingleSession = true
-  ): Observable<Token> {
+  ): Observable<any> {
     const body = new HttpParams()
       .set('username', email)
       .set('password', password)
       .set('single_session', enforceSingleSession.toString());
 
     return this.http
-      .post<Token>(`${this.AUTH_URL}/login`, body.toString(), {
+      .post(`${this.AUTH_URL}/login`, body.toString(), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       })
       .pipe(
-        tap((response) => {
+        tap((response: any) => {
           if (response.requires_2fa) {
             sessionStorage.setItem(
               'temp_2fa_auth',
@@ -190,7 +138,7 @@ export class Auth {
             throw { requires2FA: true, message: response.message || '2FA requerido' };
           }
           this.clearSession();
-          this.setAuthData(response.access_token, response.refresh_token);
+          this.setAuthData();
         }),
         switchMap((response) => {
           if (response.requires_2fa) return of(response);
@@ -211,7 +159,7 @@ export class Auth {
   /**
    * Inicia sesión con verificación de dos factores (2FA).
    */
-  loginWith2FA(loginData: Login2FARequest): Observable<Token> {
+  loginWith2FA(loginData: Login2FARequest): Observable<any> {
     if (!loginData.username || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginData.username.trim())) {
       return throwError(() => new Error('Correo electrónico inválido'));
     }
@@ -229,13 +177,13 @@ export class Auth {
       .set('single_session', (loginData.single_session ?? true).toString());
 
     return this.http
-      .post<Token>(`${this.AUTH_URL}/login-with-2fa`, body.toString(), {
+      .post<any>(`${this.AUTH_URL}/login-with-2fa`, body.toString(), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       })
       .pipe(
-        tap((response) => {
+        tap(() => {
           this.clearSession();
-          this.setAuthData(response.access_token, response.refresh_token);
+          this.setAuthData();
         }),
         switchMap((response) =>
           this.getUserProfile().pipe(
@@ -266,7 +214,7 @@ export class Auth {
   /**
    * Registra un nuevo usuario.
    */
-  signup(userData: UserCreate): Observable<Token> {
+  signup(userData: UserCreate): Observable<any> {
     if (!userData.name || userData.name.length < 2) {
       return throwError(() => new Error('El nombre debe tener al menos 2 caracteres'));
     }
@@ -280,8 +228,8 @@ export class Auth {
       return throwError(() => new Error('Las contraseñas no coinciden'));
     }
 
-    return this.http.post<Token>(`${this.AUTH_URL}/signup`, userData).pipe(
-      tap((response) => this.setAuthData(response.access_token, response.refresh_token)),
+    return this.http.post<any>(`${this.AUTH_URL}/signup`, userData).pipe(
+      tap(() => this.setAuthData()),
       switchMap((response) =>
         this.getUserProfile().pipe(
           tap((user) => this.currentUserSubject.next(this.mapUserInfoToUser(user))),
@@ -297,18 +245,10 @@ export class Auth {
    * Intenta notificar al backend y siempre limpia localmente.
    */
   logout(): Observable<any> {
-    const refreshToken = this.getRefreshToken();
-
-    if (!refreshToken) {
-      this.clearSession();
-      window.location.href = '/login';
-      return of({ message: 'Sesión cerrada localmente' });
-    }
-
     return this.http
       .post(
         `${this.AUTH_URL}/logout`,
-        { refresh_token: refreshToken },
+        {},
         { headers: this.getAuthHeaders() }
       )
       .pipe(
@@ -326,23 +266,17 @@ export class Auth {
    * Refresca el token de acceso usando el refresh token.
    * Evita llamadas simultáneas.
    */
-  refreshToken(): Observable<Token> {
+  refreshToken(): Observable<any> {
     if (this.isRefreshing) {
       return throwError(() => new Error('Actualización de token en progreso'));
-    }
-
-    const refreshToken = this.getRefreshToken();
-    if (!refreshToken) {
-      this.clearSession();
-      return throwError(() => new Error('No hay refresh token disponible'));
     }
 
     this.isRefreshing = true;
 
     return this.http
-      .post<Token>(`${this.AUTH_URL}/refresh`, { refresh_token: refreshToken })
+      .post(`${this.AUTH_URL}/refresh`, {}, { withCredentials: true })
       .pipe(
-        tap((response) => this.setAuthData(response.access_token, response.refresh_token)),
+        tap(() => this.setAuthData()),
         finalize(() => (this.isRefreshing = false)),
         catchError((error) => {
           this.clearSession();
@@ -453,37 +387,14 @@ export class Auth {
 
   // ==================== UTILIDADES ====================
 
-  getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  getRefreshToken(): string | null {
-    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
-  }
-
   private getAuthHeaders(): HttpHeaders {
-    const token = this.getToken();
     return new HttpHeaders({
-      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     });
   }
 
   isAuthenticated(): boolean {
-    const token = this.getToken();
-    if (!token) return false;
-    if (this.isTokenExpired(token)) {
-      this.clearSession();
-      return false;
-    }
-
-    try {
-      const decoded: any = jwtDecode(token);
-      return !!decoded.role;
-    } catch {
-      this.clearSession();
-      return false;
-    }
+    return this.isAuthenticatedSubject.value;
   }
 
   isAdmin(): boolean {
@@ -491,24 +402,7 @@ export class Auth {
   }
 
   getCurrentUser(): User | null {
-    let user = this.currentUserSubject.value;
-
-    if (!user) {
-      const token = this.getToken();
-      if (token && !this.isTokenExpired(token)) {
-        try {
-          user = this.decodeToken(token);
-          this.currentUserSubject.next(user);
-          return user;
-        } catch {
-          this.clearSession();
-          return null;
-        }
-      }
-      return null;
-    }
-
-    return user.role ? user : null;
+    return this.currentUserSubject.value;
   }
 
   /**

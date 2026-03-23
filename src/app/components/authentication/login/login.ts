@@ -11,7 +11,7 @@ import { Auth as AuthService } from '../auth/auth';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertService } from '@shared/components/alert/alert.service';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
@@ -28,12 +28,11 @@ import { environment } from 'src/environments/environment';
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     ReactiveFormsModule,
     LucideAngularModule,
     TranslateModule
-  ],
+],
   templateUrl: './login.html',
   styleUrls: ['./login.css'],
 })

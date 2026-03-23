@@ -1,7 +1,7 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 import { Component, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { LucideAngularModule } from 'lucide-angular';
 import { PasswordResetService } from 'src/app/services/api/password-reset.service';
 import { AlertService } from '@shared/components/alert/alert.service';
@@ -10,7 +10,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-check-email',
   standalone: true,
-  imports: [LucideAngularModule, CommonModule, RouterModule, TranslateModule],
+  imports: [LucideAngularModule, RouterModule, TranslateModule],
   templateUrl: './check-email.html',
   styleUrls: ['./check-email.css']
 })

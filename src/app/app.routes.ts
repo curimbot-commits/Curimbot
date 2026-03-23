@@ -1,28 +1,4 @@
 import { Routes } from '@angular/router';
-import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-
-// COMPONENTS
-import { Login as LoginComponent } from './components/authentication/login/login';
-import { LandingPage as LandingPageComponent } from './components/landing-page/landing-page';
-import { Register as RegisterComponent } from './components/authentication/register/register';
-import { Dashboard as DashboardComponent } from './components/dashboard/dashboard';
-import { DocumentComponent } from './components/document/document';
-import { Search as SearchComponent } from './components/search/search';
-import { Settings as SettingsComponent } from './components/settings/settings';
-import { Security as SecurityComponent } from './components/security/security';
-import { History as HistoryComponent } from './components/history/history';
-import { Navbar as NavbarComponent } from './components/navbar/navbar';
-import { ForgotPassword as ForgotPasswordComponent } from './components/authentication/forgot-password/forgot-password';
-import { CheckEmail as CheckEmailComponent } from './components/authentication/check-email/check-email';
-import { ResetPassword as ResetPasswordComponent } from './components/authentication/reset-password/reset-password';
-import { PasswordChanged as PasswordChangedComponent } from './components/authentication/password-changed/password-changed';
-import { TwoVerification as TwoVerificationComponent } from './components/authentication/login/two-verification/two-verification';
-import { Users as usersComponent } from './components/users/users';
-import { AtheniaVoice as CurimComponent } from './components/athenia-voice/athenia-voice';
-import { NotFoundComponent } from './components/not-found/not-found';
-
-// CONVOCATORIAS
 
 // GUARDS
 import { twoFactorGuard } from './services/guards/twoFactorGuard';
@@ -37,7 +13,7 @@ export const routes: Routes = [
   // ========================================
   {
     path: '',
-    component: LandingPageComponent,
+    loadComponent: () => import('./components/landing-page/landing-page').then(m => m.LandingPage),
     title: 'CURIM',
     canActivate: [redirectIfAuthenticatedGuard],
   },
@@ -47,43 +23,43 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    component: LoginComponent,
+    loadComponent: () => import('./components/authentication/login/login').then(m => m.Login),
     title: 'Iniciar sesión',
     canActivate: [redirectIfAuthenticatedGuard],
   },
   {
     path: 'twoverification',
-    component: TwoVerificationComponent,
+    loadComponent: () => import('./components/authentication/login/two-verification/two-verification').then(m => m.TwoVerification),
     title: 'Verificación 2FA',
     canActivate: [twoFactorGuard],
   },
   {
     path: 'register',
-    component: RegisterComponent,
+    loadComponent: () => import('./components/authentication/register/register').then(m => m.Register),
     title: 'Registro',
     canActivate: [redirectIfAuthenticatedGuard],
   },
   {
     path: 'passwordreset',
-    component: ForgotPasswordComponent,
+    loadComponent: () => import('./components/authentication/forgot-password/forgot-password').then(m => m.ForgotPassword),
     title: 'Recuperar contraseña',
     canActivate: [redirectIfAuthenticatedGuard],
   },
   {
     path: 'checkemail',
-    component: CheckEmailComponent,
+    loadComponent: () => import('./components/authentication/check-email/check-email').then(m => m.CheckEmail),
     title: 'Verificar correo',
     canActivate: [redirectIfAuthenticatedGuard],
   },
   {
     path: 'resetpassword',
-    component: ResetPasswordComponent,
+    loadComponent: () => import('./components/authentication/reset-password/reset-password').then(m => m.ResetPassword),
     title: 'Restablecer contraseña',
     canActivate: [redirectIfAuthenticatedGuard],
   },
   {
     path: 'passwordchanged',
-    component: PasswordChangedComponent,
+    loadComponent: () => import('./components/authentication/password-changed/password-changed').then(m => m.PasswordChanged),
     title: 'Contraseña actualizada',
     canActivate: [redirectIfAuthenticatedGuard],
   },
@@ -93,42 +69,41 @@ export const routes: Routes = [
   // ========================================
   {
     path: '',
-    component: NavbarComponent,
+    loadComponent: () => import('./components/navbar/navbar').then(m => m.Navbar),
     canActivate: [authGuard],
     children: [
       //  RUTAS PARA USUARIOS Y ADMINISTRADORES
       {
         path: 'document',
-        component: DocumentComponent,
+        loadComponent: () => import('./components/document/document').then(m => m.DocumentComponent),
         canActivate: [roleGuard],
         title: 'Documentos',
         data: { roles: ['user', 'admin'] },
       },
       {
         path: 'search',
-        component: SearchComponent,
+        loadComponent: () => import('./components/search/search').then(m => m.Search),
         canActivate: [roleGuard],
         title: 'Búsqueda',
         data: { roles: ['user', 'admin'] },
       },
       {
         path: 'settings',
-        component: SettingsComponent,
+        loadComponent: () => import('./components/settings/settings').then(m => m.Settings),
         canActivate: [roleGuard],
         title: 'Configuraciones',
         data: { roles: ['user', 'admin'] },
       },
       {
         path: 'security',
-        component: SecurityComponent,
+        loadComponent: () => import('./components/security/security').then(m => m.Security),
         canActivate: [roleGuard],
         title: 'Seguridad',
         data: { roles: ['user', 'admin'] },
       },
-
       {
         path: 'voice',
-        component: CurimComponent,
+        loadComponent: () => import('./components/athenia-voice/athenia-voice').then(m => m.AtheniaVoice),
         canActivate: [roleGuard],
         title: 'Curim',
         data: { roles: ['user', 'admin'] },
@@ -137,22 +112,21 @@ export const routes: Routes = [
       // 👑 RUTAS SOLO PARA ADMINISTRADORES
       {
         path: 'dashboard',
-        component: DashboardComponent,
+        loadComponent: () => import('./components/dashboard/dashboard').then(m => m.Dashboard),
         canActivate: [roleGuard],
         title: 'Panel de control',
         data: { roles: ['admin'] },
       },
-
       {
         path: 'users',
-        component: usersComponent,
+        loadComponent: () => import('./components/users/users').then(m => m.Users),
         canActivate: [roleGuard],
         title: 'Usuarios',
         data: { roles: ['admin'] },
       },
       {
         path: 'history',
-        component: HistoryComponent,
+        loadComponent: () => import('./components/history/history').then(m => m.History),
         canActivate: [roleGuard],
         title: 'Historial',
         data: { roles: ['admin'] },
@@ -172,14 +146,8 @@ export const routes: Routes = [
   // ========================================
   { 
     path: '404', 
-    component: NotFoundComponent,
+    loadComponent: () => import('./components/not-found/not-found').then(m => m.NotFoundComponent),
     title: '404 - Página no encontrada'
   },
   { path: '**', redirectTo: '404' },
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
-})
-export class AppRoutingModule { }

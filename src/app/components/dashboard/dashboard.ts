@@ -1,23 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-inferrable-types */
-/* eslint-disable @angular-eslint/prefer-inject */
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { Chart } from 'chart.js/auto';
 import { Subject, takeUntil, finalize, debounceTime, distinctUntilChanged, forkJoin } from 'rxjs';
-import { Api } from '../../services/api/api';
-import { Auth as AuthService } from '../../components/authentication/auth/auth';
-import { ActivityLog, ChartDataPoint, DashboardStats, DocumentType, TimeRange, UserExtended } from 'src/app/domain/models/document.model';
-import { UserPreferencesService } from 'src/app/services/api/user-preferences.service';
-import { UserService } from 'src/app/services/api/user-service';
-import { ProfileAvatar } from "@shared/components/profile-avatar/profile-avatar";
-import { User, UserRole } from 'src/app/domain/models/user.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
+import { AnalyticsService } from '../../services/api/analytics.service';
+import { DocumentService } from '../../services/api/document.service';
+import { Auth as AuthService } from '../../components/authentication/auth/auth';
+import { UserService } from 'src/app/services/api/user-service';
+import { ActivityLog, ChartDataPoint, DashboardStats, DocumentType, TimeRange, UserExtended } from 'src/app/domain/models/document.model';
+import { User, UserRole } from 'src/app/domain/models/user.model';
+
+import { DashboardChartsComponent } from './dashboard-charts/dashboard-charts';
+import { RecentActivitiesComponent } from './recent-activities/recent-activities';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,293 +23,176 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     CommonModule,
     FormsModule,
     LucideAngularModule,
-    ProfileAvatar,
-    TranslateModule
+    TranslateModule,
+    DashboardChartsComponent,
+    RecentActivitiesComponent
   ],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css']
+  styleUrls: ['./dashboard.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
+export class Dashboard implements OnInit {
   
-  // ==================== PROPIEDADES DE FILTROS Y CONFIGURACIÓN ====================
+  // ==================== DEPENDENCIAS ====================
+  private analyticsService = inject(AnalyticsService);
+  private documentService = inject(DocumentService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private userService = inject(UserService);
+  private translate = inject(TranslateService);
+
+  // ==================== ESTADO (SIGNALS) ====================
+  isAdmin = signal<boolean>(false);
+  showContent = signal<boolean>(false);
+
+  activeFilter = signal<DocumentType | 'all'>('all');
+  timeRange = signal<TimeRange>('week');
+  searchQuery = signal<string>('');
   
-  /** Filtro activo para tipo de documento */
-  activeFilter: DocumentType | 'all' = 'all';
+  stats = signal<DashboardStats | null>(null);
+  chartData = signal<ChartDataPoint[]>([]);
+  recentActivities = signal<ActivityLog[]>([]);
+  users = signal<UserExtended[]>([]);
+
+  isLoadingStats = signal<boolean>(false);
+  isLoadingChart = signal<boolean>(false);
+  isLoadingActivities = signal<boolean>(false);
+  isRefreshing = signal<boolean>(false);
+
+  errorStats = signal<string | null>(null);
+  errorChart = signal<string | null>(null);
+  errorActivities = signal<string | null>(null);
+
+  // ==================== ESTADO DERIVADO (COMPUTED SIGNALS) ====================
   
-  /** Rango de tiempo seleccionado para visualización de datos */
-  timeRange: TimeRange = 'week';
-  
-  /** Tipos de documentos disponibles para filtrado */
+  pieData = computed(() => {
+    const s = this.stats();
+    const filter = this.activeFilter();
+    if (!s?.typeBreakdown) return [];
+
+    if (filter === 'all') {
+      return s.typeBreakdown
+        .filter(item => item.count > 0)
+        .map(item => ({
+          name: item.file_type.toUpperCase(),
+          value: item.count,
+          color: this.getColorValue(item.file_type.toLowerCase())
+        }));
+    } else {
+      const typeData = s.typeBreakdown.find(
+        item => item.file_type.toLowerCase() === filter.toLowerCase()
+      );
+      return typeData && typeData.count > 0 ? [{
+        name: filter.toUpperCase(),
+        value: typeData.count,
+        color: this.getColorValue(filter.toLowerCase())
+      }] : [];
+    }
+  });
+
+  filteredActivities = computed(() => {
+    let list = this.recentActivities();
+    const filter = this.activeFilter();
+    const query = this.searchQuery().trim().toLowerCase();
+
+    if (filter !== 'all') {
+      list = list.filter(a => a.document_type.toLowerCase() === filter.toLowerCase());
+    }
+    if (query) {
+      list = list.filter(a => 
+        (a.user_name || '').toLowerCase().includes(query) ||
+        (a.document_name || '').toLowerCase().includes(query)
+      );
+    }
+    return list;
+  });
+
   documentTypes: (DocumentType | 'all')[] = ['all', 'pdf', 'txt', 'docx'];
-  
-  /** Rangos de tiempo disponibles para selección */
-  timeRanges: TimeRange[] = ['week', 'month', 'year'];
-  
-  /** Consulta de búsqueda ingresada por el usuario */
-  searchQuery: string = '';
-  
-  /** Subject para gestionar el debounce en búsquedas */
-  private searchSubject = new Subject<string>();
-
-  /** Indica si el usuario actual tiene rol de administrador */
-  isAdmin: boolean = false;
-
-  // ==================== PROPIEDADES DE DATOS ====================
-  
-  /** Estadísticas generales del dashboard */
-  stats: DashboardStats | null = null;
-  
-  /** Datos para el gráfico de líneas temporal */
-  chartData: ChartDataPoint[] = [];
-  
-  /** Lista completa de actividades recientes */
-  recentActivities: ActivityLog[] = [];
-  
-  /** Actividades filtradas según criterios de búsqueda */
-  filteredActivities: ActivityLog[] = [];
-  
-  /** Actividades de la página actual (paginación) */
-  paginatedActivities: ActivityLog[] = [];
-  
-  /** URL de la foto de perfil del usuario */
-  profilePhotoUrl: string | null = null;
-  
-  /** Vista previa de la foto de perfil */
-  photoPreview: string | undefined;
-  
-  /** Lista de usuarios del sistema (para administradores) */
-  users: UserExtended[] = [];
-
-  // ==================== PROPIEDADES DE PAGINACIÓN ====================
-  
-  /** Página actual de actividades */
-  currentActivitiesPage = 1;
-  
-  /** Número de actividades por página */
-  activitiesPerPage = 6;
-  
-  /** Total de páginas disponibles */
-  totalActivitiesPages = 1;
-  
-  /** Total de actividades filtradas */
-  totalActivitiesCount = 0;
-  
-  /** Índice de inicio de la página actual */
-  activitiesPageStart = 0;
-  
-  /** Índice de fin de la página actual */
-  activitiesPageEnd = 0;
-  
-  /** Máximo de páginas visibles en el paginador */
-  maxVisiblePages = 6;
-
-  // ==================== PROPIEDADES DE ESTADO DE CARGA ====================
-  
-  /** Indica si las estadísticas están cargando */
-  isLoadingStats = false;
-  
-  /** Indica si los datos del gráfico están cargando */
-  isLoadingChart = false;
-  
-  /** Indica si las actividades están cargando */
-  isLoadingActivities = false;
-  
-  /** Indica si se está ejecutando un refresh general */
-  isRefreshing = false;
-  
-  /** Controla la visibilidad del contenido principal */
-  showContent = false;
-
-  // ==================== PROPIEDADES DE ERRORES ====================
-  
-  /** Mensaje de error al cargar estadísticas */
-  errorStats: string | null = null;
-  
-  /** Mensaje de error al cargar gráfico */
-  errorChart: string | null = null;
-  
-  /** Mensaje de error al cargar actividades */
-  errorActivities: string | null = null;
-
-  // ==================== CONFIGURACIÓN DE COLORES ====================
-  
-  /** Mapeo de colores para cada tipo de documento */
   documentColors: Record<DocumentType | 'all', string> = {
-    pdf: 'red',
-    txt: 'green',
-    docx: 'blue',
-    all: 'purple'
+    pdf: 'red', txt: 'green', docx: 'blue', all: 'purple'
   };
 
-  // ==================== PROPIEDADES PRIVADAS ====================
-  
-  /** Instancia del gráfico circular (Chart.js) */
-  private pieChartInstance: Chart | null = null;
-  
-  /** Instancia del gráfico de líneas (Chart.js) */
-  private lineChartInstance: Chart | null = null;
-  
-  /** Subject para gestionar la limpieza de subscripciones */
+  private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
-  
-  /** Caché de datos procesados para el gráfico circular */
-  private pieDataCache: { name: string; value: number; color: string }[] | null = null;
-  
-  /** Intervalo para auto-refresco de datos */
-  private refreshInterval: ReturnType<typeof setInterval> | null = null;
-  
-  /** Indica si la vista ha sido inicializada */
-  private viewInitialized = false;
-  
-  /** Indica si los gráficos han sido inicializados */
-  private chartsInitialized = false;
 
-  // ==================== REFERENCIAS A ELEMENTOS DEL DOM ====================
-  
-  /** Referencia al canvas del gráfico circular */
-  @ViewChild('pieChart') pieChartCanvas!: ElementRef<HTMLCanvasElement>;
-  
-  /** Referencia al canvas del gráfico de líneas */
-  @ViewChild('lineChart') lineChartCanvas!: ElementRef<HTMLCanvasElement>;
-
-  // ==================== CONSTRUCTOR ====================
-
-  constructor(
-    private dashboardService: Api,
-    private authService: AuthService,
-    private router: Router,
-    private cdr: ChangeDetectorRef,
-    private ngZone: NgZone,
-    private preferencesService: UserPreferencesService,
-    private userService: UserService,
-    private translate: TranslateService
-  ) { }
-
-  // ==================== HOOKS DEL CICLO DE VIDA ====================
-
-  /**
-   * Inicialización del componente
-   * Configura búsqueda con debounce y verifica autenticación
-   */
+  // ==================== LIFECYCLE ====================
   ngOnInit(): void {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.filterActivities();
+    ).subscribe(query => {
+      this.searchQuery.set(query);
     });
 
-    if (this.authService.isAuthenticated()) {
-      this.checkAdminStatus();
-    } else {
-      this.router.navigate(['/login']);
-    }
+    this.checkAdminStatus();
   }
 
-  /**
-   * Hook ejecutado después de inicializar la vista
-   * Intenta renderizar los gráficos con un pequeño delay
-   */
-  ngAfterViewInit(): void {
-    this.viewInitialized = true;
-
-    this.ngZone.runOutsideAngular(() => {
-      setTimeout(() => {
-        this.attemptRenderCharts();
-      }, 100);
-    });
-  }
-
-  /**
-   * Limpieza al destruir el componente
-   * Destruye gráficos, limpia intervalos y completa observables
-   */
   ngOnDestroy(): void {
-    this.destroyCharts();
-    this.clearAutoRefresh();
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  // ==================== MÉTODOS DE AUTENTICACIÓN Y PERMISOS ====================
-
-  /**
-   * Verifica si el usuario actual tiene rol de administrador
-   * Carga los datos del dashboard después de la verificación
-   */
+  // ==================== CÓDIGO CORE ====================
   private checkAdminStatus(): void {
     this.authService.getUserProfile()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (userProfile) => {
-          this.isAdmin = userProfile?.role === UserRole.ADMIN;
-          this.showContent = true;
+        next: (profile) => {
+          this.isAdmin.set(profile?.role === UserRole.ADMIN);
+          this.showContent.set(true);
           this.loadDashboardData();
-          this.cdr.markForCheck();
         },
         error: () => {
-          this.isAdmin = false;
-          this.showContent = true;
+          this.isAdmin.set(false);
+          this.showContent.set(true);
           this.loadDashboardData();
-          this.cdr.markForCheck();
         }
       });
   }
 
-  // ==================== MÉTODOS DE CARGA DE DATOS ====================
-
-  /**
-   * Carga todos los datos del dashboard en paralelo
-   * Utiliza forkJoin para optimizar las peticiones HTTP
-   */
   private loadDashboardData(): void {
-    this.isLoadingStats = true;
-    this.isLoadingChart = true;
-    this.isLoadingActivities = true;
+    this.isLoadingStats.set(true);
+    this.isLoadingChart.set(true);
+    this.isLoadingActivities.set(true);
 
-    const includeAllUsers = this.isAdmin;
+    const isAdm = this.isAdmin();
 
     forkJoin({
-      stats: this.dashboardService.getDashboardStats(includeAllUsers),
-      chart: this.dashboardService.getChartData('week', includeAllUsers),
-      activities: this.dashboardService.getRecentActivities(100, includeAllUsers),
+      stats: this.analyticsService.getDashboardStats(isAdm),
+      chart: this.analyticsService.getChartData('week', isAdm),
+      activities: this.analyticsService.getRecentActivities(100, isAdm),
       users: this.userService.getUsers()
     }).pipe(
       takeUntil(this.destroy$),
       finalize(() => {
-        this.isLoadingStats = false;
-        this.isLoadingChart = false;
-        this.isLoadingActivities = false;
-        this.cdr.markForCheck();
+        this.isLoadingStats.set(false);
+        this.isLoadingChart.set(false);
+        this.isLoadingActivities.set(false);
       })
     ).subscribe({
-      next: ({ stats, chart, activities, users }) => {
-        this.stats = {
-          ...stats,
-          typeBreakdown: stats.typeBreakdown?.map(item => ({
-            ...item,
-            file_type: item.file_type.toLowerCase() as DocumentType
+      next: (res) => {
+        this.stats.set({
+          ...res.stats,
+          typeBreakdown: res.stats.typeBreakdown?.map(item => ({
+            ...item, file_type: item.file_type.toLowerCase() as DocumentType
           })) ?? []
-        };
-        this.pieDataCache = null;
-
-        this.chartData = chart;
-
-        this.recentActivities = activities.map(activity => ({
-          ...activity,
-          document_type: activity.document_type.toLowerCase() as DocumentType
-        }));
-
-        this.users = users.map(user => this.convertToUserExtended(user));
-
-        this.filterActivities();
-
-        this.ngZone.runOutsideAngular(() => {
-          setTimeout(() => {
-            this.attemptRenderCharts();
-          }, 50);
         });
+        this.chartData.set(res.chart);
+        this.recentActivities.set(res.activities.map(a => ({
+          ...a, document_type: a.document_type.toLowerCase() as DocumentType
+        })));
+        this.users.set(res.users.map(u => ({
+          id: u.id, email: u.email, name: u.name, role: u.role as UserRole,
+          created_at: u.created_at || new Date().toISOString(),
+          last_login: null, is_active: u.is_active ?? true, documentsCount: 0,
+          lastActivity: 'Sin actividad', documents: [], profile_photo_url: (u as any).profile_photo_url || null
+        })));
       },
       error: () => {
         this.loadStats();
@@ -322,882 +202,94 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  /**
-   * Carga las estadísticas del dashboard
-   * Actualiza el gráfico circular después de cargar
-   */
   public loadStats(): void {
-    if (this.isLoadingStats) return;
-    
-    this.isLoadingStats = true;
-    this.errorStats = null;
-
-    const includeAllUsers = this.isAdmin;
-
-    this.dashboardService.getDashboardStats(includeAllUsers)
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.isLoadingStats = false;
-          this.cdr.markForCheck();
-        })
-      )
+    this.isLoadingStats.set(true);
+    this.errorStats.set(null);
+    this.analyticsService.getDashboardStats(this.isAdmin())
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoadingStats.set(false)))
       .subscribe({
-        next: (data: DashboardStats) => {
-          this.stats = {
-            ...data,
-            typeBreakdown: data.typeBreakdown?.map(item => ({
-              ...item,
-              file_type: item.file_type.toLowerCase() as DocumentType
-            })) ?? []
-          };
-          this.pieDataCache = null;
-
-          this.ngZone.runOutsideAngular(() => {
-            setTimeout(() => {
-              this.renderOrUpdatePieChart();
-            }, 0);
-          });
-        },
-        error: (error: Error) => {
-          this.errorStats = `${this.translate.instant('dashboard.errors.stats')} ${error.message}`;
-        }
+        next: (data) => this.stats.set(data),
+        error: (err) => this.errorStats.set(`${this.translate.instant('dashboard.errors.stats')} ${err.message}`)
       });
   }
 
-  /**
-   * Carga los datos del gráfico de líneas según el rango temporal seleccionado
-   */
   private loadChartData(): void {
-  if (this.isLoadingChart) return;
+    this.isLoadingChart.set(true);
+    this.errorChart.set(null);
+    this.analyticsService.getChartData(this.timeRange(), this.isAdmin())
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoadingChart.set(false)))
+      .subscribe({
+        next: (data) => this.chartData.set(data),
+        error: (err) => this.errorChart.set(`${this.translate.instant('dashboard.errors.chart')} ${err.message}`)
+      });
+  }
 
-  this.isLoadingChart = true;
-  this.errorChart = null;
-
-  // ✅ timeRange ya es 'week' | 'month' | 'year' — mapeo directo
-  const period: 'week' | 'month' | 'year' = this.timeRange;
-  const includeAllUsers = this.isAdmin;
-
-  this.dashboardService.getChartData(period, includeAllUsers)
-    .pipe(
-      takeUntil(this.destroy$),
-      finalize(() => {
-        this.isLoadingChart = false;
-        this.cdr.markForCheck();
-      })
-    )
-    .subscribe({
-      next: (data: ChartDataPoint[]) => {
-        this.chartData = data;
-
-        // ✅ Forzar re-render fuera de Angular para que el canvas esté listo
-        this.ngZone.runOutsideAngular(() => {
-          setTimeout(() => {
-            this.renderLineChart();   // siempre crea desde cero (instancia ya destruida)
-          }, 50);
-        });
-      },
-      error: (error: Error) => {
-        this.errorChart = `${this.translate.instant('dashboard.errors.chart')} ${error.message}`;
-      }
-    });
-}
-
-  /**
-   * Carga las actividades recientes del sistema
-   * Aplica filtros después de cargar los datos
-   */
   public loadRecentActivities(): void {
-    if (this.isLoadingActivities) return;
-    
-    this.isLoadingActivities = true;
-    this.errorActivities = null;
-
-    const includeAllUsers = this.isAdmin;
-
-    this.dashboardService.getRecentActivities(100, includeAllUsers)
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.isLoadingActivities = false;
-          this.cdr.markForCheck();
-        })
-      )
+    this.isLoadingActivities.set(true);
+    this.errorActivities.set(null);
+    this.analyticsService.getRecentActivities(100, this.isAdmin())
+      .pipe(takeUntil(this.destroy$), finalize(() => this.isLoadingActivities.set(false)))
       .subscribe({
-        next: (data: ActivityLog[]) => {
-          this.recentActivities = data.map(activity => ({
-            ...activity,
-            document_type: activity.document_type.toLowerCase() as DocumentType
-          }));
-          this.filterActivities();
-        },
-        error: (error: Error) => {
-          this.errorActivities = `${this.translate.instant('dashboard.errors.activities')} ${error.message}`;
-        }
+        next: (data) => this.recentActivities.set(data),
+        error: (err) => this.errorActivities.set(`${this.translate.instant('dashboard.errors.activities')} ${err.message}`)
       });
   }
 
-  /**
-   * Refresca todos los datos del dashboard
-   * @param silent - Si es true, no muestra indicadores de carga
-   */
-  refreshAllData(silent = false): void {
-    if (this.isRefreshing) return;
-    
-    this.isRefreshing = true;
-
-    if (!silent) {
-      this.isLoadingStats = true;
-      this.isLoadingChart = true;
-      this.isLoadingActivities = true;
-    }
-
-    let completed = 0;
-    const total = 4;
-
-    const checkComplete = () => {
-      completed++;
-      if (completed >= total) {
-        this.isRefreshing = false;
-        if (!silent) {
-          this.isLoadingStats = false;
-          this.isLoadingChart = false;
-          this.isLoadingActivities = false;
-        }
-
-        this.ngZone.runOutsideAngular(() => {
-          setTimeout(() => {
-            this.attemptRenderCharts();
-          }, 0);
-        });
-
-        this.cdr.markForCheck();
-      }
-    };
-
-    this.userService.getUsers()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (users) => {
-          this.users = users.map(user => this.convertToUserExtended(user));
-          checkComplete();
-        },
-        error: () => {
-          checkComplete();
-        }
-      });
+  onSearchInput(event: Event): void {
+    const input = (event.target as HTMLInputElement).value;
+    this.searchSubject.next(input);
   }
 
-  // ==================== MÉTODOS DE RENDERIZADO DE GRÁFICOS ====================
-
-  /**
-   * Intenta renderizar ambos gráficos si la vista está inicializada
-   */
-  private attemptRenderCharts(): void {
-    if (!this.viewInitialized) return;
-
-    this.renderOrUpdatePieChart();
-    this.renderOrUpdateLineChart();
-    this.chartsInitialized = true;
+  setActiveFilter(filter: DocumentType | 'all') {
+    this.activeFilter.set(filter);
   }
 
-  /**
-   * Renderiza o actualiza el gráfico circular según disponibilidad de datos
-   */
-  private renderOrUpdatePieChart(): void {
-    const hasPieCanvas = !!this.pieChartCanvas?.nativeElement;
-    const hasPieData = this.hasPieChartData();
-
-    if (hasPieData && hasPieCanvas) {
-      if (this.pieChartInstance) {
-        this.updatePieChart();
-      } else {
-        this.renderPieChart();
-      }
-    } else {
-      if (this.pieChartInstance && !hasPieData) {
-        this.pieChartInstance.destroy();
-        this.pieChartInstance = null;
-      }
-    }
+  onTimeRangeChange(range: string) {
+    this.timeRange.set(range as TimeRange);
+    this.loadChartData();
   }
 
-  /**
-   * Renderiza o actualiza el gráfico de líneas según disponibilidad de datos
-   */
-  private renderOrUpdateLineChart(): void {
-  const hasLineCanvas = !!this.lineChartCanvas?.nativeElement;
-  const hasLineData   = this.chartData.length > 0;
-
-  if (!hasLineData || !hasLineCanvas) {
-    if (this.lineChartInstance) {
-      this.lineChartInstance.destroy();
-      this.lineChartInstance = null;
-    }
-    return;
-  }
-
-  if (!this.lineChartInstance) {
-    this.renderLineChart();
-  } else {
-    this.updateLineChart();
-  }
-}
-
-  /**
-   * Crea una nueva instancia del gráfico circular tipo doughnut
-   * Configura estilos, tooltips y animaciones
-   */
-  private renderPieChart(): void {
-    if (!this.pieChartCanvas?.nativeElement) return;
-
-    const pieData = this.getPieData();
-    if (!this.hasPieChartData()) return;
-
-    try {
-      this.pieChartInstance = new Chart(this.pieChartCanvas.nativeElement, {
-        type: 'doughnut',
-        data: {
-          labels: pieData.map(item => item.name),
-          datasets: [{
-            data: pieData.map(item => item.value),
-            backgroundColor: pieData.map(item => this.getColorValue(item.name.toLowerCase())),
-            borderWidth: 3,
-            borderColor: '#ffffff',
-            hoverOffset: 10
-          }],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: {
-            duration: 800,
-            easing: 'easeInOutQuart'
-          },
-          plugins: {
-            legend: {
-              display: false
-            },
-            tooltip: {
-              backgroundColor: 'rgba(0, 0, 0, 0.8)',
-              padding: 12,
-              cornerRadius: 8,
-              titleFont: { size: 14, weight: 'bold' },
-              bodyFont: { size: 13 },
-              callbacks: {
-                label: (context) => {
-                  const label = context.label || '';
-                  const value = context.parsed || 0;
-                  const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0) as number;
-                  const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0';
-                  return ` ${label}: ${value} (${percentage}%)`;
-                }
-              }
-            }
-          }
-        }
-      });
-    } catch (error) {
-      // Error silencioso
-    }
-  }
-
-  /**
-   * Actualiza los datos del gráfico circular existente sin recrearlo
-   */
-  private updatePieChart(): void {
-    if (!this.pieChartInstance) {
-      this.renderPieChart();
-      return;
-    }
-
-    const pieData = this.getPieData();
-
-    if (!this.hasPieChartData()) {
-      this.pieChartInstance.destroy();
-      this.pieChartInstance = null;
-      this.cdr.detectChanges();
-      return;
-    }
-
-    this.pieChartInstance.data.labels = pieData.map(item => item.name);
-    this.pieChartInstance.data.datasets[0].data = pieData.map(item => item.value);
-    this.pieChartInstance.data.datasets[0].backgroundColor = pieData.map(item => this.getColorValue(item.name.toLowerCase()));
-    this.pieChartInstance.update('active');
-  }
-
-  /**
-   * Crea una nueva instancia del gráfico de líneas temporal
-   * Muestra la evolución de documentos por tipo a lo largo del tiempo
-   */
-  private renderLineChart(): void {
-  if (!this.lineChartCanvas?.nativeElement) return;
-  if (!this.chartData || this.chartData.length === 0) return;
-
-  try {
-    const labels  = this.chartData.map(item => item.label || '');
-    const pdfData  = this.chartData.map(item => item.pdf  || 0);
-    const docxData = this.chartData.map(item => item.docx || 0);
-    const txtData  = this.chartData.map(item => item.txt  || 0);
-
-    this.lineChartInstance = new Chart(this.lineChartCanvas.nativeElement, {
-      type: 'bar',                          // ← 'line' → 'bar'
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'PDF',
-            data: pdfData,
-            backgroundColor: this.hexToRgba(this.getColorValue('pdf'), 0.85),
-            borderColor: this.getColorValue('pdf'),
-            borderWidth: 1.5,
-            borderRadius: 6,               // ← esquinas redondeadas
-            borderSkipped: false,
-          },
-          {
-            label: 'DOCX',
-            data: docxData,
-            backgroundColor: this.hexToRgba(this.getColorValue('docx'), 0.85),
-            borderColor: this.getColorValue('docx'),
-            borderWidth: 1.5,
-            borderRadius: 6,
-            borderSkipped: false,
-          },
-          {
-            label: 'TXT',
-            data: txtData,
-            backgroundColor: this.hexToRgba(this.getColorValue('txt'), 0.85),
-            borderColor: this.getColorValue('txt'),
-            borderWidth: 1.5,
-            borderRadius: 6,
-            borderSkipped: false,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: {
-          duration: 600,
-          easing: 'easeInOutQuart',
-        },
-        interaction: {
-          mode: 'index',
-          intersect: false,
-        },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: { font: { size: 11 } },
-          },
-          y: {
-            beginAtZero: true,
-            ticks: {
-              precision: 0,
-              font: { size: 11 },
-            },
-            grid: {
-              color: 'rgba(0,0,0,0.05)',
-            },
-          },
-        },
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: {
-              padding: 15,
-              font: { size: 12, weight: 500 },
-              usePointStyle: true,
-              pointStyle: 'rectRounded',   // ← cuadrado redondeado en leyenda
-            },
-          },
-          tooltip: {
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            padding: 12,
-            cornerRadius: 8,
-            titleFont: { size: 13, weight: 'bold' },
-            bodyFont: { size: 12 },
-            mode: 'index',
-            intersect: false,
-          },
-        },
-      },
-    });
-  } catch (error) {
-    // Error silencioso
-  }
-}
-
-  /**
-   * Actualiza los datos del gráfico de líneas existente
-   */
-  private updateLineChart(): void {
-  if (!this.lineChartInstance) {
-    this.renderLineChart();
-    return;
-  }
-
-  const labels  = this.chartData.map(item => item.label || '');
-  const pdfData  = this.chartData.map(item => item.pdf  || 0);
-  const docxData = this.chartData.map(item => item.docx || 0);
-  const txtData  = this.chartData.map(item => item.txt  || 0);
-
-  this.lineChartInstance.data.labels            = labels;
-  this.lineChartInstance.data.datasets[0].data  = pdfData;
-  this.lineChartInstance.data.datasets[1].data  = docxData;
-  this.lineChartInstance.data.datasets[2].data  = txtData;
-  this.lineChartInstance.update('active');
-}
-
-  /**
-   * Destruye ambas instancias de gráficos de Chart.js
-   */
-  private destroyCharts(): void {
-    if (this.pieChartInstance) {
-      this.pieChartInstance.destroy();
-      this.pieChartInstance = null;
-    }
-    if (this.lineChartInstance) {
-      this.lineChartInstance.destroy();
-      this.lineChartInstance = null;
-    }
-    this.chartsInitialized = false;
-  }
-
-  // ==================== MÉTODOS DE FILTRADO Y BÚSQUEDA ====================
-
-  /**
-   * Establece el filtro activo por tipo de documento
-   * Actualiza el gráfico circular y filtra las actividades
-   * @param filter - Tipo de documento o 'all' para mostrar todos
-   */
-  setActiveFilter(filter: DocumentType | 'all'): void {
-    this.activeFilter = filter;
-    this.pieDataCache = null;
-
-    this.ngZone.runOutsideAngular(() => {
-      setTimeout(() => {
-        this.renderOrUpdatePieChart();
-      }, 0);
-    });
-
-    this.filterActivities();
-  }
-
-  /**
-   * Establece el rango de tiempo para el gráfico de líneas
-   * @param range - Rango temporal (week, month, year)
-   */
-  setTimeRange(range: TimeRange): void {
-  if (this.timeRange === range) return;
-
-  this.timeRange = range;
-
-  // ✅ Destruir instancia anterior para evitar conflictos de canvas
-  if (this.lineChartInstance) {
-    this.lineChartInstance.destroy();
-    this.lineChartInstance = null;
-  }
-
-  this.loadChartData();
-}
-
-  /**
-   * Manejador del input de búsqueda
-   * Emite el valor al subject para aplicar debounce
-   */
-  public onSearchInput(): void {
-    this.searchSubject.next(this.searchQuery);
-  }
-
-  /**
-   * Filtra las actividades según el filtro activo y la consulta de búsqueda
-   * Resetea la paginación después de filtrar
-   */
-  public filterActivities(): void {
-    let filtered = this.recentActivities;
-
-    if (this.activeFilter !== 'all') {
-      filtered = filtered.filter(activity =>
-        activity.document_type.toLowerCase() === this.activeFilter.toLowerCase()
-      );
-    }
-
-    if (this.searchQuery.trim()) {
-      const query = this.searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(activity =>
-        activity.user_name.toLowerCase().includes(query) ||
-        activity.document_name.toLowerCase().includes(query)
-      );
-    }
-
-    this.filteredActivities = filtered;
-    this.totalActivitiesCount = this.filteredActivities.length;
-    this.currentActivitiesPage = 1;
-    this.updatePaginatedActivities();
-    this.cdr.markForCheck();
-  }
-
-  // ==================== MÉTODOS DE PAGINACIÓN ====================
-
-  /**
-   * Actualiza las actividades visibles según la página actual
-   * Calcula los índices de inicio y fin
-   */
-  private updatePaginatedActivities(): void {
-    const start = (this.currentActivitiesPage - 1) * this.activitiesPerPage;
-    const end = start + this.activitiesPerPage;
-    this.paginatedActivities = this.filteredActivities.slice(start, end);
-    this.totalActivitiesPages = Math.ceil(this.totalActivitiesCount / this.activitiesPerPage);
-    this.activitiesPageStart = this.totalActivitiesCount > 0 ? start + 1 : 0;
-    this.activitiesPageEnd = Math.min(end, this.totalActivitiesCount);
-  }
-
-  /**
-   * Navega a una página específica de actividades
-   * @param page - Número de página o string (para ellipsis)
-   */
-  goToActivitiesPage(page: number | string): void {
-    if (typeof page === 'string') return;
-    if (page < 1 || page > this.totalActivitiesPages) return;
-    
-    this.currentActivitiesPage = page;
-    this.updatePaginatedActivities();
-    this.cdr.markForCheck();
-  }
-
-  /**
-   * Genera el array de números de página para el paginador
-   * Incluye ellipsis (...) cuando hay muchas páginas
-   * @returns Array con números de página y strings '...'
-   */
-  getActivitiesPageNumbers(): (number | string)[] {
-    const pages: (number | string)[] = [];
-
-    if (this.totalActivitiesPages <= this.maxVisiblePages + 2) {
-      for (let i = 1; i <= this.totalActivitiesPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      pages.push(1);
-
-      if (this.currentActivitiesPage > 3) {
-        pages.push('...');
-      }
-
-      const start = Math.max(2, this.currentActivitiesPage - 1);
-      const end = Math.min(this.totalActivitiesPages - 1, this.currentActivitiesPage + 1);
-
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-
-      if (this.currentActivitiesPage < this.totalActivitiesPages - 2) {
-        pages.push('...');
-      }
-
-      pages.push(this.totalActivitiesPages);
-    }
-
-    return pages;
-  }
-
-  // ==================== MÉTODOS DE PROCESAMIENTO DE DATOS ====================
-
-  /**
-   * Convierte un objeto User a UserExtended
-   * Agrega propiedades adicionales con valores por defecto
-   * @param user - Usuario base
-   * @returns Usuario extendido con propiedades adicionales
-   */
-  private convertToUserExtended(user: User): UserExtended {
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role as UserRole,
-      created_at: user.created_at || new Date().toISOString(),
-      last_login: null,
-      is_active: user.is_active ?? true,
-      documentsCount: 0,
-      lastActivity: 'Sin actividad',
-      documents: [],
-      profile_photo_url: (user as any).profile_photo_url || null
-    };
-  }
-
-  /**
-   * Obtiene los datos procesados para el gráfico circular
-   * Aplica caché para evitar recálculos innecesarios
-   * @returns Array de objetos con nombre, valor y color
-   */
-  getPieData(): { name: string; value: number; color: string }[] {
-    if (this.pieDataCache) {
-      return this.pieDataCache;
-    }
-
-    if (!this.stats?.typeBreakdown) return [];
-
-    let result: { name: string; value: number; color: string }[];
-
-    if (this.activeFilter === 'all') {
-      result = this.stats.typeBreakdown
-        .filter(item => item.count > 0)
-        .map(item => ({
-          name: item.file_type.toUpperCase(),
-          value: item.count,
-          color: this.getColorValue(item.file_type.toLowerCase())
-        }));
-    } else {
-      const typeData = this.stats.typeBreakdown.find(
-        item => item.file_type.toLowerCase() === this.activeFilter.toLowerCase()
-      );
-
-      result = typeData && typeData.count > 0 ? [{
-        name: this.activeFilter.toUpperCase(),
-        value: typeData.count,
-        color: this.getColorValue(this.activeFilter.toLowerCase())
-      }] : [];
-    }
-
-    this.pieDataCache = result;
-    return result;
-  }
-
-  /**
-   * Verifica si hay datos válidos para mostrar en el gráfico circular
-   * @returns true si hay al menos un elemento con valor mayor a 0
-   */
-  hasPieChartData(): boolean {
-    const pieData = this.getPieData();
-    return pieData.length > 0 && pieData.some(item => item.value > 0);
-  }
-
-  /**
-   * Obtiene el total de documentos según el filtro activo
-   * @returns Total de documentos filtrados
-   */
-  getTotalDocuments(): number {
-    if (!this.stats) return 0;
-    
-    return this.activeFilter === 'all'
-      ? this.stats.totalDocuments || 0
-      : this.stats.typeBreakdown?.find(item => item.file_type.toLowerCase() === this.activeFilter.toLowerCase())?.count ?? 0;
-  }
-
-  /**
-   * Obtiene el conteo de documentos por tipo específico
-   * @param type - Tipo de documento
-   * @returns Cantidad de documentos del tipo especificado
-   */
   getDocumentCountByType(type: DocumentType | 'all'): number {
-    if (type === 'all') return this.stats?.totalDocuments || 0;
-    
-    return this.stats?.typeBreakdown?.find(item => item.file_type.toLowerCase() === type.toLowerCase())?.count ?? 0;
+    const s = this.stats();
+    if (!s) return 0;
+    if (type === 'all') return s.totalDocuments || 0;
+    return s.typeBreakdown?.find(item => item.file_type.toLowerCase() === type.toLowerCase())?.count ?? 0;
   }
 
-  /**
-   * Busca un usuario por ID en la lista cargada
-   * @param userId - ID del usuario
-   * @returns Usuario extendido o undefined si no existe
-   */
-  getUserById(userId: number): UserExtended | undefined {
-    return this.users.find(u => u.id === userId);
+  getColorValue(type: string): string {
+    const c: Record<string, string> = { pdf: '#ef4444', txt: '#02ab74', docx: '#3b82f6', all: '#7209b7' };
+    return c[type] ?? '#6b7280';
   }
 
-  // ==================== MÉTODOS DE UTILIDADES Y HELPERS ====================
-
-  /**
-   * Limpia el intervalo de auto-refresco
-   */
-  private clearAutoRefresh(): void {
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-      this.refreshInterval = null;
-    }
-  }
-
-  /**
-   * Obtiene el color hexadecimal asociado a un tipo de documento
-   * @param type - Tipo de documento
-   * @returns Color en formato hexadecimal
-   */
-  public getColorValue(type: string): string {
-    return {
-      pdf: '#ef4444',
-      txt: '#02ab74',
-      docx: '#3b82f6',
-      all: '#7209b7'
-    }[type.toLowerCase()] ?? '#6b7280';
-  }
-
-  /**
-   * Convierte un color hexadecimal a formato RGBA
-   * @param hex - Color en formato hexadecimal
-   * @param alpha - Valor de transparencia (0-1)
-   * @returns Color en formato rgba()
-   */
-  private hexToRgba(hex: string, alpha: number): string {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  }
-
-  /**
-   * Obtiene las iniciales de un nombre
-   * @param name - Nombre completo
-   * @returns Iniciales en mayúsculas (máximo 2 caracteres)
-   */
-  getUserInitials(name: string): string {
-    if (!name) return '??';
-    
-    const names = name.split(' ');
-    return names.length >= 2
-      ? (names[0][0] + names[1][0]).toUpperCase()
-      : name.substring(0, 2).toUpperCase();
-  }
-
-
-  /**
-   * Obtiene el ícono correspondiente a una acción
-   * @param action - Tipo de acción
-   * @returns Nombre del ícono de Lucide
-   */
-  getActionIcon(action: string): string {
-    const iconMap: Record<string, string> = {
-      upload: 'Upload',
-      download: 'Download',
-      view: 'Eye',
-      delete: 'Trash2',
-      share: 'Share'
-    };
-    return iconMap[action.toLowerCase()] ?? 'FileText';
-  }
-
-  /**
-   * Obtiene las clases CSS de color para una acción
-   * @param action - Tipo de acción
-   * @returns Clases Tailwind CSS
-   */
-  getActionColorClass(action: string): string {
-    const colorMap: Record<string, string> = {
-      upload: 'bg-green-100 text-green-700',
-      download: 'bg-blue-100 text-blue-700',
-      view: 'bg-purple-100 text-purple-700',
-      delete: 'bg-red-100 text-red-700',
-      share: 'bg-yellow-100 text-yellow-700'
-    };
-    return colorMap[action.toLowerCase()] ?? 'bg-gray-100 text-gray-700';
-  }
-
-  /**
-   * Obtiene las clases CSS de color para un tipo de archivo
-   * @param fileType - Tipo de archivo
-   * @returns Clases Tailwind CSS
-   */
-  getFileTypeColorClass(fileType?: string): string {
-    const colorMap: Record<string, string> = {
-      pdf: 'bg-red-100 text-red-700',
-      docx: 'bg-blue-100 text-blue-700',
-      txt: 'bg-green-100 text-green-700',
-    };
-
-    return colorMap[fileType?.toLowerCase() || ''] || 'bg-gray-100 text-gray-700';
-  }
-
-  // ==================== MÉTODOS DE FORMATEO ====================
-
-  /**
-   * Formatea bytes a unidades legibles (KB, MB, GB)
-   * @param bytes - Cantidad de bytes
-   * @returns String formateado con unidad
-   */
   formatBytes(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
-    
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${Math.round((bytes / Math.pow(k, i)) * 100) / 100} ${sizes[i]}`;
   }
 
-  /**
-   * Formatea una fecha a formato legible en español
-   * Aplica ajuste de zona horaria UTC-5
-   * @param dateString - String de fecha ISO
-   * @returns Fecha formateada (ej: "23 oct 2025")
-   */
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    const utcMinus5 = new Date(date.getTime() - (5 * 60 * 60 * 1000));
-
-    return utcMinus5.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-  }
-
-  /**
-   * Formatea una hora a formato de 24 horas
-   * Aplica ajuste de zona horaria UTC-5
-   * @param dateString - String de fecha ISO
-   * @returns Hora formateada (ej: "14:30")
-   */
-  formatTime(dateString: string): string {
-    const date = new Date(dateString);
-    const utcMinus5 = new Date(date.getTime() - (5 * 60 * 60 * 1000));
-
-    return utcMinus5.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
-  /**
-   * Obtiene la fecha actual formateada para nombres de archivo
-   * Aplica ajuste de zona horaria UTC-5
-   * @returns Fecha formateada con guiones (ej: "23-oct-2025")
-   */
-  getCurrentTimestamp(): string {
-    const today = new Date();
-    const utcMinus5 = new Date(today.getTime() - (5 * 60 * 60 * 1000));
-    
-    // Formato: YYYYMMDD_HHMMSS
-    const pad = (n: number) => n.toString().padStart(2, '0');
-    const datePart = `${utcMinus5.getFullYear()}${pad(utcMinus5.getMonth() + 1)}${pad(utcMinus5.getDate())}`;
-    const timePart = `${pad(utcMinus5.getHours())}${pad(utcMinus5.getMinutes())}${pad(utcMinus5.getSeconds())}`;
-    
-    return `${datePart}_${timePart}`;
-  }
-
-  // ==================== MÉTODOS DE EXPORTACIÓN ====================
-
-  /**
-   * Exporta las actividades filtradas a un archivo CSV
-   * Escapa caracteres especiales según estándar CSV
-   */
   exportActivities(): void {
-    const headers = this.isAdmin 
+    const headers = this.isAdmin() 
       ? ['Usuario', 'Email', 'Documento', 'Tipo', 'Acción', 'Fecha', 'Hora']
       : ['Usuario', 'Documento', 'Tipo', 'Acción', 'Fecha', 'Hora'];
 
-    const data = this.filteredActivities.map(activity => {
+    const data = this.filteredActivities().map(activity => {
+      const date = new Date(activity.timestamp);
       const row = [
         activity.user_name || '',
-        ...(this.isAdmin ? [activity.user_email || ''] : []),
+        ...(this.isAdmin() ? [activity.user_email || ''] : []),
         activity.document_name || '',
         activity.document_type ? activity.document_type.toUpperCase() : '',
         activity.action || '',
-        activity.timestamp ? this.formatDate(activity.timestamp) : '',
-        activity.timestamp ? this.formatTime(activity.timestamp) : ''
+        activity.timestamp ? date.toLocaleDateString() : '',
+        activity.timestamp ? date.toLocaleTimeString() : ''
       ];
       return row;
     });
 
     const escapeCSV = (field: any) => {
-      if (field === null || field === undefined) return '';
+      if (!field) return '';
       const strField = String(field);
       if (strField.includes(';') || strField.includes('"') || strField.includes('\n')) {
         return `"${strField.replace(/"/g, '""')}"`;
@@ -1205,18 +297,12 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       return strField;
     };
 
-    const csvContent = [
-      headers.map(escapeCSV).join(';'),
-      ...data.map(row => row.map(escapeCSV).join(';'))
-    ].join('\n');
-
-    const BOM = '\uFEFF';
-    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = [headers.map(escapeCSV).join(';'), ...data.map(row => row.map(escapeCSV).join(';'))].join('\n');
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.setAttribute('href', url);
-    const filename = this.isAdmin ? 'actividades_todos_usuarios' : 'actividades';
-    link.setAttribute('download', `${filename}_${this.getCurrentTimestamp()}.csv`);
+    link.href = url;
+    link.download = `actividades_${Date.now()}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

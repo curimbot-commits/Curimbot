@@ -1,5 +1,5 @@
 // src/app/features/settings/components/settings.component.ts
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -45,7 +45,8 @@ import { NavService } from '../navbar/navbar-services';
     TranslateModule
   ],
   templateUrl: './settings.html',
-  styleUrl: './settings.css'
+  styleUrl: './settings.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Settings implements OnInit, OnDestroy {
   // ==================================================================

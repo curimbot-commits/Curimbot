@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Auth } from './components/authentication/auth/auth';
 
@@ -24,13 +24,12 @@ import { TranslateService } from '@ngx-translate/core';
   selector: 'app-root',
   standalone: true,
   imports: [
-    CommonModule,
     RouterOutlet,
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
     AlertContainerComponent
-  ],
+],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],

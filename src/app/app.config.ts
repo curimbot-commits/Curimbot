@@ -7,6 +7,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { LucideIcons } from './icon/icons';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { AuthInterceptor } from './services/interceptors/auth.interceptor';
+import { ErrorInterceptor } from './services/interceptors/error.interceptor';
 import { ThemeService } from './services/theme/theme.service';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
@@ -46,6 +47,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
       multi: true
     },
 

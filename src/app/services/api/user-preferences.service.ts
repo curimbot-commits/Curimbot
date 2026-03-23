@@ -4,7 +4,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { AuthHeaderService } from './auth-header.service';
+
 import {
   InterfacePreferencesUpdate,
   LanguageEnum,
@@ -58,7 +58,6 @@ export class UserPreferencesService {
   // ==================================================================
 
   private http = inject(HttpClient);
-  private authHeaderService = inject(AuthHeaderService);
   private translate = inject(TranslateService);
 
   // ==================================================================
@@ -98,9 +97,7 @@ export class UserPreferencesService {
    * @returns Preferencias completas
    */
   getUserPreferences(): Observable<UserPreferencesResponse> {
-    return this.http.get<UserPreferencesResponse>(this.API_URL, {
-      headers: this.authHeaderService.getAuthHeaders()
-    }).pipe(
+    return this.http.get<UserPreferencesResponse>(this.API_URL).pipe(
       tap(prefs => {
         this.preferencesSubject.next(prefs);
         if (prefs.theme) this.setTheme(prefs.theme);
@@ -114,9 +111,7 @@ export class UserPreferencesService {
    * @returns Estado de habilitación
    */
   getConvocatoriaPreference(): Observable<{ convocatoria_enabled: boolean }> {
-    return this.http.get<{ convocatoria_enabled: boolean }>(`${this.API_URL}/convocatoria`, {
-      headers: this.authHeaderService.getAuthHeaders()
-    });
+    return this.http.get<{ convocatoria_enabled: boolean }>(`${this.API_URL}/convocatoria`);
   }
 
   // ==================================================================
@@ -133,8 +128,7 @@ export class UserPreferencesService {
   ): Observable<UserPreferencesResponse> {
     return this.http.patch<UserPreferencesResponse>(
       `${this.API_URL}/notifications`,
-      preferences,
-      { headers: this.authHeaderService.getAuthHeaders() }
+      preferences
     ).pipe(tap(prefs => this.preferencesSubject.next(prefs)));
   }
 
@@ -148,8 +142,7 @@ export class UserPreferencesService {
   ): Observable<UserPreferencesResponse> {
     return this.http.patch<UserPreferencesResponse>(
       `${this.API_URL}/interface`,
-      preferences,
-      { headers: this.authHeaderService.getAuthHeaders() }
+      preferences
     ).pipe(
       tap(prefs => {
         this.preferencesSubject.next(prefs);
@@ -167,8 +160,7 @@ export class UserPreferencesService {
   updateUserProfile(profileData: UserProfileUpdate): Observable<UserInfoResponse> {
     return this.http.patch<UserInfoResponse>(
       `${this.API_URL}/profile`,
-      profileData,
-      { headers: this.authHeaderService.getAuthHeaders() }
+      profileData
     );
   }
 
@@ -180,8 +172,7 @@ export class UserPreferencesService {
   updateConvocatoria(enabled: boolean): Observable<UserPreferencesResponse> {
     return this.http.patch<UserPreferencesResponse>(
       `${this.API_URL}/convocatoria`,
-      enabled,
-      { headers: this.authHeaderService.getAuthHeaders() }
+      enabled
     );
   }
 
@@ -200,8 +191,7 @@ export class UserPreferencesService {
 
     return this.http.post<ProfilePhotoResponse>(
       `${this.API_URL}/profile/photo`,
-      formData,
-      { headers: this.authHeaderService.getAuthHeaders() }
+      formData
     ).pipe(
       tap(response => {
         const current = this.preferencesSubject.value;
@@ -221,8 +211,7 @@ export class UserPreferencesService {
    */
   deleteProfilePhoto(): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(
-      `${this.API_URL}/profile/photo`,
-      { headers: this.authHeaderService.getAuthHeaders() }
+      `${this.API_URL}/profile/photo`
     ).pipe(
       tap(() => {
         const current = this.preferencesSubject.value;
@@ -247,8 +236,7 @@ export class UserPreferencesService {
   sendTestEmail(): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(
       `${this.API_URL}/test-email`,
-      {},
-      { headers: this.authHeaderService.getAuthHeaders() }
+      {}
     );
   }
 

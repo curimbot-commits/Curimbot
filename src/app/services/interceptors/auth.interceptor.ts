@@ -75,12 +75,11 @@ export class AuthInterceptor implements HttpInterceptor {
       return next.handle(req);
     }
 
-    const token = this.authService.getToken();
-    let authReq = req;
-
-    if (token) {
-      authReq = this.addTokenHeader(req, token);
-    }
+    // En lugar de enviar un token manual (Bearer), permitimos
+    // que el navegador adjunte las cookies HttpOnly con withCredentials.
+    let authReq = req.clone({
+      withCredentials: true
+    });
 
     return next.handle(authReq).pipe(
       catchError((error) => {
@@ -100,18 +99,6 @@ export class AuthInterceptor implements HttpInterceptor {
   // ==================================================================
   // AUTENTICACIÓN
   // ==================================================================
-
-  /**
-   * Agrega el header Authorization: Bearer <token> a la petición.
-   */
-  private addTokenHeader(
-    request: HttpRequest<any>,
-    token: string
-  ): HttpRequest<any> {
-    return request.clone({
-      headers: request.headers.set('Authorization', `Bearer ${token}`),
-    });
-  }
 
   /**
    * Verifica si la URL es un endpoint público que no requiere token.
@@ -146,10 +133,11 @@ export class AuthInterceptor implements HttpInterceptor {
     this.refreshTokenSubject.next(null);
 
     return this.authService.refreshToken().pipe(
-      switchMap((token: any) => {
+      switchMap(() => {
         this.isRefreshing = false;
-        this.refreshTokenSubject.next(token.access_token);
-        return next.handle(this.addTokenHeader(request, token.access_token));
+        // Indicador genérico para desbloquear solicitudes en cola
+        this.refreshTokenSubject.next('refreshed');
+        return next.handle(request.clone({ withCredentials: true }));
       }),
       catchError((err) => {
         this.isRefreshing = false;
@@ -177,8 +165,8 @@ export class AuthInterceptor implements HttpInterceptor {
     return this.refreshTokenSubject.pipe(
       filter((token) => token !== null),
       take(1),
-      switchMap((token) =>
-        next.handle(this.addTokenHeader(request, token!))
+      switchMap(() =>
+        next.handle(request.clone({ withCredentials: true }))
       )
     );
   }

@@ -1,6 +1,6 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertService } from '@shared/components/alert/alert.service';
@@ -9,8 +9,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-password-changed',
-  imports: [LucideAngularModule,
-    CommonModule, TranslateModule],
+  imports: [LucideAngularModule, TranslateModule],
   templateUrl: './password-changed.html',
   styleUrl: './password-changed.css'
 })

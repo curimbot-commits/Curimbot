@@ -1,5 +1,5 @@
 /* eslint-disable @angular-eslint/prefer-inject */
-import { CommonModule } from '@angular/common';
+
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { UserInfoResponse } from 'src/app/domain/models/user.model';
@@ -11,7 +11,7 @@ import { Inject } from '@angular/core';
 
 @Component({
   selector: 'app-profile-avatar',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './profile-avatar.html',
   styleUrls: ['./profile-avatar.css']
 })

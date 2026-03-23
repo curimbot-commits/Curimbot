@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { LucideAngularModule } from 'lucide-angular';
 import { PasswordResetService } from 'src/app/services/api/password-reset.service';
 import { AlertService } from '@shared/components/alert/alert.service';
@@ -11,7 +11,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, TranslateModule],
+  imports: [ReactiveFormsModule, LucideAngularModule, TranslateModule],
   templateUrl: './forgot-password.html',
   styleUrls: ['./forgot-password.css']
 })

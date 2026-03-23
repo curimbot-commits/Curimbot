@@ -5,7 +5,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AuthHeaderService } from './auth-header.service';
 import { environment } from 'src/environments/environment';
 
 /**
@@ -75,16 +74,12 @@ export class AtheniaService {
   // ==================================================================
 
   private http = inject(HttpClient);
-  private authHeaderService = inject(AuthHeaderService);
 
   // ==================================================================
   // MÉTODOS PRIVADOS
   // ==================================================================
 
-  /** Obtiene headers de autenticación */
-  private getHeaders() {
-    return this.authHeaderService.getAuthHeaders();
-  }
+
 
   /** Maneja errores HTTP */
   private handleError(error: any): Observable<never> {
@@ -95,14 +90,9 @@ export class AtheniaService {
   // CONSULTAS
   // ==================================================================
 
-  /**
-   * Realiza una pregunta a ATHENIA.
-   * @param request Datos de la consulta
-   * @returns Respuesta del asistente
-   */
   askQuestion(request: AtheniaQueryRequest): Observable<AtheniaResponse> {
     return this.http
-      .post<AtheniaResponse>(`${this.BASE_URL}/query`, request, { headers: this.getHeaders() })
+      .post<AtheniaResponse>(`${this.BASE_URL}/query`, request)
       .pipe(catchError(this.handleError));
   }
 
@@ -116,7 +106,7 @@ export class AtheniaService {
    */
   getStatus(): Observable<AtheniaStatus> {
     return this.http
-      .get<AtheniaStatus>(`${this.BASE_URL}/status`, { headers: this.getHeaders() })
+      .get<AtheniaStatus>(`${this.BASE_URL}/status`)
       .pipe(catchError(this.handleError));
   }
 
@@ -139,7 +129,7 @@ export class AtheniaService {
     return this.http
       .get<
         ConversationMessage[]
-      >(`${this.BASE_URL}/history`, { headers: this.getHeaders(), params })
+      >(`${this.BASE_URL}/history`, { params })
       .pipe(catchError(this.handleError));
   }
 
@@ -153,7 +143,7 @@ export class AtheniaService {
    */
   clearCache(): Observable<{ message: string }> {
     return this.http
-      .delete<{ message: string }>(`${this.BASE_URL}/cache`, { headers: this.getHeaders() })
+      .delete<{ message: string }>(`${this.BASE_URL}/cache`)
       .pipe(catchError(this.handleError));
   }
 
@@ -163,7 +153,7 @@ export class AtheniaService {
    */
   getCacheStats(): Observable<any> {
     return this.http
-      .get(`${this.BASE_URL}/cache/stats`, { headers: this.getHeaders() })
+      .get(`${this.BASE_URL}/cache/stats`)
       .pipe(catchError(this.handleError));
   }
 
@@ -184,7 +174,7 @@ export class AtheniaService {
     };
 
     return this.http
-      .post(`${this.BASE_URL}/documents/sync`, payload, { headers: this.getHeaders() })
+      .post(`${this.BASE_URL}/documents/sync`, payload)
       .pipe(catchError(this.handleError));
   }
 

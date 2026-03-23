@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { catchError, of, Subscription } from 'rxjs';
 import { Auth as AuthService } from '../authentication/auth/auth';
-import { Api as DocumentService } from '../../services/api/api';
+import { DocumentService } from '../../services/api/document.service';
 import {
   DocumentWithMetadata,
   PaginatedDocumentsResponse,
+  DocumentType
 } from '../../domain/models/document.model';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
@@ -75,8 +76,7 @@ export class Search implements OnDestroy {
   private fetchDocuments(): void {
     this.loading = true;
 
-    const token = this.authService.getToken();
-    if (!token) {
+    if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/login']);
       this.loading = false;
       return;

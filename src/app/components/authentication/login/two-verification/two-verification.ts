@@ -2,7 +2,7 @@
 import { LucideAngularModule } from "lucide-angular";
 import { NgOtpInputComponent } from 'ng-otp-input';
 import { Component, EventEmitter, Output, OnDestroy, OnInit, NgZone } from '@angular/core';
-import { CommonModule } from "@angular/common";
+
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from 'src/app/services/api/user-service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -14,7 +14,7 @@ import { Temp2FAAuth } from 'src/app/domain/models/user.model';
 
 @Component({
   selector: 'app-two-verification',
-  imports: [LucideAngularModule, NgOtpInputComponent, CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [LucideAngularModule, NgOtpInputComponent, FormsModule, ReactiveFormsModule],
   standalone: true,
   templateUrl: './two-verification.html',
   styleUrls: ['./two-verification.css']

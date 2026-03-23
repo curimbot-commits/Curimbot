@@ -5,7 +5,7 @@ import { Auth as AuthService } from '../authentication/auth/auth';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Api as DocumentService } from '../../services/api/api';
+import { DocumentService } from '../../services/api/document.service';
 import { DocumentWithMetadata, Document } from '../../domain/models/document.model';
 import { Subject } from 'rxjs';
 import { takeUntil, switchMap, finalize } from 'rxjs/operators';

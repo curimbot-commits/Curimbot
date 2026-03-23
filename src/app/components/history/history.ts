@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import { Api } from '../../services/api/api';
+import { AnalyticsService } from '../../services/api/analytics.service';
 import { AlertService } from '@shared/components/alert/alert.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -92,7 +92,7 @@ export class History implements OnInit {
   // SERVICIOS
   // ==================================================================
 
-  private apiService = inject(Api);
+  private analyticsService = inject(AnalyticsService);
   private alertService = inject(AlertService);
   private translate = inject(TranslateService);
 
@@ -159,7 +159,7 @@ export class History implements OnInit {
     this.loading = true;
     this.errorMessage = null;
 
-    this.apiService.getRecentActivities(this.limit, this.includeAllUsers).subscribe({
+    this.analyticsService.getRecentActivities(this.limit, this.includeAllUsers).subscribe({
       next: data => {
         this.activities = data.map(a => ({
           ...a,

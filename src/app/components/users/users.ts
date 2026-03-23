@@ -2,14 +2,13 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AlertConfig, AlertService } from '@shared/components/alert/alert.service';
 import { LucideAngularModule } from 'lucide-angular';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { UserService } from 'src/app/services/api/user-service';
-import { Api } from 'src/app/services/api/api';
-import { Api as DocumentService } from '../../services/api/api';
+import { DocumentService } from '../../services/api/document.service';
 import { DocumentWithMetadata, UserExtended } from 'src/app/domain/models/document.model';
 import { UserRole, User } from 'src/app/domain/models/user.model';
 import { ProfileAvatar } from '@shared/components/profile-avatar/profile-avatar';
@@ -26,7 +25,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule, FormsModule, LucideAngularModule, ProfileAvatar, TranslateModule],
   templateUrl: './users.html',
-  styleUrl: './users.css'
+  styleUrl: './users.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Users implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -53,7 +53,6 @@ export class Users implements OnInit, OnDestroy {
   private documentService = inject(DocumentService);
   private alertService = inject(AlertService);
   private userService = inject(UserService);
-  private apiService = inject(Api);
   private translate = inject(TranslateService);
 
   constructor() { }
@@ -112,7 +111,7 @@ export class Users implements OnInit, OnDestroy {
 
   /** Asocia documentos a cada usuario y calcula última actividad */
   private loadUserDocuments(): void {
-    this.apiService.getAllDocumentsMetadata(true)
+    this.documentService.getAllDocumentsMetadata(true)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (documents: DocumentWithMetadata[]) => {

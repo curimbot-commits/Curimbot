@@ -12,6 +12,7 @@ import {
   computed,
   ViewChild,
 } from '@angular/core';
+import { AtheniaService } from '../../services/api/athenia.service';
 import { Subject, takeUntil } from 'rxjs';
 import {
   VoiceLiveService,
@@ -20,7 +21,7 @@ import {
 } from '../../services/voice/voice-live.service';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Api as DocumentService } from '../../services/api/api';
+import { DocumentService } from '../../services/api/document.service';
 declare const THREE: any;
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -51,6 +52,7 @@ export class AtheniaVoice implements OnInit, OnDestroy {
   private ngZone = inject(NgZone);
   private destroy$ = new Subject<void>();
   private documentService = inject(DocumentService);
+  private atheniaService = inject(AtheniaService);
   private translate = inject(TranslateService);
 
   // ─── UI state ──────────────────────────────────────────────────────────────
@@ -236,9 +238,8 @@ export class AtheniaVoice implements OnInit, OnDestroy {
   private askBackend(question: string): void {
   this.isTyping.set(true);
 
-  this.documentService.askCurim({
+  this.atheniaService.askQuestion({
     question,
-    document_ids: null, // busca en todos
     use_cache: true
   })
   .pipe(takeUntil(this.destroy$))

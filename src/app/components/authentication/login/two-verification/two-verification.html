@@ -1,50 +1,51 @@
 <div class="min-h-screen bg-gradient-to-b from-white to-gray-50 flex flex-col">
-    <!-- Header -->
-    <header class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <button (click)="navigate.emit('landing')"
-                    class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-                    <div class="p-2 bg-[#02ab74] rounded-lg">
-                        <lucide-angular name="bot" class="w-6 h-6 text-white"></lucide-angular>
-                    </div>
-                    <span class="text-xl text-[#070025]">Asistente Virtual IA</span>
-                </button>
-            </div>
+  <!-- Header -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <button (click)="navigate.emit('landing')"
+          class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+          <div class="p-2 bg-[#02ab74] rounded-lg">
+            <lucide-angular name="bot" class="w-6 h-6 text-white"></lucide-angular>
+          </div>
+          <span class="text-xl text-[#070025]">Asistente Virtual IA</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md">
+      <button (click)="goBackToLogin()"
+        class="flex items-center gap-2 text-gray-600 hover:text-[#02ab74] transition-colors mb-6">
+        <lucide-angular name="arrowLeft" class="w-4 h-4"></lucide-angular>
+        <span>Volver al inicio de sesión</span>
+      </button>
+
+      <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <!-- Icon -->
+        <div class="flex justify-center mb-6">
+          <div class="p-4 rounded-2xl shadow-md"
+            style="background: linear-gradient(to bottom right, #02ab74, #7209b7);">
+            <lucide-angular name="shield" class="w-12 h-12 text-white"></lucide-angular>
+          </div>
         </div>
-    </header>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex items-center justify-center px-4 py-12">
-        <div class="w-full max-w-md">
-            <button (click)="goBackToLogin()"
-                class="flex items-center gap-2 text-gray-600 hover:text-[#02ab74] transition-colors mb-6">
-                <lucide-angular name="arrowLeft" class="w-4 h-4"></lucide-angular>
-                <span>Volver al inicio de sesión</span>
-            </button>
+        <h1 class="text-center text-[#070025] text-2xl font-bold mb-2">Verificación en Dos Pasos</h1>
+        <p class="text-center text-gray-600 mb-8">
+          {{ useBackupCode
+          ? 'Ingresa uno de tus códigos de respaldo'
+          : 'Ingresa el código de 6 dígitos de tu aplicación de autenticación'
+          }}
+        </p>
 
-            <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-                <!-- Icon -->
-                <div class="flex justify-center mb-6">
-                    <div class="p-4 rounded-2xl shadow-md"
-                        style="background: linear-gradient(to bottom right, #02ab74, #7209b7);">
-                        <lucide-angular name="shield" class="w-12 h-12 text-white"></lucide-angular>
-                    </div>
-                </div>
-
-                <h1 class="text-center text-[#070025] text-2xl font-bold mb-2">Verificación en Dos Pasos</h1>
-                <p class="text-center text-gray-600 mb-8">
-                    {{ useBackupCode
-                    ? 'Ingresa uno de tus códigos de respaldo'
-                    : 'Ingresa el código de 6 dígitos de tu aplicación de autenticación'
-                    }}
-                </p>
-
-                <!-- FormGroup binding -->
-                <form [formGroup]="twoFaForm" class="space-y-6" (ngSubmit)="handleVerify()">
-                    <!-- OTP Input para código normal -->
-                    <div *ngIf="!useBackupCode">
-                        <div class="flex justify-center">
+        <!-- FormGroup binding -->
+        <form [formGroup]="twoFaForm" class="space-y-6" (ngSubmit)="handleVerify()">
+          <!-- OTP Input para código normal -->
+          @if (!useBackupCode) {
+            <div>
+              <div class="flex justify-center">
                             <ng-otp-input formControlName="code" [config]="{
                   length: 6,
                   inputStyles: {
@@ -62,81 +63,92 @@
                     justifyContent: 'center'
                   }
                 }" (onInputChange)="handleOtpInput($event)">
-                            </ng-otp-input>
-                        </div>
-                        <div *ngIf="twoFaForm.get('code')?.invalid && (twoFaForm.get('code')?.touched || twoFaForm.get('code')?.dirty)"
-                            class="text-red-600 text-center mt-2 text-sm">
-                            Por favor ingresa un código de 6 dígitos válido.
-                        </div>
-                    </div>
+              </ng-otp-input>
+            </div>
+            @if (twoFaForm.get('code')?.invalid && (twoFaForm.get('code')?.touched || twoFaForm.get('code')?.dirty)) {
+              <div
+                class="text-red-600 text-center mt-2 text-sm">
+                Por favor ingresa un código de 6 dígitos válido.
+              </div>
+            }
+          </div>
+        }
 
-                    <!-- Input para código de respaldo -->
-                    <div *ngIf="useBackupCode">
-                        <input type="text" formControlName="backupCode"
-                            (input)="twoFaForm.get('backupCode')?.setValue(twoFaForm.get('backupCode')?.value.toUpperCase(), { emitEvent: false })"
-                            placeholder="XXXX-XXXX-XXXX" maxlength="14"
-                            class="w-full px-4 py-3 text-center text-lg font-mono border-2 border-gray-300 rounded-lg focus:border-[#02ab74] focus:ring-2 focus:ring-[#02ab74]/20 outline-none transition-all" />
-                        <div *ngIf="twoFaForm.get('backupCode')?.invalid && (twoFaForm.get('backupCode')?.touched || twoFaForm.get('backupCode')?.dirty)"
-                            class="text-red-600 text-center mt-2 text-sm">
-                            Por favor ingresa un código de respaldo válido.
-                        </div>
-                    </div>
+        <!-- Input para código de respaldo -->
+        @if (useBackupCode) {
+          <div>
+            <input type="text" formControlName="backupCode"
+              (input)="twoFaForm.get('backupCode')?.setValue(twoFaForm.get('backupCode')?.value.toUpperCase(), { emitEvent: false })"
+              placeholder="XXXX-XXXX-XXXX" maxlength="14"
+              class="w-full px-4 py-3 text-center text-lg font-mono border-2 border-gray-300 rounded-lg focus:border-[#02ab74] focus:ring-2 focus:ring-[#02ab74]/20 outline-none transition-all" />
+              @if (twoFaForm.get('backupCode')?.invalid && (twoFaForm.get('backupCode')?.touched || twoFaForm.get('backupCode')?.dirty)) {
+                <div
+                  class="text-red-600 text-center mt-2 text-sm">
+                  Por favor ingresa un código de respaldo válido.
+                </div>
+              }
+            </div>
+          }
 
-                    <!-- Info Box -->
-                    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                        <div class="flex items-start gap-3">
-                            <lucide-angular name="info"
-                                class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"></lucide-angular>
-                            <p class="text-sm text-blue-800">
-                                <strong>💡 Consejo:</strong>
-                                {{ useBackupCode
-                                ? 'Los códigos de respaldo son de un solo uso. Una vez utilizado, no podrás usarlo
-                                nuevamente.'
-                                : 'Abre tu app de autenticación (Google Authenticator, Authy, etc.) para obtener el
-                                código actual.'
-                                }}
-                            </p>
-                        </div>
-                    </div>
+          <!-- Info Box -->
+          <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <div class="flex items-start gap-3">
+              <lucide-angular name="info"
+              class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"></lucide-angular>
+              <p class="text-sm text-blue-800">
+                <strong>💡 Consejo:</strong>
+                {{ useBackupCode
+                ? 'Los códigos de respaldo son de un solo uso. Una vez utilizado, no podrás usarlo
+                nuevamente.'
+                : 'Abre tu app de autenticación (Google Authenticator, Authy, etc.) para obtener el
+                código actual.'
+                }}
+              </p>
+            </div>
+          </div>
 
-                    <!-- Verify Button -->
+          <!-- Verify Button -->
                     <button type="submit" [disabled]="
               isLoading ||
               (!useBackupCode && twoFaForm.get('code')?.invalid) ||
               (useBackupCode && twoFaForm.get('backupCode')?.invalid)
             " class="w-full bg-[#02ab74] hover:bg-[#028a5f] text-white font-medium rounded-lg py-3 px-4 transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#02ab74] focus:ring-offset-2 flex items-center justify-center gap-2">
-                        <lucide-angular *ngIf="isLoading" name="loader2" class="w-5 h-5 animate-spin"></lucide-angular>
-                        <span>{{ isLoading ? 'Verificando...' : 'Verificar' }}</span>
-                    </button>
+            @if (isLoading) {
+              <lucide-angular name="loader2" class="w-5 h-5 animate-spin"></lucide-angular>
+            }
+            <span>{{ isLoading ? 'Verificando...' : 'Verificar' }}</span>
+          </button>
 
-                    <!-- Alternate options -->
-                    <div class="space-y-3">
-                        <button type="button" (click)="toggleBackup()" [disabled]="isLoading"
-                            class="w-full text-sm text-[#02ab74] hover:text-[#028a5f] transition-colors font-medium py-2 disabled:opacity-50">
-                            {{ useBackupCode
-                            ? '← Usar código de autenticación'
-                            : '¿No tienes acceso a tu app? Usa un código de respaldo →'
-                            }}
-                        </button>
+          <!-- Alternate options -->
+          <div class="space-y-3">
+            <button type="button" (click)="toggleBackup()" [disabled]="isLoading"
+              class="w-full text-sm text-[#02ab74] hover:text-[#028a5f] transition-colors font-medium py-2 disabled:opacity-50">
+              {{ useBackupCode
+              ? '← Usar código de autenticación'
+              : '¿No tienes acceso a tu app? Usa un código de respaldo →'
+              }}
+            </button>
 
-                        <button *ngIf="!useBackupCode" type="button" (click)="handleResendCode()" [disabled]="isLoading"
-                            class="w-full text-sm text-gray-600 hover:text-gray-800 transition-colors py-2 disabled:opacity-50">
-                            ¿El código no funciona? Verifica la sincronización de hora
-                        </button>
-                    </div>
-                </form>
+            @if (!useBackupCode) {
+              <button type="button" (click)="handleResendCode()" [disabled]="isLoading"
+                class="w-full text-sm text-gray-600 hover:text-gray-800 transition-colors py-2 disabled:opacity-50">
+                ¿El código no funciona? Verifica la sincronización de hora
+              </button>
+            }
+          </div>
+        </form>
 
-                <!-- Help -->
-                <div class="mt-6 pt-6 border-t border-gray-200">
-                    <p class="text-center text-sm text-gray-600">
-                        ¿Perdiste el acceso a tu autenticador?
-                        <button class="text-[#02ab74] hover:text-[#028a5f] transition-colors font-medium ml-1"
-                            (click)="navigate.emit('landing')">
-                            Contacta soporte
-                        </button>
-                    </p>
-                </div>
-            </div>
+        <!-- Help -->
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <p class="text-center text-sm text-gray-600">
+            ¿Perdiste el acceso a tu autenticador?
+            <button class="text-[#02ab74] hover:text-[#028a5f] transition-colors font-medium ml-1"
+              (click)="navigate.emit('landing')">
+              Contacta soporte
+            </button>
+          </p>
         </div>
+      </div>
     </div>
+  </div>
 </div>

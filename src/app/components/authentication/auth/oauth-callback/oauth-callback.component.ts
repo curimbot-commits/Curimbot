@@ -72,7 +72,6 @@ export class OAuthCallbackComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
 
-      const token = params['token'];
       const error = params['error'];
 
       // ── Caso error: backend mandó ?error=... ──────────────────────
@@ -81,29 +80,29 @@ export class OAuthCallbackComponent implements OnInit {
         return;
       }
 
-      // ── Caso éxito: Backend ya estableció las cookies HttpOnly ────────────────
-      // Verificamos el perfil para forzar el estado reactivo y ver el rol.
-      this.processAuthCookies();
-    });
-  }
+      // ── Caso éxito: Backend manda token y refresh en la URL ────────────────
+      const token = params['token'];
+      const refresh = params['refresh'];
 
-  /**
-   * Intenta obtener el perfil del usuario mediante la cookie HttpOnly recién establecida.
-   * Si es exitoso, redirige de acuerdo al rol.
-   */
-  private processAuthCookies(): void {
-    this.authService.getUserProfile().subscribe({
-      next: (user) => {
-        const role = user.role;
-        const destination = role === 'admin' ? '/dashboard' : '/document';
+      if (token && refresh) {
+        // Llamar al backend para que setee las cookies en el proxy/frontend
+        this.authService.setOAuthCookies(token, refresh).subscribe({
+          next: (user) => {
+            const role = user.role;
+            const destination = role === 'admin' ? '/dashboard' : '/document';
 
-        setTimeout(() => {
-          this.router.navigateByUrl(destination);
-        }, 300);
-      },
-      error: (err) => {
-        console.error('Error obteniendo perfil después del OAuth:', err);
-        this.errorMessage = 'No se pudo iniciar sesión. Las cookies pueden ser inválidas o haber expirado.';
+            setTimeout(() => {
+              this.router.navigateByUrl(destination);
+            }, 300);
+          },
+          error: (err) => {
+            console.error('Error seteando cookies OAuth:', err);
+            this.errorMessage = 'No se pudo iniciar sesión. Las credenciales pueden haber expirado.';
+          }
+        });
+      } else {
+        this.errorMessage = 'No se recibieron tokens del servidor.';
+        setTimeout(() => this.goToLogin(), 3000);
       }
     });
   }

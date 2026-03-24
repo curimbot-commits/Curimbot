@@ -22,7 +22,7 @@ import {
   ContactRound,SquarePen,Building2,Tag,UserPlus,NotebookPen,CircleUser,
   Phone,MessageSquare,
   Instagram, Linkedin, Github, Map, Play, Menu,
-  ShieldCheck, Award,
+  ShieldCheck, Award,DownloadCloud,UploadCloud
 } from 'lucide-angular';
 
 /**
@@ -30,7 +30,7 @@ import {
  * para poder usarlos dinámicamente desde arrays en componentes.
  */
 export const LucideIcons = {
-  Bot, Mail, Lock, User, MessageCircle, Zap,SquarePen,
+  Bot, Mail, Lock, User,DownloadCloud,UploadCloud, MessageCircle, Zap,SquarePen,
   Info, CheckCircle2, AlertTriangle, Mic,Building,Tag,
   XCircle, ChevronDown, ArrowLeft, Volume2,Briefcase,
   CheckCircle, Sparkles, Shield, MicOff, Scale,Building2,

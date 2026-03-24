@@ -1,13 +1,23 @@
-import { ApplicationConfig, APP_INITIALIZER, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  APP_INITIALIZER,
+  importProvidersFrom,
+  provideBrowserGlobalErrorListeners,
+  provideZoneChangeDetection
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+  HTTP_INTERCEPTORS
+} from '@angular/common/http';
 import { LucideAngularModule } from 'lucide-angular';
 import { LucideIcons } from './icon/icons';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { AuthInterceptor } from './services/interceptors/auth.interceptor';
 import { ErrorInterceptor } from './services/interceptors/error.interceptor';
+import { CredentialsInterceptor } from './services/interceptors/credentials.interceptor';
 import { ThemeService } from './services/theme/theme.service';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
@@ -40,10 +50,16 @@ export const appConfig: ApplicationConfig = {
       })
     ),
 
-    // ✅ withInterceptorsFromDi() habilita los interceptores de clase (HTTP_INTERCEPTORS)
     provideHttpClient(
       withInterceptorsFromDi()
     ),
+
+    // Orden de ejecución (request entrante): Credentials → Auth → Error
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: CredentialsInterceptor,
+      multi: true
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
@@ -55,7 +71,6 @@ export const appConfig: ApplicationConfig = {
       multi: true
     },
 
-    // ✅ Inicializa el tema ANTES de que Angular monte los componentes
     {
       provide: APP_INITIALIZER,
       useFactory: (themeService: ThemeService) => () => themeService.init(),
@@ -63,7 +78,6 @@ export const appConfig: ApplicationConfig = {
       multi: true
     },
 
-    // ✅ Inicializa las traducciones antes de que se cargue la UI
     {
       provide: APP_INITIALIZER,
       useFactory: (translate: TranslateService) => {
@@ -77,4 +91,4 @@ export const appConfig: ApplicationConfig = {
       multi: true
     }
   ]
-};
+};

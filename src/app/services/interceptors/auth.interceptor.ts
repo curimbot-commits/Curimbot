@@ -59,6 +59,7 @@ export class AuthInterceptor implements HttpInterceptor {
     '/auth/health',
     '/auth/google/',    // OAuth Google — no requiere token
     '/auth/github/',    // OAuth GitHub — no requiere token
+    '/auth/oauth/set-cookies',  // ← endpoint para setear cookies tras OAuth
   ];
 
   // ==================================================================

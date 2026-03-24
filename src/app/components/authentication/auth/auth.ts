@@ -58,6 +58,10 @@ export class Auth {
    * Llama al backend para obtener el perfil mediante la cookie.
    */
   private initializeAuth(): void {
+    if (window.location.pathname.includes('/callback')) {
+      return;
+    }
+
     this.getUserProfile().subscribe({
       next: (user) => {
         this.currentUserSubject.next(this.mapUserInfoToUser(user));
@@ -291,8 +295,23 @@ export class Auth {
     return this.http
       .get<UserInfoResponse>(`${this.AUTH_URL}/me`, {
         headers: this.getAuthHeaders(),
+        withCredentials: true,
       })
       .pipe(catchError(this.handleError));
+  }
+
+  setOAuthCookies(token: string, refresh: string): Observable<UserInfoResponse> {
+    return this.http.post<UserInfoResponse>(
+      `${this.AUTH_URL}/oauth/set-cookies`,
+      { token, refresh },
+      { withCredentials: true }
+    ).pipe(
+      tap((user) => {
+        this.currentUserSubject.next(this.mapUserInfoToUser(user));
+        this.isAuthenticatedSubject.next(true);
+      }),
+      catchError(this.handleError)
+    );
   }
 
   changePassword(oldPassword: string, newPassword: string): Observable<any> {
@@ -451,7 +470,7 @@ export class Auth {
     const customError: any = new Error(errorKey);
     customError.status = error.status;
     customError.originalError = error;
-    
+
     return throwError(() => customError);
   }
 

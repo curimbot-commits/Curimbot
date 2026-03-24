@@ -7,7 +7,7 @@
 
   <!-- Stats -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    @for (stat of stats; track stat) {
+    @for (stat of stats; track stat.label) {
       <div class="p-6 border border-gray-200 rounded-xl flex items-center justify-between">
         <div>
           <p class="text-sm text-gray-600 mb-1">{{ stat.label }}</p>
@@ -78,7 +78,7 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              @for (user of filteredUsers; track user) {
+              @for (user of filteredUsers; track user.id) {
                 <tr class="hover:bg-gray-50 transition-colors">
                   <td class="px-6 py-4">
                     <div class="flex items-center space-x-3">
@@ -171,7 +171,7 @@
     <!-- Users Cards (Mobile) -->
     @if (!isLoading) {
       <div class="md:hidden space-y-4">
-        @for (user of filteredUsers; track user) {
+        @for (user of filteredUsers; track user.id) {
           <div class="p-4 border border-gray-200 rounded-xl bg-white shadow-sm space-y-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
@@ -259,7 +259,7 @@
             <!-- Body -->
             <div class="px-6 py-4 space-y-3">
               @if (selectedUser && selectedUser.documents.length > 0) {
-                @for (doc of selectedUser.documents; track doc) {
+                @for (doc of selectedUser.documents; track doc.id) {
                   <div class="p-4 border border-gray-200 rounded-lg">
                     <div class="flex items-start justify-between">
                       <div class="flex items-start gap-3 flex-1">

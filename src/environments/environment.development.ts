@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://api.curimbot.com',
-  dashboardRefreshInterval: 30000,
+  apiUrl: 'http://localhost:8000',
+  /*apiUrl: 'https://api.curimbot.com',*/
 };

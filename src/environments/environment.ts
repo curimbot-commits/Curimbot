@@ -1,4 +1,6 @@
 export const environment = {
-  production: true,
-  apiUrl: 'https://api.curimbot.com',
+  production: false,
+  /*apiUrl: 'https://api.curimbot.com',*/
+  apiUrl: '',
+  dashboardRefreshInterval: 30000,
 };

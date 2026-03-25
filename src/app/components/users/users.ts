@@ -2,7 +2,7 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AlertConfig, AlertService } from '@shared/components/alert/alert.service';
 import { LucideAngularModule } from 'lucide-angular';
@@ -54,6 +54,7 @@ export class Users implements OnInit, OnDestroy {
   private alertService = inject(AlertService);
   private userService = inject(UserService);
   private translate = inject(TranslateService);
+  private cdr = inject(ChangeDetectorRef);
 
   constructor() { }
 
@@ -81,11 +82,13 @@ export class Users implements OnInit, OnDestroy {
         next: (users: User[]) => {
           this.users = users.map(user => this.convertToUserExtended(user));
           this.isLoading = false;
+          this.cdr.markForCheck();
           this.loadUserDocuments();
         },
         error: () => {
           this.alertService.error(this.translate.instant('users.alerts.error'), this.translate.instant('users.alerts.loadErrorDesc'), 5000);
           this.isLoading = false;
+          this.cdr.markForCheck();
         }
       });
   }
@@ -115,20 +118,18 @@ export class Users implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (documents: DocumentWithMetadata[]) => {
-          this.users.forEach(user => {
+          // Crear referencias nuevas para que OnPush detecte los cambios
+          this.users = this.users.map(user => {
             const userDocs = documents.filter(doc => doc.user_id === user.id);
-            user.documents = userDocs;
-            user.documentsCount = userDocs.length;
+            const lastActivity = userDocs.length > 0
+              ? this.formatLastActivity(userDocs.reduce((latest, current) =>
+                  new Date(current.upload_date) > new Date(latest.upload_date) ? current : latest
+                ).upload_date)
+              : this.translate.instant('users.status.noActivity');
 
-            if (userDocs.length > 0) {
-              const lastDoc = userDocs.reduce((latest, current) =>
-                new Date(current.upload_date) > new Date(latest.upload_date) ? current : latest
-              );
-              user.lastActivity = this.formatLastActivity(lastDoc.upload_date);
-            } else {
-              user.lastActivity = this.translate.instant('users.status.noActivity');
-            }
+            return { ...user, documents: userDocs, documentsCount: userDocs.length, lastActivity };
           });
+          this.cdr.markForCheck();
         },
         error: () => {
           // Silencioso: no afecta funcionalidad principal

@@ -7,17 +7,30 @@
         </div>
 
         <!-- Área de carga de archivos -->
-        <div class="bg-gray-50/50 border-2 border-dashed border-gray-300 rounded-xl p-6 sm:p-10 text-center mb-6 sm:mb-8 cursor-pointer transition-all duration-300 hover:border-[#02ab74] hover:bg-[#02ab74]/5"
-            [class.border-[#02ab74]]="isDragOver" [class.bg-[#02ab74]/10]="isDragOver" (dragover)="onDragOver($event)"
-            (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+        <div class="bg-gray-50/50 border-2 border-dashed rounded-xl p-6 sm:p-10 text-center mb-6 sm:mb-8 cursor-pointer transition-all duration-300"
+            [class.border-[#02ab74]]="isDragOver || isUploading"
+            [class.bg-[#02ab74]/10]="isDragOver || isUploading"
+            [class.border-gray-300]="!isDragOver && !isUploading"
+            [class.hover:border-[#02ab74]]="!isUploading"
+            [class.hover:bg-[#02ab74]/5]="!isUploading"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)">
 
             <div class="flex justify-center items-center mb-3 sm:mb-4">
-                <lucide-angular name="cloud-upload" class="w-12 h-12 sm:w-16 sm:h-16 text-[#02ab74]"></lucide-angular>
+                @if (isUploading) {
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-4 border-[#02ab74]/30 border-t-[#02ab74] animate-spin"></div>
+                } @else {
+                    <lucide-angular name="upload-cloud" class="w-12 h-12 sm:w-16 sm:h-16 text-[#02ab74] transition-transform duration-300" [class.scale-110]="isDragOver"></lucide-angular>
+                }
             </div>
-            <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">{{ 'document.upload.dragDrop' | translate }}</h3>
+            <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">
+                {{ isUploading ? ('document.upload.uploading' | translate) : ('document.upload.dragDrop' | translate) }}
+            </h3>
             <p class="text-gray-500 mb-3 sm:mb-4 text-sm sm:text-base">{{ 'document.upload.or' | translate }}</p>
             <button
-                class="w-full sm:w-auto bg-[#02ab74] text-white border-none py-2.5 sm:py-3 px-6 rounded-lg cursor-pointer text-sm sm:text-base font-semibold inline-flex items-center justify-center gap-2 transition-transform hover:scale-105 shadow-md"
+                [disabled]="isUploading"
+                class="w-full sm:w-auto bg-[#02ab74] text-white border-none py-2.5 sm:py-3 px-6 rounded-lg cursor-pointer text-sm sm:text-base font-semibold inline-flex items-center justify-center gap-2 transition-transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 (click)="openFileInput()">
                 <lucide-angular name="folder-open" class="w-5 h-5"></lucide-angular>
                 {{ 'document.upload.select' | translate }}
@@ -25,6 +38,53 @@
             <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" multiple />
             <p class="mt-4 text-xs sm:text-sm text-gray-500">{{ 'document.upload.supported' | translate }}</p>
         </div>
+
+        <!-- Panel de progreso de subida -->
+        @if (isUploading && uploadQueue.length > 0) {
+            <div class="mb-6 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden animate-[fadeIn_0.3s_ease]">
+                <div class="px-5 py-3 border-b border-gray-100 flex items-center gap-2 bg-gray-50">
+                    <div class="w-2 h-2 rounded-full bg-[#02ab74] animate-pulse"></div>
+                    <span class="text-sm font-semibold text-gray-700">Subiendo archivos...</span>
+                    <span class="ml-auto text-xs text-gray-400">{{ uploadQueue.length }} archivo(s)</span>
+                </div>
+                <ul class="divide-y divide-gray-50">
+                    @for (item of uploadQueue; track item.name) {
+                        <li class="px-5 py-3 flex items-center gap-3">
+                            <!-- Status icon -->
+                            @if (item.status === 'done') {
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                    <lucide-angular name="check-circle-2" class="w-4 h-4 text-green-500"></lucide-angular>
+                                </div>
+                            } @else if (item.status === 'error') {
+                                <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                                    <lucide-angular name="x-circle" class="w-4 h-4 text-red-500"></lucide-angular>
+                                </div>
+                            } @else {
+                                <div class="w-8 h-8 rounded-full bg-[#02ab74]/10 flex items-center justify-center flex-shrink-0">
+                                    <div class="w-4 h-4 rounded-full border-2 border-[#02ab74]/30 border-t-[#02ab74] animate-spin"></div>
+                                </div>
+                            }
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">{{ item.name }}</p>
+                                <div class="mt-1.5 h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                                    <div class="h-full rounded-full transition-all duration-300"
+                                        [style.width.%]="item.progress"
+                                        [class.bg-[#02ab74]]="item.status !== 'error'"
+                                        [class.bg-red-500]="item.status === 'error'">
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-xs font-medium flex-shrink-0"
+                                [class.text-[#02ab74]]="item.status === 'done'"
+                                [class.text-gray-400]="item.status === 'uploading'"
+                                [class.text-red-400]="item.status === 'error'">
+                                {{ item.progress | number:'1.0-0' }}%
+                            </span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
 
         <!-- Filtros de documentos -->
         <div class="grid grid-cols-2 sm:flex flex-wrap gap-2 sm:gap-4 mb-6">
@@ -54,13 +114,26 @@
             </button>
         </div>
 
-        @if (documents && documents.length > 0) {
+        <!-- Skeleton loaders durante carga inicial -->
+        @if (loading && documents.length === 0) {
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                @if (loading) {
-                    <div class="col-span-full text-center py-8">
-                        <i class="fas fa-spinner fa-spin"></i> {{ 'document.list.loading' | translate }}
+                @for (s of [1,2,3,4]; track s) {
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md flex flex-col">
+                        <div class="h-14 bg-gray-200 animate-pulse"></div>
+                        <div class="p-4 flex-grow space-y-2">
+                            <div class="h-4 bg-gray-200 rounded animate-pulse"></div>
+                            <div class="h-3 bg-gray-100 rounded animate-pulse w-3/4"></div>
+                        </div>
+                        <div class="py-3 px-4 border-t border-gray-100 flex justify-end gap-4">
+                            <div class="w-6 h-6 bg-gray-100 rounded-full animate-pulse"></div>
+                            <div class="w-6 h-6 bg-gray-100 rounded-full animate-pulse"></div>
+                            <div class="w-6 h-6 bg-gray-100 rounded-full animate-pulse"></div>
+                        </div>
                     </div>
                 }
+            </div>
+        } @else if (documents && documents.length > 0) {
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 @for (document of (documents ? paginatedDocuments : []); track document.id) {
                     <div class="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 flex flex-col hover:-translate-y-1 hover:shadow-lg">
                         <div class="p-4 text-white flex items-center gap-2.5" [ngClass]="{
@@ -68,59 +141,54 @@
                         'bg-blue-600': document.file_type === 'docx',
                         'bg-green-600': document.file_type === 'txt'
                     }">
-                    <i class="text-2xl" [ngClass]="getDocumentIconClassFromFileType(document.file_type)"></i>
-                    <h4 class="font-semibold">{{ document.file_type.toUpperCase() }}</h4>
-                </div>
-
-                <div class="p-4 flex-grow text-gray-800">
-                    <h5 class="font-semibold mb-2 truncate" [title]="document.filename">{{ document.filename
-                        }}</h5>
-                    <div class="flex justify-between text-gray-600 text-sm">
-                        @if (document?.size) {
-                            <span>{{ formatBytesToMB(document.size) }}</span>
-                        }
-                        <span>{{ document.created_at | date:'short':' -0500' }}</span>
+                        <i class="text-2xl" [ngClass]="getDocumentIconClassFromFileType(document.file_type)"></i>
+                        <h4 class="font-semibold">{{ document.file_type.toUpperCase() }}</h4>
                     </div>
-                </div>
 
-                <div class="py-3 px-4 flex justify-end gap-4 border-t border-gray-200">
-                    <button
-                        class="p-2 -m-2 bg-transparent border-none text-gray-400 cursor-pointer text-lg transition-colors duration-300 hover:text-[#02ab74]"
-                        (click)="viewDocument(document)"
-                        [title]="viewedDocuments.has(document.id) ? ('document.list.viewed' | translate) : ('document.list.view' | translate)">
-                        <i class="fas fa-eye" [ngClass]="viewedDocuments.has(document.id) ? 'text-green-500' : ''"></i>
-                    </button>
-                    <button
-                        class="p-2 -m-2 bg-transparent border-none text-gray-400 cursor-pointer text-lg transition-colors duration-300 hover:text-[#02ab74]"
-                        (click)="downloadDocument(document)"
-                        [title]="'document.list.download' | translate">
-                        <i class="fas fa-download"></i>
-                    </button>
-                    <button
-                        class="p-2 -m-2 bg-transparent border-none text-gray-400 cursor-pointer text-lg transition-colors duration-300 hover:text-red-500"
-                        (click)="deleteDocument(document)"
-                        [title]="'document.list.delete' | translate">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </div>
+                    <div class="p-4 flex-grow text-gray-800">
+                        <h5 class="font-semibold mb-2 truncate" [title]="document.filename">{{ document.filename }}</h5>
+                        <div class="flex justify-between text-gray-600 text-sm">
+                            @if (document?.size) {
+                                <span>{{ formatBytesToMB(document.size) }}</span>
+                            }
+                            <span>{{ document.created_at | date:'short':' -0500' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="py-3 px-4 flex justify-end gap-4 border-t border-gray-200">
+                        <button
+                            class="p-2 -m-2 bg-transparent border-none text-gray-400 cursor-pointer text-lg transition-colors duration-300 hover:text-[#02ab74]"
+                            (click)="viewDocument(document)"
+                            [title]="viewedDocuments.has(document.id) ? ('document.list.viewed' | translate) : ('document.list.view' | translate)">
+                            <i class="fas fa-eye" [ngClass]="viewedDocuments.has(document.id) ? 'text-green-500' : ''"></i>
+                        </button>
+                        <button
+                            class="p-2 -m-2 bg-transparent border-none text-gray-400 cursor-pointer text-lg transition-colors duration-300 hover:text-[#02ab74]"
+                            (click)="downloadDocument(document)"
+                            [title]="'document.list.download' | translate">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button
+                            class="p-2 -m-2 bg-transparent border-none text-gray-400 cursor-pointer text-lg transition-colors duration-300 hover:text-red-500"
+                            (click)="deleteDocument(document)"
+                            [title]="'document.list.delete' | translate">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
                     </div>
                 }
             </div>
-        } @else {
+        } @else if (!loading) {
             <div class="p-12 border border-gray-200 rounded-xl text-center mt-10 flex flex-col items-center justify-center">
                 <div class="text-center">
                     <lucide-angular name="Inbox" class="w-12 h-12 text-gray-400 mx-auto mb-2"></lucide-angular>
-                    <p class="text-gray-500 font-medium">
-                        {{ loading ? ('document.list.loading' | translate) : ('document.list.noDocs' | translate) }}
+                    <p class="text-gray-500 font-medium">{{ 'document.list.noDocs' | translate }}</p>
+                    <p class="text-sm text-gray-400 mt-1">
+                        {{ activeFilter === 'all'
+                        ? ('document.list.uploadFirst' | translate)
+                        : ('document.list.noType' | translate) + ' ' + activeFilter.toUpperCase()
+                        }}
                     </p>
-                    @if (!loading) {
-                        <p class="text-sm text-gray-400 mt-1">
-                            {{ activeFilter === 'all'
-                            ? ('document.list.uploadFirst' | translate)
-                            : ('document.list.noType' | translate) + ' ' + activeFilter.toUpperCase()
-                            }}
-                        </p>
-                    }
                 </div>
             </div>
         }
@@ -150,6 +218,5 @@
             </nav>
         </div>
 
-        
     </section>
 </div>

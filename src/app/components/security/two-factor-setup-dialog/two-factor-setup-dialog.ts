@@ -178,8 +178,13 @@ export class TwoFactorSetupDialog implements OnChanges {
     this.closeDialog();
   }
 
-  handleCancel(): void {
-    if (confirm(this.translate.instant('security.alerts.cancelConfirm'))) {
+  async handleCancel(): Promise<void> {
+    const confirmed = await this.alertService.confirm(
+      this.translate.instant('alerts.confirm'),
+      this.translate.instant('security.alerts.cancelConfirm')
+    );
+
+    if (confirmed) {
       this.setupCancelled.emit();
       this.closeDialog();
     }

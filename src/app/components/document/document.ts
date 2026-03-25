@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { Auth as AuthService } from '../authentication/auth/auth';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { DocumentService } from '../../services/api/document.service';
 import { DocumentWithMetadata, Document } from '../../domain/models/document.model';
 import { Subject } from 'rxjs';
@@ -28,6 +26,7 @@ import {  AtheniaVoice } from '../athenia-voice/athenia-voice';
   imports: [
     RouterModule,
     CommonModule,
+    DecimalPipe,
     LucideAngularModule,
     TranslateModule,
   ],
@@ -45,6 +44,10 @@ export class DocumentComponent implements OnInit, OnDestroy {
   activeFilter: 'all' | 'pdf' | 'docx' | 'txt' = 'all';
   documents: DocumentWithMetadata[] = [];
   loading = false;
+
+  // Upload state
+  isUploading = false;
+  uploadQueue: { name: string; status: 'uploading' | 'done' | 'error'; progress: number }[] = [];
 
   currentPage = 0;
   itemsPerPage = 5;
@@ -93,29 +96,49 @@ export class DocumentComponent implements OnInit, OnDestroy {
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
+    this.startUpload(Array.from(input.files));
+    input.value = ''; // reset so same file can be re-selected
+  }
 
-    const files = Array.from(input.files);
-    this.alertService.info(this.translate.instant('document.alerts.uploading'), '', 3000);
+  private startUpload(files: File[]): void {
+    this.isUploading = true;
+    this.uploadQueue = files.map(f => ({ name: f.name, status: 'uploading', progress: 0 }));
+
+    // Simulate per-file progress animation
+    this.uploadQueue.forEach((item, idx) => {
+      const interval = setInterval(() => {
+        item.progress = Math.min(item.progress + Math.random() * 18 + 5, 90);
+      }, 200 + idx * 80);
+
+      setTimeout(() => clearInterval(interval), 2000 + idx * 300);
+    });
 
     this.loading = true;
     this.documentService
       .uploadDocuments(files)
       .pipe(
         takeUntil(this.destroy$),
-        switchMap(() => new Promise(resolve => setTimeout(resolve, 1500))),
+        switchMap(() => new Promise(resolve => setTimeout(resolve, 800))),
         switchMap(() => this.documentService.listDocuments()),
-        finalize(() => this.loading = false)
+        finalize(() => {
+          this.loading = false;
+        })
       )
       .subscribe({
         next: (response) => {
           this.documents = response.items;
+          this.uploadQueue.forEach(q => { q.progress = 100; q.status = 'done'; });
           this.alertService.success(this.translate.instant('document.alerts.uploadSuccess'), '');
+          setTimeout(() => { this.isUploading = false; this.uploadQueue = []; }, 2000);
         },
         error: () => {
+          this.uploadQueue.forEach(q => { q.status = 'error'; });
           this.alertService.error(this.translate.instant('document.alerts.uploadError'), '');
+          setTimeout(() => { this.isUploading = false; this.uploadQueue = []; }, 3000);
         },
       });
   }
+
 
   // ==================== DRAG & DROP ====================
 
@@ -138,30 +161,8 @@ export class DocumentComponent implements OnInit, OnDestroy {
   onDrop(event: DragEvent): void {
     event.preventDefault();
     this.isDragOver = false;
-
     if (!event.dataTransfer?.files.length) return;
-
-    const files = Array.from(event.dataTransfer.files);
-    this.alertService.info(this.translate.instant('document.alerts.uploading'), '');
-
-    this.loading = true;
-    this.documentService
-      .uploadDocuments(files)
-      .pipe(
-        takeUntil(this.destroy$),
-        switchMap(() => new Promise(resolve => setTimeout(resolve, 1500))),
-        switchMap(() => this.documentService.listDocuments()),
-        finalize(() => this.loading = false)
-      )
-      .subscribe({
-        next: (response) => {
-          this.documents = response.items;
-          this.alertService.success(this.translate.instant('document.alerts.uploadSuccess'), '');
-        },
-        error: () => {
-          this.alertService.error(this.translate.instant('document.alerts.uploadError'), '');
-        },
-      });
+    this.startUpload(Array.from(event.dataTransfer.files));
   }
 
   // ==================== CARGA Y FILTRO ====================

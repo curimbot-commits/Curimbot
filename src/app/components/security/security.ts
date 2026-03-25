@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @angular-eslint/prefer-inject */
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from "lucide-angular";
@@ -83,7 +83,8 @@ export class Security implements OnInit, OnDestroy {
     private userService: UserService,
     private preferencesService: UserPreferencesService,
     private alertService: AlertService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   // ==================== HOOKS DEL CICLO DE VIDA ====================
@@ -119,9 +120,11 @@ export class Security implements OnInit, OnDestroy {
         next: (prefs) => {
           this.emailNotifications = prefs.email_notifications;
           this.loginAlerts = prefs.login_alerts ?? true;
+          this.cdr.markForCheck();
         },
         error: () => {
           this.alertService.error(this.translate.instant('security.alerts.loadPrefsError'), '', 3000);
+          this.cdr.markForCheck();
         }
       });
 
@@ -138,9 +141,11 @@ export class Security implements OnInit, OnDestroy {
       .subscribe({
         next: (user: any) => {
           this.twoFactorEnabled = user.two_factor_enabled ?? false;
+          this.cdr.markForCheck();
         },
         error: () => {
           this.alertService.error(this.translate.instant('security.alerts.check2FAError'), '', 3000);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -158,10 +163,12 @@ export class Security implements OnInit, OnDestroy {
         next: (sessions: ActiveSession[]) => {
           this.activeSessions = sessions;
           this.isLoadingSessions = false;
+          this.cdr.markForCheck();
         },
         error: () => {
           this.isLoadingSessions = false;
           this.alertService.error(this.translate.instant('security.alerts.loadSessionsError'), '', 3000);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -226,6 +233,7 @@ export class Security implements OnInit, OnDestroy {
     if (enabled) {
       this.showSetupDialog = true;
       this.twoFactorEnabled = false;
+      this.cdr.markForCheck();
     } else {
       const confirmed = await this.alertService.confirm(
         this.translate.instant('security.alerts.disable2FATitle'),
@@ -264,6 +272,7 @@ export class Security implements OnInit, OnDestroy {
     this.twoFactorEnabled = true;
     this.showSetupDialog = false;
     this.alertService.success(this.translate.instant('security.alerts.enable2FASuccess'), '', 3000);
+    this.cdr.markForCheck();
   }
 
   /**
@@ -273,6 +282,7 @@ export class Security implements OnInit, OnDestroy {
   onSetupCancelled(): void {
     this.showSetupDialog = false;
     this.twoFactorEnabled = false;
+    this.cdr.markForCheck();
     // Re-verificar con el servidor para estar 100% seguros
     this.check2FAStatus();
   }

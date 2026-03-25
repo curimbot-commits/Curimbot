@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 
-import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, SecurityContext } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { Subject, takeUntil } from 'rxjs';
 import { AtheniaService, ConversationMessage, AtheniaQueryRequest, AtheniaResponse } from 'src/app/services/api/athenia.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-athenia-chat',
@@ -20,6 +21,7 @@ export class AtheniaChat implements OnInit, OnDestroy {
 
   private atheniaService = inject(AtheniaService);
   private translate = inject(TranslateService);
+  private sanitizer = inject(DomSanitizer);
   private destroy$ = new Subject<void>();
 
   messages: ConversationMessage[] = [];
@@ -149,34 +151,73 @@ export class AtheniaChat implements OnInit, OnDestroy {
 
   /**
    * Formatea contenido Markdown básico a HTML
-   * Angular sanitiza automáticamente cuando se usa [innerHTML]
+   * Se usa DomSanitizer para permitir que las clases de Tailwind funcionen
   **/
-  formatContent(content: string): string {
+  formatContent(content: string): SafeHtml {
     if (!content) return '';
-    
-    // Escapar HTML básico para seguridad inicial y visualizar tags
+
+    // 1. Escapar HTML básico
     let html = content
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 
-    // Negritas: **texto** or __texto__
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+    // 2. Bloques de código (antes de cualquier otra transformación)
+    html = html.replace(/```([\s\S]*?)```/g, '<pre class="bg-gray-100 rounded-lg p-3 my-2 text-xs overflow-x-auto font-mono"><code>$1</code></pre>');
+    html = html.replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono text-[#02ab74]">$1</code>');
 
-    // Itálica: *texto* or _texto_
-    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+    // 3. Encabezados
+    html = html.replace(/^### (.+)$/gm, '<h3 class="text-sm font-bold text-[#070025] mt-3 mb-1">$1</h3>');
+    html = html.replace(/^## (.+)$/gm, '<h2 class="text-base font-bold text-[#070025] mt-4 mb-1.5 border-b border-gray-100 pb-1">$1</h2>');
+    html = html.replace(/^# (.+)$/gm, '<h1 class="text-lg font-bold text-[#070025] mt-4 mb-2">$1</h1>');
 
-    // Listas: - item or * item
-    html = html.replace(/^\s*[-*]\s+(.*)$/gm, '<li>$1</li>');
-    html = html.replace(/(<li>.*<\/li>)/gms, '<ul class="list-disc ml-4 my-2">$1</ul>');
+    // 4. Negritas e itálicas (en orden: primero ** para no interferir con *)
+    html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+    html = html.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
+    html = html.replace(/_([^_\n]+?)_/g, '<em>$1</em>');
 
-    // Saltos de línea
-    html = html.replace(/\n/g, '<br>');
+    // 5. Listas con soporte para anidación (2 niveles)
+    // Primero procesamos las listas: separamos bloques de lista del resto del texto
+    const lines = html.split('\n');
+    const result: string[] = [];
+    let inList = false;
+    let inSubList = false;
 
-    return html;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const isSubItem = /^\s{2,}[-*]\s+(.+)$/.exec(line);
+      const isItem    = /^\s*[-*]\s+(.+)$/.exec(line);
+
+      if (isSubItem) {
+        if (!inSubList) { result.push('<ul class="list-disc ml-8 my-1 space-y-0.5">'); inSubList = true; }
+        result.push(`<li class="text-sm leading-relaxed">${isSubItem[1]}</li>`);
+      } else if (isItem) {
+        if (inSubList) { result.push('</ul>'); inSubList = false; }
+        if (!inList) { result.push('<ul class="list-disc ml-5 my-2 space-y-1">'); inList = true; }
+        result.push(`<li class="text-sm leading-relaxed">${isItem[1]}</li>`);
+      } else {
+        if (inSubList) { result.push('</ul>'); inSubList = false; }
+        if (inList)    { result.push('</ul>'); inList = false; }
+        result.push(line);
+      }
+    }
+    if (inSubList) result.push('</ul>');
+    if (inList)    result.push('</ul>');
+
+    html = result.join('\n');
+
+    // 6. Saltos de línea: solo los que estén fuera de tags HTML
+    html = html.replace(/\n(?!<[/]?(ul|ol|li|h1|h2|h3|pre|code))/g, '<br>');
+    // Limpiar <br> redundantes justo antes/después de listas y encabezados
+    html = html.replace(/<br>(<\/?(?:ul|ol|li|h[123]|pre))/g, '$1');
+    html = html.replace(/(<\/(?:ul|ol|li|h[123]|pre)>)<br>/g, '$1');
+
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
+
+
 
   /**
    * Manejar Enter para enviar

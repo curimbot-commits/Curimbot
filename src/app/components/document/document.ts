@@ -280,7 +280,10 @@ export class DocumentComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (blob) => {
-          const url = window.URL.createObjectURL(blob);
+          // Asegurar que el Blob tenga el MIME type correcto para que el navegador lo abra en el visor
+          const mimeType = this.getMimeTypeFromFileType(doc.file_type);
+          const typedBlob = new Blob([blob], { type: mimeType });
+          const url = window.URL.createObjectURL(typedBlob);
           window.open(url, '_blank');
           this.viewedDocuments.add(+doc.id);
         },

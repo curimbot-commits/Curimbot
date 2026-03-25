@@ -24,6 +24,24 @@ import { map, catchError } from 'rxjs/operators';
  * El paso 2 detecta el caso donde el backend reinició (nueva SECRET_KEY,
  * blacklist limpia, etc.) y el token existe localmente pero ya no es válido.
  */
+const validateUserPermissions = (user: any, url: string, router: Router): boolean => {
+  // Verificar flujo 2FA pendiente
+  const pending2FA = sessionStorage.getItem('temp_2fa_auth');
+  if (
+    user.two_factor_enabled &&
+    pending2FA &&
+    url !== '/twoverification'
+  ) {
+    router.navigate(['/twoverification'], {
+      queryParams: { returnUrl: url },
+      replaceUrl: true,
+    });
+    return false;
+  }
+
+  return true;
+};
+
 const checkAuth = (url: string): Observable<boolean> => {
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -38,28 +56,20 @@ const checkAuth = (url: string): Observable<boolean> => {
     return of(false);
   }
 
-  // ── Paso 2: Verificar contra el backend ──────────────────────────
-  // Una sola request GET /auth/me para confirmar que el token
-  // sigue siendo válido en el servidor
+  // ── Paso 2: Verificar datos locales vs backend ──────────────────
+  const currentUser = authService.getCurrentUser();
+
+  // Si ya tenemos el usuario en memoria, permitimos la navegación inmediata.
+  // La integridad de la sesión se valida periódicamente o en el interceptor.
+  if (currentUser) {
+    return of(validateUserPermissions(currentUser, url, router));
+  }
+
+  // Si no hay usuario en memoria pero sí token, lo recuperamos del backend.
+  // Esto solo ocurre una vez por sesión o al recargar (F5).
   return authService.getUserProfile().pipe(
     map((user) => {
-      // Token válido en el backend ✅
-
-      // Verificar flujo 2FA pendiente
-      const pending2FA = sessionStorage.getItem('temp_2fa_auth');
-      if (
-        user.two_factor_enabled &&
-        pending2FA &&
-        url !== '/twoverification'
-      ) {
-        router.navigate(['/twoverification'], {
-          queryParams: { returnUrl: url },
-          replaceUrl: true,
-        });
-        return false;
-      }
-
-      return true;
+      return validateUserPermissions(user, url, router);
     }),
     catchError((err) => {
       // El backend rechazó el token:

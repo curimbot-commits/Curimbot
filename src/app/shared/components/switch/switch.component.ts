@@ -16,7 +16,7 @@ type OnChangeType = (value: any) => void;
   standalone: true,
   exportAs: 'zSwitch',
   template: `
-    <span class="flex items-center space-x-2" (mousedown)="onSwitchChange()">
+    <span class="flex items-center space-x-2" (click)="onSwitchChange()">
       <button
         [id]="zId() || uniqueId()"
         type="button"

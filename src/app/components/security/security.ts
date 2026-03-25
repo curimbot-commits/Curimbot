@@ -120,11 +120,11 @@ export class Security implements OnInit, OnDestroy {
         next: (prefs) => {
           this.emailNotifications = prefs.email_notifications;
           this.loginAlerts = prefs.login_alerts ?? true;
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         },
         error: () => {
           this.alertService.error(this.translate.instant('security.alerts.loadPrefsError'), '', 3000);
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         }
       });
 
@@ -141,11 +141,11 @@ export class Security implements OnInit, OnDestroy {
       .subscribe({
         next: (user: any) => {
           this.twoFactorEnabled = user.two_factor_enabled ?? false;
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         },
         error: () => {
           this.alertService.error(this.translate.instant('security.alerts.check2FAError'), '', 3000);
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         }
       });
   }
@@ -163,12 +163,12 @@ export class Security implements OnInit, OnDestroy {
         next: (sessions: ActiveSession[]) => {
           this.activeSessions = sessions;
           this.isLoadingSessions = false;
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         },
         error: () => {
           this.isLoadingSessions = false;
           this.alertService.error(this.translate.instant('security.alerts.loadSessionsError'), '', 3000);
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         }
       });
   }
@@ -233,7 +233,7 @@ export class Security implements OnInit, OnDestroy {
     if (enabled) {
       this.showSetupDialog = true;
       this.twoFactorEnabled = false;
-      this.cdr.markForCheck();
+      this.cdr.detectChanges();
     } else {
       const confirmed = await this.alertService.confirm(
         this.translate.instant('security.alerts.disable2FATitle'),
@@ -272,7 +272,7 @@ export class Security implements OnInit, OnDestroy {
     this.twoFactorEnabled = true;
     this.showSetupDialog = false;
     this.alertService.success(this.translate.instant('security.alerts.enable2FASuccess'), '', 3000);
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 
   /**
@@ -282,7 +282,7 @@ export class Security implements OnInit, OnDestroy {
   onSetupCancelled(): void {
     this.showSetupDialog = false;
     this.twoFactorEnabled = false;
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
     // Re-verificar con el servidor para estar 100% seguros
     this.check2FAStatus();
   }

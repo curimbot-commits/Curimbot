@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { Subject, takeUntil } from 'rxjs';
 import { AtheniaService, ConversationMessage, AtheniaQueryRequest, AtheniaResponse } from 'src/app/services/api/athenia.service';
+import { DocumentService } from 'src/app/services/api/document.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
@@ -20,6 +21,7 @@ export class AtheniaChat implements OnInit, OnDestroy {
   @ViewChild('questionInput') questionInput!: ElementRef;
 
   private atheniaService = inject(AtheniaService);
+  private documentService = inject(DocumentService);
   private translate = inject(TranslateService);
   private sanitizer = inject(DomSanitizer);
   private destroy$ = new Subject<void>();
@@ -29,6 +31,13 @@ export class AtheniaChat implements OnInit, OnDestroy {
   isLoading = false;
   isVisible = false;
   currentConversationId?: number;
+
+  // Sugerencias actualizadas
+  suggestions = [
+    { key: 'chat.suggestions.summary', query: '¿Me puedes dar un resumen de mis documentos?' },
+    { key: 'chat.suggestions.uninsurable', query: '¿Cuáles son los riesgos no asegurables?' },
+    { key: 'chat.suggestions.claim', query: '¿Cómo realizar un reclamo?' }
+  ];
 
   // Estadísticas
   atheniaStatus: any = {
@@ -227,5 +236,29 @@ export class AtheniaChat implements OnInit, OnDestroy {
       event.preventDefault();
       this.sendQuestion();
     }
+  }
+
+  /**
+   * Abre o descarga un documento fuente
+  **/
+  viewSource(docId: number): void {
+    this.documentService.downloadDocument(docId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (blob) => {
+          // Intentar determinar el tipo MIME si es posible (por defecto usamos PDF para visor si el backend no lo da)
+          // Nota: El backend suele devolver el blob con el tipo correcto si está configurado.
+          // Si no, podemos intentar obtener el metadato primero, pero para velocidad abrimos el blob directamente.
+          const url = window.URL.createObjectURL(blob);
+          window.open(url, '_blank');
+          
+          // Liberar memoria después de un tiempo
+          setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+        },
+        error: () => {
+          // Si falla, podríamos mostrar una alerta, pero por simplicidad logueamos
+          console.error('Error al abrir el documento fuente');
+        }
+      });
   }
 }

@@ -137,8 +137,8 @@
     "errorConsulting": "Error consultando a Curim.",
     "hints": {
       "hint1": "¿Qué beneficios tiene mi póliza?",
-      "hint2": "¿Cuáles son las exclusiones de salud?",
-      "hint3": "¿Cómo radicar un siniestro?"
+      "hint2": "¿Cuáles son los riesgos no asegurables?",
+      "hint3": "¿Cómo realizar un reclamo?"
     }
   },
   "settings": {
@@ -197,7 +197,7 @@
     }
   },
   "navbar": {
-    "documents": "Documentos",
+    "documents": "Documentos de referencia",
     "search": "Búsqueda",
     "dashboard": "Dashboard",
     "users": "Usuarios",
@@ -217,7 +217,7 @@
     }
   },
   "document": {
-    "title": "Gestión de Documentos",
+    "title": "Documentos de referencia",
     "subtitle": "Visualiza, carga y organiza tus documentos",
     "upload": {
       "dragDrop": "Arrastra y suelta tus archivos aquí",
@@ -274,8 +274,8 @@
     "you": "Tú",
     "suggestions": {
       "summary": "¿Me puedes dar un resumen de mis documentos?",
-      "dates": "¿Cuáles son las fechas clave del último proceso?",
-      "status": "¿Cuál es el estado de mis trámites?"
+      "uninsurable": "¿Cuáles son los riesgos no asegurables?",
+      "claim": "¿Cómo realizar un reclamo?"
     },
     "close": "Cerrar chat",
     "emptyTitle": "¿En qué puedo ayudarte?",

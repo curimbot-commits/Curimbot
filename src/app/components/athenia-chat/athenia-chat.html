@@ -98,12 +98,23 @@
                     <div
                       style="margin-top:10px; padding-top:10px; border-top:1px solid #f1f5f9;">
                       <div class="flex flex-wrap gap-2">
-                        @for (source of message.sources; track source) {
-                          <button (click)="viewSource(source)"
-                            class="px-2 py-1 bg-white/50 border border-gray-200 rounded text-[10px] font-medium text-gray-500 hover:bg-[#02ab74]/10 hover:text-[#02ab74] hover:border-[#02ab74]/30 transition-all cursor-pointer flex items-center gap-1">
-                            <lucide-angular name="file-text" class="w-3 h-3"></lucide-angular>
-                            ID: {{ source }}
-                          </button>
+                        @if (message.sources_info && message.sources_info.length > 0) {
+                          @for (source of message.sources_info; track source.document_id) {
+                            <button (click)="viewSource(source.document_id)"
+                              class="px-2 py-1 bg-white/50 border border-gray-200 rounded text-[10px] font-medium text-gray-500 hover:bg-[#02ab74]/10 hover:text-[#02ab74] hover:border-[#02ab74]/30 transition-all cursor-pointer flex items-center gap-1 max-w-[150px] truncate"
+                              [title]="source.filename">
+                              <lucide-angular name="file-text" class="w-3 h-3"></lucide-angular>
+                              {{ source.filename }}
+                            </button>
+                          }
+                        } @else if (message.sources && message.sources.length > 0) {
+                          @for (source of message.sources; track source) {
+                            <button (click)="viewSource(source)"
+                              class="px-2 py-1 bg-white/50 border border-gray-200 rounded text-[10px] font-medium text-gray-500 hover:bg-[#02ab74]/10 hover:text-[#02ab74] hover:border-[#02ab74]/30 transition-all cursor-pointer flex items-center gap-1">
+                              <lucide-angular name="file-text" class="w-3 h-3"></lucide-angular>
+                              ID: {{ source }}
+                            </button>
+                          }
                         }
                       </div>
                     </div>

@@ -17,12 +17,23 @@ export interface AtheniaQueryRequest {
 }
 
 /**
+ * Información detallada de fuente.
+ */
+export interface AtheniaSourceInfo {
+  document_id: number;
+  filename: string;
+  snippet?: string;
+  relevance_score?: number;
+}
+
+/**
  * Respuesta de ATHENIA.
  */
 export interface AtheniaResponse {
   answer: string;
   confidence: number;
   sources: number[];
+  sources_info?: AtheniaSourceInfo[];
   from_cache: boolean;
   processing_time_ms: number;
   conversation_id: number;
@@ -50,6 +61,7 @@ export interface ConversationMessage {
   content: string;
   timestamp: string;
   sources?: number[];
+  sources_info?: AtheniaSourceInfo[];
   confidence?: number;
   from_cache?: boolean;
 }

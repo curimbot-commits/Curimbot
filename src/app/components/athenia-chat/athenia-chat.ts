@@ -121,6 +121,7 @@ export class AtheniaChat implements OnInit, OnDestroy {
             content: response.answer,
             timestamp: new Date().toISOString(),
             sources: response.sources,
+            sources_info: response.sources_info,
             confidence: response.confidence,
             from_cache: response.from_cache
           };

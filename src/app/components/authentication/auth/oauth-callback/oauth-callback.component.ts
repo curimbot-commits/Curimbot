@@ -89,7 +89,7 @@ export class OAuthCallbackComponent implements OnInit {
         this.authService.setOAuthCookies(token, refresh).subscribe({
           next: (user) => {
             const role = user.role;
-            const destination = role === 'admin' ? '/dashboard' : '/document';
+            const destination = role === 'admin' ? '/app/dashboard' : '/app/document';
 
             setTimeout(() => {
               this.router.navigateByUrl(destination);

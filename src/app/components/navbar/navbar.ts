@@ -74,14 +74,14 @@ export class Navbar implements OnInit, OnDestroy {
   // ==================================================================
 
   private readonly BASE_NAV_ITEMS: NavItem[] = [
-    { id: 'document', icon: 'Folder', label: 'navbar.documents', route: '/document', roles: ['user', 'admin'] },
-    { id: 'search', icon: 'Search', label: 'navbar.search', route: '/search', roles: ['user', 'admin'] },
-    { id: 'dashboard', icon: 'LayoutDashboard', label: 'navbar.dashboard', route: '/dashboard', roles: ['admin'] },
-    { id: 'users', icon: 'Users', label: 'navbar.users', route: '/users', roles: ['admin'] },
-    { id: 'history', icon: 'History', label: 'navbar.history', route: '/history', roles: ['admin'] },
-    { id: 'settings', icon: 'Settings', label: 'navbar.settings', route: '/settings', roles: ['user', 'admin'] },
-    { id: 'security', icon: 'Shield', label: 'navbar.security', route: '/security', roles: ['user', 'admin'] },
-    { id: 'voice', icon: 'Bot', label: 'navbar.curim', route: '/voice', roles: ['user', 'admin'] },
+    { id: 'document', icon: 'Folder', label: 'navbar.documents', route: '/app/document', roles: ['user', 'admin'] },
+    { id: 'search', icon: 'Search', label: 'navbar.search', route: '/app/search', roles: ['user', 'admin'] },
+    { id: 'dashboard', icon: 'LayoutDashboard', label: 'navbar.dashboard', route: '/app/dashboard', roles: ['admin'] },
+    { id: 'users', icon: 'Users', label: 'navbar.users', route: '/app/users', roles: ['admin'] },
+    { id: 'history', icon: 'History', label: 'navbar.history', route: '/app/history', roles: ['admin'] },
+    { id: 'settings', icon: 'Settings', label: 'navbar.settings', route: '/app/settings', roles: ['user', 'admin'] },
+    { id: 'security', icon: 'Shield', label: 'navbar.security', route: '/app/security', roles: ['user', 'admin'] },
+    { id: 'voice', icon: 'Bot', label: 'navbar.curim', route: '/app/voice', roles: ['user', 'admin'] },
   ];
 
   
@@ -174,9 +174,8 @@ export class Navbar implements OnInit, OnDestroy {
 
   /** Actualiza el item activo según la URL actual */
   private updateActiveItem(url: string): void {
-    const firstSegment = url.split('/')[1] || '';
     const matchedItem = this.visibleNavItems.find(item =>
-      item.route === `/${firstSegment}` || item.id === firstSegment
+      url.startsWith(item.route) || url.includes(`/${item.id}`)
     );
 
     this.activeItem = matchedItem?.id || (this.visibleNavItems[0]?.id ?? '');
@@ -185,7 +184,7 @@ export class Navbar implements OnInit, OnDestroy {
   /** Redirige a ruta por defecto según rol */
   private redirectToDefaultRoute(): void {
     if (!this.user) return;
-    const defaultRoute = this.user.role === 'admin' ? '/dashboard' : '/document';
+    const defaultRoute = this.user.role === 'admin' ? '/app/dashboard' : '/app/document';
     this.router.navigate([defaultRoute]);
   }
 

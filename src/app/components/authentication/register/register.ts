@@ -228,7 +228,7 @@ export class Register implements OnInit {
     this.alertService.success(this.translate.instant('register.success.registerSuccess'), '');
 
     setTimeout(() => {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/app/document']);
     }, 2000);
   }
 

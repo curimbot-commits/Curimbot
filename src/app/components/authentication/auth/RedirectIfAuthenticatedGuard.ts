@@ -18,7 +18,7 @@ export const redirectIfAuthenticatedGuard: CanActivateFn = (): Observable<boolea
   if (!currentUser) {
     return authService.getUserProfile().pipe(
       map((userProfile) => {
-        const defaultRoute = userProfile.role === 'admin' ? '/dashboard' : '/document';
+        const defaultRoute = userProfile.role === 'admin' ? '/app/dashboard' : '/app/document';
         return router.createUrlTree([defaultRoute]);
       }),
       catchError(() => {
@@ -28,6 +28,7 @@ export const redirectIfAuthenticatedGuard: CanActivateFn = (): Observable<boolea
     );
   }
 
-  const defaultRoute = currentUser.role === 'admin' ? '/dashboard' : '/document';
+  const defaultRoute = currentUser.role === 'admin' ? '/app/dashboard' : '/app/document';
   return router.createUrlTree([defaultRoute]);
 };
+

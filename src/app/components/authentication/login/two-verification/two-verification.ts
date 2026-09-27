@@ -154,7 +154,9 @@ export class TwoVerification implements OnInit, OnDestroy {
       if (this.returnUrl) {
         this.router.navigateByUrl(this.returnUrl);
       } else {
-        this.router.navigate(['/app/dashboard']);
+        const user = this.authService.getCurrentUser();
+        const defaultRoute = user?.role === 'admin' ? '/app/dashboard' : '/app/document';
+        this.router.navigate([defaultRoute]);
       }
     }, 500);
   }

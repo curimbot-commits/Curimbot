@@ -12,6 +12,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { ThemeService } from 'src/app/services/theme/theme.service';
 import { EyeTrackerComponent } from '../Robot/eye-tracker.component';
+import { Auth } from 'src/app/components/authentication/auth/auth';
 
 interface CompanyLink {
   path: string;
@@ -36,6 +37,7 @@ export class HeaderComponent {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
   private translate = inject(TranslateService);
+  private authService = inject(Auth);
 
   /** Servicio de tema expuesto al template */
   readonly theme = inject(ThemeService);
@@ -121,6 +123,12 @@ export class HeaderComponent {
   }
 
   goToLogin(): void {
-    this.router.navigate(['/login']);
+    if (this.authService.isAuthenticated()) {
+      const user = this.authService.getCurrentUser();
+      const defaultRoute = user?.role === 'admin' ? '/app/dashboard' : '/app/document';
+      this.router.navigate([defaultRoute]);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 }

@@ -1,71 +1,79 @@
-import { Injectable, inject } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { Injectable, inject, signal, computed, PLATFORM_ID } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 
 export type AppTheme = 'light' | 'dark' | 'auto';
 
 const STORAGE_KEY = 'app-theme';
 
-/**
- * Servicio centralizado para gestionar el tema de la aplicación.
- * Aplica la clase `dark` al elemento <html> para que Tailwind CSS
- * y las variables CSS respondan correctamente.
- */
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private doc = inject(DOCUMENT);
-  private mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  private platformId = inject(PLATFORM_ID);
 
-  /** Tema actualmente guardado en el sistema */
+  /** Signal con el tema seleccionado por el usuario */
+  private themeSignal = signal<AppTheme>('light');
+
+  /** Signal reactivo: ¿está activo el modo oscuro? */
+  readonly isDark = computed(() => {
+    const t = this.themeSignal();
+    return t === 'dark' || (t === 'auto' && this.systemPrefersDark);
+  });
+
+  /** Icono listo para el header */
+  readonly themeIcon = computed(() => (this.isDark() ? 'sun' : 'moon'));
+
+  /** ¿El sistema prefiere dark? */
+  private systemPrefersDark = false;
+
+  /** Tema actual */
   get currentTheme(): AppTheme {
-    return (localStorage.getItem(STORAGE_KEY) as AppTheme) ?? 'light';
+    return this.themeSignal();
   }
 
   /**
-   * Inicializa el tema al arrancar la app.
-   * Debe llamarse desde APP_INITIALIZER o en el constructor del root.
+   * Inicializa el tema. Llamar desde APP_INITIALIZER
+   * o desde el constructor de AppComponent.
    */
   init(): void {
-    // Escuchar cambios del sistema para modo AUTO
-    this.mediaQuery.addEventListener('change', () => {
-      if (this.currentTheme === 'auto') {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    this.systemPrefersDark = media.matches;
+
+    // Escuchar cambios del sistema (solo afecta si theme === 'auto')
+    media.addEventListener('change', (e) => {
+      this.systemPrefersDark = e.matches;
+      if (this.themeSignal() === 'auto') {
         this.applyTheme('auto');
+        // forzamos recálculo del computed
+        this.themeSignal.set('auto');
       }
     });
-    // Aplicar el tema guardado
-    this.applyTheme(this.currentTheme);
+
+    // Leer preferencia guardada
+    const saved = (localStorage.getItem(STORAGE_KEY) as AppTheme) ?? 'auto';
+    this.setTheme(saved);
   }
 
-  /**
-   * Cambia y persiste el tema.
-   * @param theme 'light' | 'dark' | 'auto'
-   */
   setTheme(theme: AppTheme): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     localStorage.setItem(STORAGE_KEY, theme);
+    this.themeSignal.set(theme);
     this.applyTheme(theme);
   }
 
-  /**
-   * Aplica efectivamente el tema al DOM.
-   * Añade/quita la clase `dark` del elemento `<html>`.
-   */
-  applyTheme(theme: AppTheme): void {
-    const html = this.doc.documentElement; // <html>
-    const isDark =
-      theme === 'dark' ||
-      (theme === 'auto' && this.mediaQuery.matches);
-
-    if (isDark) {
-      html.classList.add('dark');
-      // También en body para compatibilidad con CSS variables legacy
-      this.doc.body.classList.add('dark');
-    } else {
-      html.classList.remove('dark');
-      this.doc.body.classList.remove('dark');
-    }
+  /** Alterna entre light y dark (ignora auto) */
+  toggle(): void {
+    const next: AppTheme = this.isDark() ? 'light' : 'dark';
+    this.setTheme(next);
   }
 
-  /** Devuelve true si el modo oscuro está activo actualmente */
-  get isDark(): boolean {
-    return this.doc.documentElement.classList.contains('dark');
+  private applyTheme(theme: AppTheme): void {
+    const html = this.doc.documentElement;
+    const body = this.doc.body;
+    const dark = theme === 'dark' || (theme === 'auto' && this.systemPrefersDark);
+
+    html.classList.toggle('dark', dark);
+    body.classList.toggle('dark', dark);
   }
 }

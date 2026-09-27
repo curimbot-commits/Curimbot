@@ -1,212 +1,159 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/app/interceptors/auth.interceptor.ts
+// src/app/services/interceptors/auth.interceptor.ts
 
-import { Injectable, inject } from '@angular/core';
+import { inject } from '@angular/core';
 import {
-  HttpEvent,
-  HttpInterceptor,
-  HttpHandler,
-  HttpRequest,
+  HttpInterceptorFn,
   HttpErrorResponse,
+  HttpRequest,
+  HttpHandlerFn,
+  HttpEvent,
 } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, switchMap, filter, take, finalize } from 'rxjs/operators';
 import { Auth as AuthService } from '../../components/authentication/auth/auth';
 import { Router } from '@angular/router';
 
-/**
- * Interceptor HTTP para autenticación automática.
- *
- * Responsabilidades:
- *   - Agrega token JWT a todas las peticiones privadas
- *   - Intenta refrescar el token cuando el backend responde 401
- *   - Si el refresh falla → limpia sesión y redirige al login
- *   - Maneja 403 (sin permisos)
- *   - Evita múltiples refresh simultáneos con BehaviorSubject
- *
- * FIX aplicado:
- *   El forceLogout() anterior hacía POST /logout con un token ya inválido,
- *   lo que causaba otro 401 y un loop silencioso sin redirección.
- *   Ahora forceLogoutLocal() limpia la sesión localmente y redirige directo,
- *   sin hacer ninguna request adicional al backend.
- */
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
+// ==================================================================
+// ESTADO COMPARTIDO DEL REFRESH (vive a nivel de módulo)
+// ==================================================================
 
-  // ==================================================================
-  // ESTADO DE REFRESH
-  // ==================================================================
+let isRefreshing = false;
+const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
-  private isRefreshing = false;
-  private refreshTokenSubject = new BehaviorSubject<string | null>(null);
+// ==================================================================
+// ENDPOINTS PÚBLICOS
+// ==================================================================
 
-  // ==================================================================
-  // SERVICIOS
-  // ==================================================================
+const PUBLIC_ENDPOINTS = [
+  '/auth/login',
+  '/auth/signup',
+  '/auth/login-with-2fa',
+  '/auth/health',
+  '/auth/google/',
+  '/auth/github/',
+  '/auth/oauth/set-cookies',
+];
 
-  private authService = inject(AuthService);
-  private router = inject(Router);
+function isPublicEndpoint(url: string): boolean {
+  return PUBLIC_ENDPOINTS.some((endpoint) => url.includes(endpoint));
+}
 
-  // ==================================================================
-  // ENDPOINTS PÚBLICOS
-  // No se agrega Authorization header en estas rutas
-  // ==================================================================
+// ==================================================================
+// INTERCEPTOR FUNCIONAL
+// ==================================================================
 
-  private readonly PUBLIC_ENDPOINTS = [
-    '/auth/login',
-    '/auth/signup',
-    '/auth/login-with-2fa',
-    '/auth/health',
-    '/auth/google/',    // OAuth Google — no requiere token
-    '/auth/github/',    // OAuth GitHub — no requiere token
-    '/auth/oauth/set-cookies',  // ← endpoint para setear cookies tras OAuth
-  ];
+export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  // ==================================================================
-  // INTERCEPTOR PRINCIPAL
-  // ==================================================================
+  // Saltar autenticación para endpoints públicos
+  if (isPublicEndpoint(req.url)) {
+    return next(req);
+  }
 
-  intercept(
-    req: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
+  const authReq = req.clone({ withCredentials: true });
 
-    // Saltar autenticación para endpoints públicos
-    if (this.isPublicEndpoint(req.url)) {
-      return next.handle(req);
-    }
-
-    // En lugar de enviar un token manual (Bearer), permitimos
-    // que el navegador adjunte las cookies HttpOnly con withCredentials.
-    let authReq = req.clone({
-      withCredentials: true
-    });
-
-    return next.handle(authReq).pipe(
-      catchError((error) => {
-        if (error instanceof HttpErrorResponse) {
-          if (error.status === 401) {
-            return this.handle401Error(authReq, next);
-          }
-          if (error.status === 403) {
-            return this.handle403Error(error);
-          }
+  return next(authReq).pipe(
+    catchError((error) => {
+      if (error instanceof HttpErrorResponse) {
+        if (error.status === 401) {
+          return handle401Error(authReq, next, authService, router);
         }
-        return throwError(() => error);
-      })
+        if (error.status === 403) {
+          return handle403Error(error, authService, router);
+        }
+      }
+      return throwError(() => error);
+    })
+  );
+};
+
+// ==================================================================
+// MANEJO DE 401
+// ==================================================================
+
+function handle401Error(
+  request: HttpRequest<any>,
+  next: HttpHandlerFn,
+  authService: AuthService,
+  router: Router
+): Observable<HttpEvent<any>> {
+
+  if (isRefreshing) {
+    return waitForTokenRefresh(request, next);
+  }
+
+  isRefreshing = true;
+  refreshTokenSubject.next(null);
+
+  return authService.refreshToken().pipe(
+    switchMap(() => {
+      isRefreshing = false;
+      refreshTokenSubject.next('refreshed');
+      return next(request.clone({ withCredentials: true }));
+    }),
+    catchError((err) => {
+      isRefreshing = false;
+      forceLogoutLocal(
+        authService,
+        router,
+        'Tu sesión ha expirado. Por favor inicia sesión nuevamente.'
+      );
+      return throwError(() => err);
+    }),
+    finalize(() => {
+      isRefreshing = false;
+    })
+  );
+}
+
+function waitForTokenRefresh(
+  request: HttpRequest<any>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<any>> {
+  return refreshTokenSubject.pipe(
+    filter((token) => token !== null),
+    take(1),
+    switchMap(() => next(request.clone({ withCredentials: true })))
+  );
+}
+
+// ==================================================================
+// MANEJO DE 403
+// ==================================================================
+
+function handle403Error(
+  error: HttpErrorResponse,
+  authService: AuthService,
+  router: Router
+): Observable<never> {
+  const currentUser = authService.getCurrentUser();
+  if (!currentUser || !currentUser.role) {
+    forceLogoutLocal(
+      authService,
+      router,
+      'Sesión inválida. Por favor inicia sesión nuevamente.'
     );
   }
+  return throwError(() => error);
+}
 
-  // ==================================================================
-  // AUTENTICACIÓN
-  // ==================================================================
+// ==================================================================
+// CIERRE DE SESIÓN LOCAL
+// ==================================================================
 
-  /**
-   * Verifica si la URL es un endpoint público que no requiere token.
-   */
-  private isPublicEndpoint(url: string): boolean {
-    return this.PUBLIC_ENDPOINTS.some((endpoint) => url.includes(endpoint));
-  }
-
-  // ==================================================================
-  // MANEJO DE ERRORES
-  // ==================================================================
-
-  /**
-   * Maneja errores 401 (token expirado o inválido).
-   *
-   * Intenta refrescar el token con el refresh token almacenado.
-   * Si el refresh también falla (backend reiniciado, token revocado):
-   *   → Limpia sesión localmente y redirige al login.
-   *
-   * Evita múltiples llamadas simultáneas al endpoint de refresh.
-   */
-  private handle401Error(
-    request: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
-
-    if (this.isRefreshing) {
-      return this.waitForTokenRefresh(request, next);
-    }
-
-    this.isRefreshing = true;
-    this.refreshTokenSubject.next(null);
-
-    return this.authService.refreshToken().pipe(
-      switchMap(() => {
-        this.isRefreshing = false;
-        // Indicador genérico para desbloquear solicitudes en cola
-        this.refreshTokenSubject.next('refreshed');
-        return next.handle(request.clone({ withCredentials: true }));
-      }),
-      catchError((err) => {
-        this.isRefreshing = false;
-        // FIX: No llamar a /logout con token inválido (causaba loop 401).
-        // Limpiar localmente y redirigir directo al login.
-        this.forceLogoutLocal(
-          'Tu sesión ha expirado. Por favor inicia sesión nuevamente.'
-        );
-        return throwError(() => err);
-      }),
-      finalize(() => {
-        this.isRefreshing = false;
-      })
-    );
-  }
-
-  /**
-   * Espera a que termine un refresh en progreso antes de reintentar.
-   * Evita que múltiples peticiones simultáneas llamen al refresh endpoint.
-   */
-  private waitForTokenRefresh(
-    request: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
-    return this.refreshTokenSubject.pipe(
-      filter((token) => token !== null),
-      take(1),
-      switchMap(() =>
-        next.handle(request.clone({ withCredentials: true }))
-      )
-    );
-  }
-
-  /**
-   * Maneja errores 403 (sin permisos suficientes).
-   * Si el usuario no tiene rol válido, fuerza el cierre de sesión.
-   */
-  private handle403Error(error: HttpErrorResponse): Observable<never> {
-    const currentUser = this.authService.getCurrentUser();
-    if (!currentUser || !currentUser.role) {
-      this.forceLogoutLocal('Sesión inválida. Por favor inicia sesión nuevamente.');
-    }
-    return throwError(() => error);
-  }
-
-  // ==================================================================
-  // CIERRE DE SESIÓN
-  // ==================================================================
-
-  /**
-   * Cierra la sesión limpiando el estado local y redirige al login.
-   *
-   * FIX: A diferencia del forceLogout() anterior, este método NO hace
-   * POST /auth/logout al backend. Esa llamada requiere un token válido,
-   * y si llegamos aquí es porque el token ya fue rechazado (401/403).
-   * Hacer POST /logout con token inválido causaba otro 401 → loop silencioso.
-   *
-   * El POST /auth/logout solo debe usarse para logout VOLUNTARIO del usuario
-   * (cuando el token aún es válido y queremos invalidarlo en el backend).
-   */
-  private forceLogoutLocal(message?: string): void {
-    this.authService.clearSessionPublic();
-    this.router.navigate(['/login'], {
-      queryParams: {
-        expired: 'true',
-        message: message || 'Sesión expirada',
-      },
-      replaceUrl: true,
-    });
-  }
+function forceLogoutLocal(
+  authService: AuthService,
+  router: Router,
+  message?: string
+): void {
+  authService.clearSessionPublic();
+  router.navigate(['/login'], {
+    queryParams: {
+      expired: 'true',
+      message: message || 'Sesión expirada',
+    },
+    replaceUrl: true,
+  });
 }

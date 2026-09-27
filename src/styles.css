@@ -1,7 +1,9 @@
-
 @import "tailwindcss";
-@import "tailwindcss/utilities";
 @import "@fortawesome/fontawesome-free/css/all.min.css";
+@config "../tailwind.config.js";
+
+/* Dark mode por clase */
+@variant dark (&:where(.dark, .dark *));
 
 :root {
     /* Colores base */
@@ -284,8 +286,8 @@ html.dark ::-webkit-scrollbar-track { background: #0f172a; }
 html.dark ::-webkit-scrollbar-thumb { background: #334155; border: 2px solid #0f172a; }
 html.dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-/* Suavizado Global */
-* {
+/* Suavizado Global para elementos de UI */
+body, button, input, select, textarea, a, .card, .sidebar, header {
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.1s ease;
 }
 

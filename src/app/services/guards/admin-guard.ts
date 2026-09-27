@@ -51,8 +51,12 @@ const checkRole = (route: ActivatedRouteSnapshot): boolean | UrlTree => {
 
   // No autenticado → login
   if (!isAuthenticated || !currentUser) {
+    const fullPath = '/' + route.pathFromRoot
+      .map(r => r.url.map(s => s.path).join('/'))
+      .filter(Boolean)
+      .join('/');
     return router.createUrlTree(['/login'], {
-      queryParams: { returnUrl: routePath || undefined }
+      queryParams: { returnUrl: fullPath !== '/' ? fullPath : undefined }
     });
   }
 
@@ -67,7 +71,7 @@ const checkRole = (route: ActivatedRouteSnapshot): boolean | UrlTree => {
   }
 
   // Acceso denegado → redirigir según rol
-  const defaultRoute = currentUser.role === 'admin' ? '/dashboard' : '/document';
+  const defaultRoute = currentUser.role === 'admin' ? '/app/dashboard' : '/app/document';
   return router.createUrlTree([defaultRoute]);
 };
 

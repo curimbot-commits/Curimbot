@@ -1,8 +1,11 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// src/app/components/authentication/auth/auth.ts
+
 import { Injectable } from '@angular/core';
 import {
   HttpClient,
+  HttpBackend,
   HttpErrorResponse,
   HttpHeaders,
   HttpParams,
@@ -24,7 +27,13 @@ import { Router } from '@angular/router';
 
 /**
  * Servicio central de autenticación y gestión de usuarios.
- * Maneja login, registro, tokens JWT, refresh, 2FA, permisos y operaciones administrativas.
+ *
+ * IMPORTANTE — Ruptura del ciclo DI:
+ *   Este servicio inyecta `HttpClient` (que pasa por interceptores) para
+ *   la mayoría de operaciones, PERO también crea `httpNoInterceptors` con
+ *   `HttpBackend` para que `refreshToken()` no dispare `AuthInterceptor`.
+ *
+ *   Sin esto: HttpClient → HTTP_INTERCEPTORS → AuthInterceptor → Auth → HttpClient.
  */
 @Injectable({
   providedIn: 'root',
@@ -43,21 +52,35 @@ export class Auth {
 
   private isRefreshing = false;
 
+  // ==================== CLIENTE HTTP SIN INTERCEPTORES ====================
+  /**
+   * Cliente "limpio" que NO pasa por los interceptores.
+   * Se usa exclusivamente en refreshToken() para romper el ciclo DI.
+   */
+  private httpNoInterceptors: HttpClient;
+
   // ==================== CONSTRUCTOR ====================
   constructor(
     private http: HttpClient,
+    private httpBackend: HttpBackend,
     private router: Router
   ) {
-    this.initializeAuth();
+    this.httpNoInterceptors = new HttpClient(httpBackend);
   }
 
   // ==================== INICIALIZACIÓN Y TOKENS ====================
 
   /**
-   * Inicializa el estado de autenticación al cargar el servicio.
-   * Llama al backend para obtener el perfil mediante la cookie.
+   * Carga el estado inicial de autenticación.
+   *
+   * Se llama desde un APP_INITIALIZER en app.config.ts, NO desde el
+   * constructor, porque dispara una petición HTTP que requiere que
+   * HttpClient esté completamente construido.
    */
-  private initializeAuth(): void {
+  public initAuthState(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
     if (window.location.pathname.includes('/callback')) {
       return;
     }
@@ -69,13 +92,13 @@ export class Auth {
       },
       error: () => {
         this.clearSession();
-      }
+      },
     });
   }
 
   /**
-   * Almacena datos del usuario reactivo localmente tras un inicio de sesión.
-   * Ya NO maneja tokens porque el backend emplea cookies HttpOnly.
+   * Marca al usuario como autenticado tras login/signup exitoso.
+   * Ya NO maneja tokens porque el backend usa cookies HttpOnly.
    */
   private setAuthData(): void {
     this.isAuthenticatedSubject.next(true);
@@ -83,7 +106,6 @@ export class Auth {
 
   /**
    * Limpia completamente la sesión del usuario.
-   * Elimina tokens y datos relacionados del almacenamiento.
    */
   private clearSession(): void {
     sessionStorage.removeItem('temp_2fa_auth');
@@ -98,8 +120,7 @@ export class Auth {
 
   /**
    * Versión pública de clearSession().
-   * Usada por auth-guard e interceptor cuando el backend
-   * rechaza el token (reinicio del servidor, blacklist limpia, etc.)
+   * Usada por auth-guard e interceptor cuando el backend rechaza la cookie.
    */
   clearSessionPublic(): void {
     this.clearSession();
@@ -116,7 +137,6 @@ export class Auth {
 
   /**
    * Inicia sesión con credenciales.
-   * Si requiere 2FA, lanza error controlado con flag.
    */
   login(
     email: string,
@@ -131,6 +151,7 @@ export class Auth {
     return this.http
       .post(`${this.AUTH_URL}/login`, body.toString(), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        withCredentials: true,
       })
       .pipe(
         tap((response: any) => {
@@ -153,8 +174,6 @@ export class Auth {
         }),
         catchError((error) => {
           if (error?.requires2FA) return throwError(() => error);
-          // ✅ Devolvemos el error original para que login.ts pueda manejar
-          // los códigos de estado (401, 423, 0, etc.) con sus propias traducciones.
           return throwError(() => error);
         })
       );
@@ -164,13 +183,21 @@ export class Auth {
    * Inicia sesión con verificación de dos factores (2FA).
    */
   loginWith2FA(loginData: Login2FARequest): Observable<any> {
-    if (!loginData.username || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginData.username.trim())) {
+    if (
+      !loginData.username ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginData.username.trim())
+    ) {
       return throwError(() => new Error('Correo electrónico inválido'));
     }
     if (!loginData.password || loginData.password.length < 8) {
-      return throwError(() => new Error('La contraseña debe tener al menos 8 caracteres'));
+      return throwError(
+        () => new Error('La contraseña debe tener al menos 8 caracteres')
+      );
     }
-    if (!loginData.code || !(/^\d{6}$/.test(loginData.code) || /^[A-Z0-9]{8}$/.test(loginData.code))) {
+    if (
+      !loginData.code ||
+      !(/^\d{6}$/.test(loginData.code) || /^[A-Z0-9]{8}$/.test(loginData.code))
+    ) {
       return throwError(() => new Error('Código de verificación inválido'));
     }
 
@@ -183,6 +210,7 @@ export class Auth {
     return this.http
       .post<any>(`${this.AUTH_URL}/login-with-2fa`, body.toString(), {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        withCredentials: true,
       })
       .pipe(
         tap(() => {
@@ -191,7 +219,9 @@ export class Auth {
         }),
         switchMap((response) =>
           this.getUserProfile().pipe(
-            tap((user) => this.currentUserSubject.next(this.mapUserInfoToUser(user))),
+            tap((user) =>
+              this.currentUserSubject.next(this.mapUserInfoToUser(user))
+            ),
             map(() => response)
           )
         ),
@@ -200,13 +230,22 @@ export class Auth {
             const detail = error.error?.detail || '';
             if (error.status === 401) {
               if (detail.includes('Código de autenticación inválido')) {
-                return throwError(() => new Error('Código de autenticación inválido. Intenta nuevamente.'));
+                return throwError(
+                  () =>
+                    new Error(
+                      'Código de autenticación inválido. Intenta nuevamente.'
+                    )
+                );
               }
               if (detail.includes('Código expirado')) {
-                return throwError(() => new Error('El código ha expirado. Solicita uno nuevo.'));
+                return throwError(
+                  () => new Error('El código ha expirado. Solicita uno nuevo.')
+                );
               }
               if (detail.includes('Cuenta bloqueada')) {
-                return throwError(() => new Error('Cuenta bloqueada. Contacta soporte.'));
+                return throwError(
+                  () => new Error('Cuenta bloqueada. Contacta soporte.')
+                );
               }
             }
           }
@@ -220,41 +259,49 @@ export class Auth {
    */
   signup(userData: UserCreate): Observable<any> {
     if (!userData.name || userData.name.length < 2) {
-      return throwError(() => new Error('El nombre debe tener al menos 2 caracteres'));
+      return throwError(
+        () => new Error('El nombre debe tener al menos 2 caracteres')
+      );
     }
-    if (!userData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.email)) {
+    if (
+      !userData.email ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.email)
+    ) {
       return throwError(() => new Error('Correo electrónico inválido'));
     }
     if (!userData.password || userData.password.length < 8) {
-      return throwError(() => new Error('La contraseña debe tener al menos 8 caracteres'));
+      return throwError(
+        () => new Error('La contraseña debe tener al menos 8 caracteres')
+      );
     }
     if (userData.password !== userData.password_confirm) {
       return throwError(() => new Error('Las contraseñas no coinciden'));
     }
 
-    return this.http.post<any>(`${this.AUTH_URL}/signup`, userData).pipe(
-      tap(() => this.setAuthData()),
-      switchMap((response) =>
-        this.getUserProfile().pipe(
-          tap((user) => this.currentUserSubject.next(this.mapUserInfoToUser(user))),
-          map(() => response)
-        )
-      ),
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<any>(`${this.AUTH_URL}/signup`, userData, {
+        withCredentials: true,
+      })
+      .pipe(
+        tap(() => this.setAuthData()),
+        switchMap((response) =>
+          this.getUserProfile().pipe(
+            tap((user) =>
+              this.currentUserSubject.next(this.mapUserInfoToUser(user))
+            ),
+            map(() => response)
+          )
+        ),
+        catchError(this.handleError)
+      );
   }
 
   /**
    * Cierra la sesión del usuario.
-   * Intenta notificar al backend y siempre limpia localmente.
    */
   logout(): Observable<any> {
     return this.http
-      .post(
-        `${this.AUTH_URL}/logout`,
-        {},
-        { headers: this.getAuthHeaders() }
-      )
+      .post(`${this.AUTH_URL}/logout`, {}, { withCredentials: true })
       .pipe(
         catchError(() => of({ message: 'Sesión cerrada con advertencias' })),
         finalize(() => {
@@ -267,8 +314,8 @@ export class Auth {
   }
 
   /**
-   * Refresca el token de acceso usando el refresh token.
-   * Evita llamadas simultáneas.
+   * Refresca la cookie de acceso usando el refresh token.
+   *
    */
   refreshToken(): Observable<any> {
     if (this.isRefreshing) {
@@ -277,7 +324,7 @@ export class Auth {
 
     this.isRefreshing = true;
 
-    return this.http
+    return this.httpNoInterceptors
       .post(`${this.AUTH_URL}/refresh`, {}, { withCredentials: true })
       .pipe(
         tap(() => this.setAuthData()),
@@ -294,24 +341,25 @@ export class Auth {
   getUserProfile(): Observable<UserInfoResponse> {
     return this.http
       .get<UserInfoResponse>(`${this.AUTH_URL}/me`, {
-        headers: this.getAuthHeaders(),
         withCredentials: true,
       })
       .pipe(catchError(this.handleError));
   }
 
   setOAuthCookies(token: string, refresh: string): Observable<UserInfoResponse> {
-    return this.http.post<UserInfoResponse>(
-      `${this.AUTH_URL}/oauth/set-cookies`,
-      { token, refresh },
-      { withCredentials: true }
-    ).pipe(
-      tap((user) => {
-        this.currentUserSubject.next(this.mapUserInfoToUser(user));
-        this.isAuthenticatedSubject.next(true);
-      }),
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<UserInfoResponse>(
+        `${this.AUTH_URL}/oauth/set-cookies`,
+        { token, refresh },
+        { withCredentials: true }
+      )
+      .pipe(
+        tap((user) => {
+          this.currentUserSubject.next(this.mapUserInfoToUser(user));
+          this.isAuthenticatedSubject.next(true);
+        }),
+        catchError(this.handleError)
+      );
   }
 
   changePassword(oldPassword: string, newPassword: string): Observable<any> {
@@ -319,7 +367,7 @@ export class Auth {
       .patch(
         `${this.AUTH_URL}/change-password`,
         { old_password: oldPassword, new_password: newPassword },
-        { headers: this.getAuthHeaders() }
+        { withCredentials: true }
       )
       .pipe(catchError(this.handleError));
   }
@@ -328,15 +376,19 @@ export class Auth {
     const params = new HttpParams().set('hours', hours.toString());
     return this.http
       .get<LoginStatsResponse>(`${this.AUTH_URL}/login-stats`, {
-        headers: this.getAuthHeaders(),
         params,
+        withCredentials: true,
       })
       .pipe(catchError(this.handleError));
   }
 
   // ==================== ADMINISTRACIÓN ====================
 
-  getAllUsers(skip = 0, limit = 100, activeOnly = true): Observable<UserInfoResponse[]> {
+  getAllUsers(
+    skip = 0,
+    limit = 100,
+    activeOnly = true
+  ): Observable<UserInfoResponse[]> {
     const params = new HttpParams()
       .set('skip', skip.toString())
       .set('limit', limit.toString())
@@ -344,18 +396,21 @@ export class Auth {
 
     return this.http
       .get<UserInfoResponse[]>(`${this.AUTH_URL}/users`, {
-        headers: this.getAuthHeaders(),
         params,
+        withCredentials: true,
       })
       .pipe(catchError(this.handleError));
   }
 
-  updateUserRole(userId: number, newRole: string): Observable<UserManagementResponse> {
+  updateUserRole(
+    userId: number,
+    newRole: string
+  ): Observable<UserManagementResponse> {
     return this.http
       .patch<UserManagementResponse>(
         `${this.AUTH_URL}/users/${userId}/role`,
         { new_role: newRole },
-        { headers: this.getAuthHeaders() }
+        { withCredentials: true }
       )
       .pipe(catchError(this.handleError));
   }
@@ -365,7 +420,7 @@ export class Auth {
       .patch<UserManagementResponse>(
         `${this.AUTH_URL}/users/${userId}/deactivate`,
         {},
-        { headers: this.getAuthHeaders() }
+        { withCredentials: true }
       )
       .pipe(catchError(this.handleError));
   }
@@ -375,17 +430,20 @@ export class Auth {
       .patch<UserManagementResponse>(
         `${this.AUTH_URL}/users/${userId}/activate`,
         {},
-        { headers: this.getAuthHeaders() }
+        { withCredentials: true }
       )
       .pipe(catchError(this.handleError));
   }
 
-  getUserLoginStats(userId: number, hours = 24): Observable<LoginStatsResponse> {
+  getUserLoginStats(
+    userId: number,
+    hours = 24
+  ): Observable<LoginStatsResponse> {
     const params = new HttpParams().set('hours', hours.toString());
     return this.http
       .get<LoginStatsResponse>(`${this.AUTH_URL}/users/${userId}/login-stats`, {
-        headers: this.getAuthHeaders(),
         params,
+        withCredentials: true,
       })
       .pipe(catchError(this.handleError));
   }
@@ -393,24 +451,18 @@ export class Auth {
   // ==================== MONITOREO Y ESTADÍSTICAS ====================
 
   healthCheck(): Observable<any> {
-    return this.http.get(`${this.AUTH_URL}/health`).pipe(catchError(this.handleError));
+    return this.http
+      .get(`${this.AUTH_URL}/health`)
+      .pipe(catchError(this.handleError));
   }
 
   getAuthStatsSummary(): Observable<any> {
     return this.http
-      .get(`${this.AUTH_URL}/stats/summary`, {
-        headers: this.getAuthHeaders(),
-      })
+      .get(`${this.AUTH_URL}/stats/summary`, { withCredentials: true })
       .pipe(catchError(this.handleError));
   }
 
   // ==================== UTILIDADES ====================
-
-  private getAuthHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-    });
-  }
 
   isAuthenticated(): boolean {
     return this.isAuthenticatedSubject.value;
@@ -424,18 +476,13 @@ export class Auth {
     return this.currentUserSubject.value;
   }
 
-  /**
-   * Maneja errores HTTP de forma centralizada.
-   */
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorKey = 'login.errors.unexpectedErrorTitle';
 
     if (error.error instanceof ErrorEvent) {
-      // Error del lado del cliente
       return throwError(() => new Error(error.error.message));
     }
 
-    // Mapear estados HTTP a claves de traducción
     switch (error.status) {
       case 0:
         errorKey = 'login.errors.connectionErrorTitle';
@@ -465,8 +512,6 @@ export class Auth {
         errorKey = 'login.errors.unexpectedErrorTitle';
     }
 
-    // Devolvemos el error original pero adjuntamos la clave de traducción sugerida
-    // si el componente simplemente quiere mostrar el mensaje de error.
     const customError: any = new Error(errorKey);
     customError.status = error.status;
     customError.originalError = error;
@@ -474,9 +519,6 @@ export class Auth {
     return throwError(() => customError);
   }
 
-  /**
-   * Convierte UserInfoResponse a modelo User.
-   */
   private mapUserInfoToUser(user: UserInfoResponse): User {
     if (!this.isValidUserRole(user.role)) {
       throw new Error(`Rol inválido recibido: ${user.role}`);

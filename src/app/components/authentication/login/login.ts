@@ -19,6 +19,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { environment } from 'src/environments/environment';
+import { EyeTrackerComponent } from 'src/app/shared/components/Robot/eye-tracker.component';
 
 /**
  * Componente de inicio de sesión.
@@ -31,8 +32,9 @@ import { environment } from 'src/environments/environment';
     RouterModule,
     ReactiveFormsModule,
     LucideAngularModule,
-    TranslateModule
-],
+    TranslateModule,
+    EyeTrackerComponent
+  ],
   templateUrl: './login.html',
   styleUrls: ['./login.css'],
 })
@@ -184,10 +186,22 @@ export class Login implements OnInit, OnDestroy {
 
   // ==================== ÉXITO ====================
   private handleLoginSuccess(): void {
-    this.alertService.success(this.translate.instant('login.success.loginSuccess'), '', 2000);
+    const user = this.authService.getCurrentUser();
+    const defaultRoute = user?.role === 'admin' ? '/app/dashboard' : '/app/document';
+
+    const targetUrl =
+      this.returnUrl === '/app/dashboard' && user?.role !== 'admin'
+        ? defaultRoute
+        : this.returnUrl;
+
+    this.alertService.success(
+      this.translate.instant('login.success.loginSuccess'),
+      '',
+      2000
+    );
 
     setTimeout(() => {
-      this.router.navigateByUrl(this.returnUrl);
+      this.router.navigateByUrl(targetUrl);
     }, 500);
   }
 
@@ -354,9 +368,5 @@ export class Login implements OnInit, OnDestroy {
   // Botones de login 
   loginWithGoogle(): void {
     window.location.href = `${environment.apiUrl}/auth/google/login`;
-  }
-
-  loginWithGitHub(): void {
-    window.location.href = `${environment.apiUrl}/auth/github/login`;
   }
 }

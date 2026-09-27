@@ -20,9 +20,11 @@ import {
   Square, Plus, Check, Edit2, Edit,Stethoscope,
   BookOpen, Scale, ChartBar, GraduationCap,Briefcase,
   ContactRound,SquarePen,Building2,Tag,UserPlus,NotebookPen,CircleUser,
-  Phone,MessageSquare,
+  Phone,MessageSquare,FacebookIcon,
   Instagram, Linkedin, Github, Map, Play, Menu,
-  ShieldCheck, Award,DownloadCloud,UploadCloud
+  ShieldCheck, Award,DownloadCloud,UploadCloud,MapPin,Flag,Layers,Compass,Cog,Cpu,
+  LifeBuoy,HeartHandshake,Target,Lightbulb,Sprout,Rocket,Crown,
+  Package,FolderSearch,FilePlusIcon,Megaphone,FilePenLine,CreditCard,Languages
 } from 'lucide-angular';
 
 /**
@@ -43,7 +45,9 @@ export const LucideIcons = {
   TrendingUp, Bell, Palette, Globe, Save, Edit, BookOpen, ChevronUp,
   Key, Smartphone, Laptop, Moon, Sun, History, ChartLine, Folder, Settings,
   LogOut, FolderOpen, CloudUpload, LayoutDashboard, Loader2, EyeClosed,ContactRound,
-  Phone,MessageSquare,
+  Phone,MessageSquare,FacebookIcon,Languages,
   Instagram, Linkedin, Github, Map, Play, Menu,
-  ShieldCheck, Award
+  ShieldCheck, Award,MapPin,Flag,Layers,Compass,Cog,Cpu,LifeBuoy,
+  HeartHandshake,Target,Lightbulb,Sprout,Rocket,Crown,Package,FolderSearch,
+  FilePlusIcon,Megaphone,FilePenLine,CreditCard
 };

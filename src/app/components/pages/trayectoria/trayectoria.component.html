@@ -1,0 +1,112 @@
+<app-header></app-header>
+
+<main>
+  <!-- ============================================= -->
+  <!-- =================   HERO ==================== -->
+  <!-- ============================================= -->
+  <section
+    class="gsap-hero-section relative h-screen min-h-[700px] max-h-[950px] flex items-center overflow-hidden bg-black">
+    <!-- Imagen de fondo -->
+    <img src="assets/images/Trayectoria/Trayectoria1.webp" alt="Equipo corporativo Curim AI"
+      class="gsap-hero-image absolute inset-0 w-full h-full object-cover object-center will-change-transform"
+      loading="eager" fetchpriority="high" />
+
+    <!-- Overlays -->
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/20"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/60"></div>
+    <div class="absolute inset-0 bg-gradient-to-br from-[#02ab74]/15 via-transparent to-[#7209b7]/15 mix-blend-overlay">
+    </div>
+
+    <!-- Contenido -->
+    <div class="container mx-auto px-6 relative z-10 pt-32 pb-24">
+      <div class="max-w-3xl">
+
+        <span
+          class="gsap-hero-badge inline-flex items-center gap-2 bg-[#02ab74] text-white font-black tracking-[0.3em] uppercase text-[10px] px-4 py-2 rounded-full mb-6 shadow-lg shadow-[#02ab74]/30 backdrop-blur-sm">
+          <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+          {{ 'landing.company.trayectoria.badge' | translate }}
+        </span>
+
+        <h1
+          class="gsap-hero-title text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.95] mb-8 drop-shadow-2xl"
+          [innerHTML]="'landing.company.trayectoria.title' | translate"></h1>
+
+        <p class="gsap-hero-sub text-lg md:text-xl text-white/90 leading-relaxed font-medium max-w-2xl drop-shadow-lg"
+          [innerHTML]="'landing.company.trayectoria.intro' | translate"></p>
+      </div>
+    </div>
+
+    <div
+      class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-[#080808] to-transparent pointer-events-none z-20">
+    </div>
+  </section>
+
+  <!-- ============================================= -->
+  <!-- Contenido de la página                        -->
+  <!-- ============================================= -->
+  <div class="relative py-24">
+
+    <div
+      class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#02ab74]/10 rounded-full blur-3xl -z-10 pointer-events-none">
+    </div>
+    <div
+      class="absolute bottom-40 left-0 w-[400px] h-[400px] bg-[#7209b7]/10 rounded-full blur-3xl -z-10 pointer-events-none">
+    </div>
+
+    <div class="container mx-auto px-6">
+
+      <!-- ============ TIMELINE ============ -->
+      <div class="gsap-timeline relative mb-24">
+        <div
+          class="gsap-timeline-line absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-[#02ab74] via-[#7209b7] to-transparent">
+        </div>
+
+        <div class="space-y-16">
+          @for (m of milestones; track m.key; let i = $index) {
+          <div class="gsap-milestone relative pl-24">
+            <div
+              class="gsap-milestone-icon absolute left-0 top-0 w-16 h-16 rounded-2xl bg-white dark:bg-gray-900 border-2 border-[#02ab74] flex items-center justify-center shadow-xl">
+              <lucide-angular [name]="m.icon" class="w-7 h-7 text-[#02ab74]"></lucide-angular>
+            </div>
+            <span
+              class="gsap-milestone-year text-[10px] font-black tracking-[0.3em] text-[#7209b7] uppercase block mb-2">{{
+              m.year }}</span>
+            <h3 class="animate-on-scroll text-2xl font-black text-gray-900 dark:text-white mb-3 tracking-tight">
+              {{ 'landing.company.trayectoria.milestones.' + m.key + '.title' | translate }}
+            </h3>
+            <p class="animate-on-scroll text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl font-medium">
+              {{ 'landing.company.trayectoria.milestones.' + m.key + '.desc' | translate }}
+            </p>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- ============ CIERRE ============ -->
+      <div
+        class="gsap-closing-block grid lg:grid-cols-2 rounded-[3rem] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-white/5 dark:to-white/[0.02] border border-gray-100 dark:border-white/5 shadow-xl">
+
+        <div class="relative h-72 lg:h-auto order-2 lg:order-1 group overflow-hidden">
+          <img src="assets/images/Trayectoria/Trayectoria1.webp" alt="Visión de futuro Curim AI"
+            class="gsap-closing-image w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 will-change-transform"
+            loading="lazy" />
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-gray-50 dark:to-[#0a0a0a] hidden lg:block">
+          </div>
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-[#0a0a0a] via-transparent to-transparent lg:hidden">
+          </div>
+          <div class="absolute inset-0 bg-gradient-to-br from-[#02ab74]/20 to-[#7209b7]/20 mix-blend-overlay"></div>
+        </div>
+
+        <div class="p-12 md:p-16 flex items-center order-1 lg:order-2">
+          <p class="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-snug"
+            [innerHTML]="'landing.company.trayectoria.closing' | translate"></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+<app-footer></app-footer>

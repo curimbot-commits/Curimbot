@@ -19,6 +19,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { LucideAngularModule } from 'lucide-angular';
 import { AlertService } from '@shared/components/alert/alert.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { environment } from 'src/environments/environment';
+import { EyeTrackerComponent } from 'src/app/shared/components/Robot/eye-tracker.component';
 
 /**
  * Validador personalizado: fuerza una contraseña fuerte.
@@ -66,8 +68,9 @@ export function passwordMatchValidator(): ValidatorFn {
     RouterModule,
     ReactiveFormsModule,
     LucideAngularModule,
-    TranslateModule
-  ],
+    TranslateModule,
+    EyeTrackerComponent
+],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
@@ -283,5 +286,10 @@ export class Register implements OnInit {
 
   get confirmPassword() {
     return this.registerForm.get('confirmPassword');
+  }
+
+  // Botones de login 
+  loginWithGoogle(): void {
+    window.location.href = `${environment.apiUrl}/auth/google/login`;
   }
 }

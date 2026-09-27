@@ -1,21 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Auth } from './components/authentication/auth/auth';
-
 import { Router, NavigationEnd, Event, RouterOutlet } from '@angular/router';
 import { filter, takeUntil } from 'rxjs/operators';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { AuthInterceptor } from './services/interceptors/auth.interceptor';
-import { AlertContainerComponent } from '@shared/components/alert/alert-container.component';
 import { Subject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
+import { Auth } from './components/authentication/auth/auth';
+import { AlertContainerComponent } from '@shared/components/alert/alert-container.component';
+
 /**
  * Componente raíz de la aplicación.
- * 
+ *
  * Responsabilidades:
- * - Configura el `AuthInterceptor` global para inyectar tokens en todas las peticiones HTTP.
  * - Valida el estado de autenticación en cada cambio de ruta.
  * - Limpia `sessionStorage` al cerrar o recargar la pestaña.
  * - Centraliza la salida de alertas globales.
@@ -23,18 +19,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterOutlet,
-    ReactiveFormsModule,
-    FormsModule,
-    HttpClientModule,
-    AlertContainerComponent
-],
-  providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
-  ],
+  imports: [RouterOutlet, ReactiveFormsModule, FormsModule, AlertContainerComponent],
   templateUrl: './app.html',
-  styleUrls: ['./app.css']
+  styleUrls: ['./app.css'],
 })
 export class App implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -43,7 +30,7 @@ export class App implements OnInit, OnDestroy {
     private authService: Auth,
     private router: Router,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   // ==================== CICLO DE VIDA ====================
 
@@ -51,7 +38,6 @@ export class App implements OnInit, OnDestroy {
     this.setupRouteChangeValidation();
     this.setupSessionCleanup();
   }
-
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -61,8 +47,9 @@ export class App implements OnInit, OnDestroy {
   // ==================== VALIDACIÓN DE AUTENTICACIÓN ====================
 
   /**
-   * Suscribe a eventos de navegación para validar integridad del estado de autenticación.
-   * Si el usuario está autenticado pero faltan datos críticos (como `role`), fuerza logout.
+   * Suscribe a eventos de navegación para validar integridad del estado
+   * de autenticación. Si el usuario está autenticado pero faltan datos
+   * críticos (como `role`), fuerza logout.
    */
   private setupRouteChangeValidation(): void {
     this.router.events

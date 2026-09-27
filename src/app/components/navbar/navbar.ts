@@ -11,6 +11,7 @@ import { Auth } from '../../components/authentication/auth/auth';
 import { User } from '../../domain/models/user.model';
 import { AlertService } from '@shared/components/alert/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { EyeTrackerComponent } from 'src/app/shared/components/Robot/eye-tracker.component';
 
 /**
  * Item de navegación en la barra lateral.
@@ -34,8 +35,9 @@ interface NavItem {
     CommonModule,
     RouterModule,
     LucideAngularModule,
-    TranslateModule
-  ],
+    TranslateModule,
+    EyeTrackerComponent
+],
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css']
 })

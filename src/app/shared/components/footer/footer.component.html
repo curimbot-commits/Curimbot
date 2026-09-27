@@ -1,0 +1,228 @@
+<footer
+  class="bg-white dark:bg-black text-gray-900 dark:text-white transition-colors border-t border-gray-100 dark:border-white/5">
+
+  <div class="container mx-auto px-6 py-16 lg:py-20">
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
+
+      <!-- ─────────── MARCA (col-span-4) ─────────── -->
+      <div class="lg:col-span-4">
+
+        <div class="flex items-center gap-3 mb-6">
+          <div
+            class="p-2.5 bg-gradient-to-br from-[#02ab74] via-[#02ab74] to-[#7209b7] rounded-xl shadow-lg transition-transform group-hover:scale-110">
+            <div class="w-6 h-6">
+              <app-eye-tracker [color]="'#ffffff'"></app-eye-tracker>
+            </div>
+          </div>
+          <div>
+            <span class="block text-xl font-black tracking-tight">CURIMAN</span>
+            <span class="block text-[10px] font-bold tracking-[0.25em] text-[#02ab74] uppercase">
+              Brokers Group
+            </span>
+          </div>
+        </div>
+
+        <p class="max-w-md text-sm leading-7 font-medium text-gray-600 dark:text-gray-400 mb-8">
+          {{ 'landing.footer.description' | translate }}
+        </p>
+
+        <!-- Trust badges -->
+        <div class="flex flex-wrap items-center gap-3 mb-8">
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-full
+                      bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+            <lucide-angular name="award" class="w-3.5 h-3.5 text-[#02ab74]"></lucide-angular>
+            <span class="text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-gray-300">
+              {{ 'landing.footer.trust.ranked' | translate }}
+            </span>
+          </div>
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-full
+                      bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+            <lucide-angular name="map" class="w-3.5 h-3.5 text-[#02ab74]"></lucide-angular>
+            <span class="text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-gray-300">
+              {{ 'landing.footer.trust.states' | translate }}
+            </span>
+          </div>
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-full
+                      bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+            <lucide-angular name="users" class="w-3.5 h-3.5 text-[#02ab74]"></lucide-angular>
+            <span class="text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-gray-300">
+              {{ 'landing.footer.trust.agents' | translate }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Redes sociales: solo LinkedIn + Facebook -->
+        <div class="flex items-center gap-3">
+          <a href="https://www.linkedin.com/company/curiman-brokers/" target="_blank" rel="noopener noreferrer"
+            aria-label="LinkedIn" class="w-10 h-10 rounded-xl border border-gray-200 dark:border-white/10
+                   bg-gray-50 dark:bg-white/5 flex items-center justify-center
+                   text-gray-600 dark:text-gray-300
+                   hover:border-[#02ab74] hover:bg-[#02ab74] hover:text-white
+                   transition-all duration-300">
+            <lucide-angular name="linkedin" class="w-[18px] h-[18px]"></lucide-angular>
+          </a>
+          <a href="https://www.facebook.com/CurimanBrokersGroup" target="_blank" rel="noopener noreferrer"
+            aria-label="Facebook" class="w-10 h-10 rounded-xl border border-gray-200 dark:border-white/10
+                   bg-gray-50 dark:bg-white/5 flex items-center justify-center
+                   text-gray-600 dark:text-gray-300
+                   hover:border-[#02ab74] hover:bg-[#02ab74] hover:text-white
+                   transition-all duration-300">
+            <lucide-angular name="FacebookIcon" class="w-[18px] h-[18px]"></lucide-angular>
+          </a>
+        </div>
+      </div>
+
+      <!-- ─────────── PRODUCTO (col-span-3) ─────────── -->
+      <!-- Secciones de la landing page (anchors) -->
+      <div class="lg:col-span-3">
+        <h4 class="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 dark:text-gray-500 mb-5">
+          {{ 'landing.footer.columns.product' | translate }}
+        </h4>
+        <ul class="space-y-3.5">
+          <li>
+            <a href="#company" class="text-sm font-medium text-gray-600 dark:text-gray-400
+                     hover:text-[#02ab74] transition-colors">
+              {{ 'landing.nav.company' | translate }}
+            </a>
+          </li>
+          <li>
+            <a href="#features" class="text-sm font-medium text-gray-600 dark:text-gray-400
+                     hover:text-[#02ab74] transition-colors">
+              {{ 'landing.nav.features' | translate }}
+            </a>
+          </li>
+          <li>
+            <a href="#roles" class="text-sm font-medium text-gray-600 dark:text-gray-400
+                     hover:text-[#02ab74] transition-colors">
+              {{ 'landing.nav.roles' | translate }}
+            </a>
+          </li>
+          <li>
+            <a href="#promise" class="text-sm font-medium text-gray-600 dark:text-gray-400
+                     hover:text-[#02ab74] transition-colors">
+              {{ 'landing.promise.badge' | translate }}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- ─────────── COMPAÑÍA (col-span-3) ─────────── -->
+      <!-- Mismas rutas y claves que el header -->
+      <div class="lg:col-span-3">
+        <h4 class="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 dark:text-gray-500 mb-5">
+          {{ 'landing.footer.columns.company' | translate }}
+        </h4>
+        <ul class="space-y-3.5">
+          @for (link of companyLinks; track link.path) {
+          <li>
+            <a [routerLink]="link.path" routerLinkActive="text-[#02ab74]" [routerLinkActiveOptions]="{ exact: false }"
+              class="text-sm font-medium text-gray-600 dark:text-gray-400
+                        hover:text-[#02ab74] transition-colors">
+              {{ link.labelKey | translate }}
+            </a>
+          </li>
+          }
+        </ul>
+      </div>
+
+      <!-- ─────────── CONTACTO (col-span-2) ─────────── -->
+      <div class="lg:col-span-2">
+        <h4 class="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 dark:text-gray-500 mb-5">
+          {{ 'landing.footer.columns.contact' | translate }}
+        </h4>
+
+        <ul class="space-y-5">
+          <!-- Teléfono -->
+          <li class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-lg bg-[#02ab74]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <lucide-angular name="phone" class="w-4 h-4 text-[#02ab74]"></lucide-angular>
+            </div>
+            <div>
+              <a href="tel:+18323034137" class="block text-sm font-bold text-gray-800 dark:text-gray-200
+                       hover:text-[#02ab74] transition-colors">
+                (832) 303-4137
+              </a>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                {{ 'landing.footer.contactLinks.phone' | translate }}
+              </span>
+            </div>
+          </li>
+
+          <!-- Dirección -->
+          <li class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-lg bg-[#02ab74]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <lucide-angular name="map-pin" class="w-4 h-4 text-[#02ab74]"></lucide-angular>
+            </div>
+            <div>
+              <address class="not-italic text-sm font-bold leading-6 text-gray-800 dark:text-gray-200">
+                2030 N Loop W Fwy #255<br />
+                Houston, TX 77018
+              </address>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                {{ 'landing.footer.contactLinks.address' | translate }}
+              </span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- CARRIERS STRIP -->
+    <div class="mt-16 pt-10 border-t border-gray-100 dark:border-white/5">
+      <div class="text-center mb-6">
+        <span class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 dark:text-gray-600">
+          {{ 'landing.footer.carriersStrip' | translate }}
+        </span>
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 opacity-70">
+        @for (partner of partners; track partner.name) {
+        <img [src]="partner.logo" [alt]="partner.alt" class="max-h-8 w-auto object-contain filter grayscale hover:grayscale-0
+                      dark:brightness-200 dark:contrast-125 transition-all duration-300"
+          (error)="onImageError($event)" />
+        }
+      </div>
+    </div>
+
+    <!-- BLOQUE INFERIOR -->
+    <div class="mt-14 pt-7 border-t border-gray-100 dark:border-white/5
+                flex flex-col lg:flex-row justify-between items-center gap-6">
+
+      <span class="text-[10px] font-bold uppercase tracking-[0.16em]
+                   text-gray-400 dark:text-gray-500 text-center lg:text-left">
+        © {{ currentYear }} Curiman Brokers Group. {{ 'landing.footer.rights' | translate }}
+      </span>
+
+      <nav class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+        <a href="#privacy" class="text-[10px] font-black uppercase tracking-[0.16em]
+                 text-gray-400 dark:text-gray-500 hover:text-[#02ab74] transition-colors">
+          {{ 'landing.footer.legalLinks.privacy' | translate }}
+        </a>
+        <a href="#terms" class="text-[10px] font-black uppercase tracking-[0.16em]
+                 text-gray-400 dark:text-gray-500 hover:text-[#02ab74] transition-colors">
+          {{ 'landing.footer.legalLinks.terms' | translate }}
+        </a>
+        <a href="#cookies" class="text-[10px] font-black uppercase tracking-[0.16em]
+                 text-gray-400 dark:text-gray-500 hover:text-[#02ab74] transition-colors">
+          {{ 'landing.footer.legalLinks.cookies' | translate }}
+        </a>
+        <a href="#licenses" class="text-[10px] font-black uppercase tracking-[0.16em]
+                 text-gray-400 dark:text-gray-500 hover:text-[#02ab74] transition-colors">
+          {{ 'landing.footer.legalLinks.licenses' | translate }}
+        </a>
+      </nav>
+
+      <div class="flex items-center gap-2 text-[9px] font-black uppercase
+                  tracking-[0.2em] text-gray-400 dark:text-gray-600">
+        <span>Houston</span>
+        <span class="w-1 h-1 rounded-full bg-[#02ab74]"></span>
+        <span>Texas</span>
+        <span class="w-1 h-1 rounded-full bg-[#02ab74]"></span>
+        <span>USA</span>
+      </div>
+
+    </div>
+
+  </div>
+</footer>

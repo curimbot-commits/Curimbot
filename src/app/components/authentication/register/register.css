@@ -1,17 +1,158 @@
-/*.custom-alert {
-  background-color: #8a4d47 !important;
-  color: #f0e8e8 !important;
-  font-size: 12px;
-  text-align: center;
+
+/* Orbes */
+.animated-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
-.alert-icon {
-  margin-right: 3px;
-  color: #d9b8b8; 
+
+/* Orbes*/
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);        
+  opacity: 0.55;               
+  will-change: transform;
+  mix-blend-mode: multiply;    
 }
-.alert-text {
-  font-weight: normal; 
+
+/* Orbe 1 */
+.orb-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #02ab74 0%, rgba(2, 171, 116, 0) 65%);
+  top: -150px;
+  left: -150px;
+  animation: float1 12s ease-in-out infinite;
 }
-.error-sublist li {
-  margin: 3px 0;
-  font-size: 11px;
-}*/
+
+/* Orbe 2  */
+.orb-2 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, #7209b7 0%, rgba(114, 9, 183, 0) 65%);
+  bottom: -120px;
+  right: -120px;
+  animation: float2 15s ease-in-out infinite;
+}
+
+/* Orbe 3  */
+.orb-3 {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, #4361ee 0%, rgba(67, 97, 238, 0) 65%);
+  top: 35%;
+  left: 50%;
+  animation: float3 10s ease-in-out infinite;
+}
+
+
+@keyframes float1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(320px, 260px) scale(1.25); }
+}
+
+@keyframes float2 {
+  0%, 100% { transform: translate(0, 0) scale(1.1); }
+  50%      { transform: translate(-340px, -220px) scale(0.85); }
+}
+
+@keyframes float3 {
+  0%, 100% { transform: translate(-50%, 0) scale(1); }
+  33%      { transform: translate(-30%, -120px) scale(1.15); }
+  66%      { transform: translate(-70%, 100px) scale(0.9); }
+}
+
+.orb-4 {
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, #f72585 0%, rgba(247, 37, 133, 0) 65%);
+  top: 10%;
+  right: 15%;
+  animation: float4 8s ease-in-out infinite;
+}
+
+@keyframes float4 {
+  0%, 100% { transform: translate(0, 0) scale(0.9); }
+  50%      { transform: translate(-200px, 300px) scale(1.2); }
+}
+
+
+/* Grid  */
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(2, 171, 116, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(2, 171, 116, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+}
+
+/* ============ ENTRADA DE LA CARD ============ */
+.login-card-enter {
+  animation: cardEnter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.card-hover {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 25px 50px -12px rgba(2, 171, 116, 0.15);
+}
+
+/* ============ ROBOT ANIMADO ============ */
+.robot-badge {
+  animation: robotFloat 3.5s ease-in-out infinite;
+  position: relative;
+}
+.robot-badge::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #02ab74, #7209b7);
+  filter: blur(18px);
+  opacity: 0.5;
+  z-index: -1;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes robotFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-10px) rotate(-3deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%      { opacity: 0.7; transform: scale(1.1); }
+}
+
+.robot-badge lucide-angular {
+  animation: robotBlink 4s ease-in-out infinite;
+}
+@keyframes robotBlink {
+  0%, 92%, 100% { opacity: 1; }
+  94%           { opacity: 0.4; }
+  96%           { opacity: 1; }
+}
+
+/* ============ ACCESIBILIDAD ============ */
+@media (prefers-reduced-motion: reduce) {
+  .login-container,
+  .orb,
+  .robot-badge,
+  .robot-badge::after,
+  .login-card-enter,
+  .card-hover {
+    animation: none !important;
+    transition: none !important;
+  }
+}

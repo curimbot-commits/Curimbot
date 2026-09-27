@@ -147,28 +147,40 @@
     "userProfile": "User Profile",
     "fullName": "Full Name",
     "email": "Email Address",
-    "namePlaceholder": "Enter your full name",
-    "emailPlaceholder": "Enter your email address",
-    "notifications": "Notifications",
+    "namePlaceholder": "Your name",
+    "emailPlaceholder": "your@email.com",
+    "notifications": {
+      "title": "Notifications",
+      "email": "Email notifications",
+      "push": "Push notifications",
+      "weeklySummary": "Weekly summary",
+      "testEmail": "Send test email"
+    },
     "emailNotifs": "Email Notifications",
-    "emailNotifsDesc": "Receive important updates via email",
+    "emailNotifsDesc": "Receive updates about your document activity.",
     "pushNotifs": "Push Notifications",
-    "pushNotifsDesc": "Receive real-time notifications",
+    "pushNotifsDesc": "Instant browser alerts.",
     "weeklySummary": "Weekly Summary",
-    "weeklySummaryDesc": "Receive a weekly activity summary",
-    "summaryFormat": "Report Format",
-    "testEmail": "Send Test Email",
-
-    "preferences": "Preferences",
+    "weeklySummaryDesc": "A report on your account activity every Monday.",
+    "summaryFormat": "Summary Format",
+    "preferences": "Interface Preferences",
     "language": "Language",
-    "theme": "Interface Theme",
+    "theme": "Theme",
     "saveChanges": "Save Changes",
     "saving": "Saving...",
-    "errors": {
-      "required": "This field is required",
-      "invalidEmail": "Invalid email",
-      "minLength": "Minimum 2 characters",
-      "maxLength": "Maximum 100 characters"
+    "profile": {
+      "title": "Profile",
+      "name": "Name",
+      "email": "Email"
+    },
+    "interface": {
+      "title": "Interface",
+      "language": "Language",
+      "theme": "Theme"
+    },
+    "convocatoria": {
+      "title": "Announcements",
+      "description": "Enable or disable access to announcements."
     },
     "languages": {
       "es": "Spanish",
@@ -177,23 +189,29 @@
     "themes": {
       "light": "Light",
       "dark": "Dark",
-      "auto": "Automatic"
+      "auto": "Auto"
     },
     "alerts": {
-      "loadUserError": "Error loading user data",
-      "loadPrefsError": "Error loading preferences",
-      "profileSuccess": "Profile updated successfully",
-      "profileError": "Error updating profile",
-      "notifSuccess": "Notification preferences updated",
-      "notifError": "Error updating notification preferences",
-      "langSuccess": "Language updated",
-      "langError": "Error changing language",
-      "themeSuccess": "Theme updated",
-      "themeError": "Error changing theme",
-      "convSuccess": "Call for applications updated successfully",
-      "convError": "Error updating call for applications",
-      "emailSuccess": "Test email sent. Check your inbox.",
-      "emailError": "Error sending test email"
+      "profileSuccess": "Profile updated successfully.",
+      "profileError": "Could not update profile.",
+      "loadUserError": "Could not load user information.",
+      "loadPrefsError": "Could not load your preferences.",
+      "notifSuccess": "Notification preferences updated.",
+      "notifError": "Could not update notifications.",
+      "langSuccess": "Language updated.",
+      "langError": "Could not update language.",
+      "themeSuccess": "Theme updated.",
+      "themeError": "Could not update theme.",
+      "convSuccess": "Announcements access updated.",
+      "convError": "Could not update announcements access.",
+      "emailSuccess": "Test email sent.",
+      "emailError": "Could not send test email."
+    },
+    "errors": {
+      "required": "This field is required.",
+      "invalidEmail": "Invalid email address.",
+      "minLength": "The value is too short.",
+      "maxLength": "The value is too long."
     }
   },
   "navbar": {
@@ -217,7 +235,7 @@
     }
   },
   "document": {
-    "title": "Document Management",
+    "title": "Reference Documents",
     "subtitle": "View, upload, and organize your documents",
     "upload": {
       "dragDrop": "Drag and drop your files here",
@@ -381,16 +399,31 @@
   "chat": {
     "docsContext": "documents · Online",
     "subtitleFallback": "Curiman Brokers Group Assistant",
+    "greeting": "Hello, how can I help you with your documents today?",
+    "inputPlaceholder": "Type your query…",
+    "suggestionsTitle": "Suggested questions:",
+    "startVoice": "Start voice chat in Curim",
+    "poweredBy": "Powered by OpenAI & Curim",
+    "toggleOpen": "Open chat",
+    "toggleClose": "Close chat",
+    "minimize": "Minimize chat",
+    "maximize": "Expand chat",
+    "botName": "Curim",
+    "you": "You",
+    "suggestions": {
+      "summary": "Can you give me a summary of my documents?",
+      "uninsurable": "What are the uninsurable risks?",
+      "claim": "How to file a claim?"
+    },
     "close": "Close",
     "emptyTitle": "How can I help you?",
-    "emptySubtitle": "I analyze policies, legal documents, and contracts instantly.",
-    "sources": "sources",
-    "inputPlaceholder": "Type your query…",
-    "inputLabel": "Your query",
+    "emptySubtitle": "Curim can answer questions about your documents and help you write or summarize complex information.",
+    "sources": "Sources",
+    "inputLabel": "Message",
     "send": "Send",
     "inputHint": "Enter to send · Shift+Enter new line",
     "systemOnline": "System online",
-    "errorMessage": "Sorry, there was an error processing your question. Please verify you have uploaded documents and try again."
+    "errorMessage": "I'm sorry, an error occurred while processing your request."
   },
   "register": {
     "title": "Create an Account",
@@ -737,10 +770,11 @@
   },
   "landing": {
     "nav": {
+      "home": "Home",
       "company": "History",
       "features": "AI Assistant",
       "roles": "Solutions",
-      "platform": "PLATFORM →"
+      "platform": "PLATFORM"
     },
     "mobileMenu": {
       "company": "History",
@@ -749,31 +783,14 @@
       "enterPlatform": "Enter Platform"
     },
     "hero": {
-      "title1": "Curim AI",
-      "title2": "Assistant",
-      "subtitle": "It's not just a tool, it's your strategic partner who understands your documents better than anyone.",
+      "title1": "The future of",
+      "title2": "smart insurance",
+      "subtitle": "A growth platform for independent agents.",
       "startNow": "Start Now",
       "ourTrajectory": "Our History"
     },
     "partners": {
-      "trustedBy": "Trusted by"
-    },
-    "company": {
-      "badge": "History and Leadership",
-      "title": "The #1 Hispanic Agency <br> in the United States.",
-      "description": "Founded in 2014, Curiman Brokers Group has revolutionized the financial market. Our mission is simple: <strong class=\"text-gray-900 dark:text-gray-200\">empower the Hispanic community</strong> through knowledge and cutting-edge technology.",
-      "stats": {
-        "states": "US States",
-        "agents": "Expert Agents"
-      },
-      "badgeCard": {
-        "title": "Hispanic Leadership",
-        "desc": "Nationally recognized for our excellence and commitment to the community."
-      },
-      "ranking": {
-        "value": "#1",
-        "label": "National Ranking"
-      }
+      "trustedBy": "Companies we work with"
     },
     "featuresSection": {
       "badge": "Cutting-edge Technology",
@@ -804,6 +821,30 @@
       "security": {
         "title": "Robust Security",
         "desc": "Your documents and data are protected with military-grade encryption. Your privacy is our top priority."
+      },
+      "ai": {
+        "title": "Artificial Intelligence",
+        "desc": "Predictive analytics and automation."
+      },
+      "analytics": {
+        "title": "Real-time analytics",
+        "desc": "Dashboards showing your business pulse."
+      },
+      "crm": {
+        "title": "Smart CRM",
+        "desc": "Manage clients and policies in one place."
+      },
+      "training": {
+        "title": "Continuous training",
+        "desc": "Content on product, sales, and leadership."
+      },
+      "support": {
+        "title": "Specialized support",
+        "desc": "Dedicated team to support your growth."
+      },
+      "carriers": {
+        "title": "Strategic partnerships",
+        "desc": "Access to leading carrier products."
       }
     },
     "rolesSection": {
@@ -846,32 +887,271 @@
           "Reduced wait times",
           "Customer satisfaction"
         ]
+      },
+      "agent": {
+        "title": "Independent agent",
+        "description": "Start your career with the backing of a complete organization.",
+        "benefits": [
+          "Simplified contracting",
+          "Continuous training",
+          "Sales tools"
+        ]
+      },
+      "producer": {
+        "title": "Experienced producer",
+        "description": "Scale your production with enterprise technology.",
+        "benefits": [
+          "Case management",
+          "Professional marketing",
+          "New business support"
+        ]
+      },
+      "leader": {
+        "title": "Agency leader",
+        "description": "Build your own organization with our support.",
+        "benefits": [
+          "Contracting & commissions",
+          "Leadership development",
+          "Growth strategy"
+        ]
+      },
+      "recruiter": {
+        "title": "Recruiter",
+        "description": "Attract talent with a proven support ecosystem.",
+        "benefits": [
+          "Recruiting tools",
+          "Structured onboarding",
+          "Ongoing support"
+        ]
       }
     },
-    "cta": {
-      "title": "Boost Your Agency Today.",
-      "button": "Access Platform"
-    },
     "footer": {
-      "description": "Technological innovation for the Hispanic insurance market in the United States.",
-      "company": "Company",
-      "companyLinks": {
-        "about": "About Curiman Group",
-        "mission": "Our Mission",
-        "careers": "Careers"
+      "description": "Growth platform for independent agents and agencies in the insurance and financial services industry.",
+      "rights": "All rights reserved.",
+      "trust": {
+        "ranked": "#1 Hispanic Agency",
+        "states": "50 States",
+        "agents": "+3,000 Agents"
       },
-      "product": "Product",
-      "productLinks": {
-        "features": "Features",
-        "security": "Security",
-        "faq": "FAQ"
+      "columns": {
+        "product": "Product",
+        "company": "Company",
+        "contact": "Contact"
       },
-      "legal": "Legal",
+      "contactLinks": {
+        "phone": "Phone",
+        "address": "Address"
+      },
       "legalLinks": {
         "privacy": "Privacy",
-        "terms": "Terms"
+        "terms": "Terms",
+        "cookies": "Cookies",
+        "licenses": "Licenses"
       },
-      "copyright": "© 2025 CURIM AI. Powered by Curiman Brokers Group."
+      "carriersStrip": "Backed by the industry's leading carriers"
+    },
+    "promise": {
+      "badge": "OUR PROMISE",
+      "title": "The infrastructure behind the independent agent",
+      "you": {
+        "title": "You",
+        "item1": "You develop the relationships.",
+        "item2": "You make the recommendations.",
+        "item3": "You build your business."
+      },
+      "us": {
+        "title": "Us",
+        "statement": "We build the support behind you.",
+        "brand": "Curiman Brokers Group"
+      },
+      "objective": "Because at Curiman Brokers Group our goal is not simply for you to have access to products. Our goal is to help you produce more, operate better, and build a business that can grow with you.",
+      "tagline": "YOU ARE INDEPENDENT, BUT YOU ARE NOT ALONE.",
+      "subtagline": "The infrastructure behind the independent agent"
+    },
+    "company": {
+      "badge": "Our Company",
+      "title": "We build <span class=\"text-[#02ab74]\">infrastructure</span> so our agents can grow.",
+      "description": "Curiman Brokers Group is a growth platform for independent agents and agencies, with a community of thousands of agents and strategic partnerships with leading companies.",
+      "stats": {
+        "states": "States covered",
+        "agents": "Active agents",
+        "statesValue": "50",
+        "agentsValue": "3K+"
+      },
+      "badgeCard": {
+        "title": "Hispanic Leadership",
+        "desc": "Nationally recognized for our excellence and commitment to the community."
+      },
+      "ranking": {
+        "value": "#1",
+        "label": "Hispanic Agency"
+      },
+      "certificate": {
+        "issuer": "National Life Group",
+        "alt": "National Life Group Certificate - Curiman Brokers #1 Hispanic Life Agency",
+        "hoverTitle": "Official Certificate — #1 Hispanic Agency"
+      },
+      "trayectoria": {
+        "badge": "Journey",
+        "title": "Building agents.<br>Developing leaders.<br>Transforming businesses.",
+        "intro": "Curiman Brokers Group was born with a clear vision: to create an organization where independent agents don't have to build their business alone. Over the years, CBG has evolved from an organization focused on insurance product distribution into a true growth platform for independent agents and agencies.",
+        "milestones": {
+          "origin": {
+            "title": "The origin",
+            "desc": "CBG is born with a clear vision: to create an organization where independent agents don't have to build their business alone."
+          },
+          "growth": {
+            "title": "Growth",
+            "desc": "Expansion of our agent community and consolidation of strategic partnerships with leading industry carriers."
+          },
+          "platform": {
+            "title": "The platform",
+            "desc": "Evolution from a distribution organization into a true growth platform for independent agents and agencies."
+          },
+          "today": {
+            "title": "Today",
+            "desc": "A community of thousands of agents is part of our ecosystem, backed by a specialized team and infrastructure designed to support them throughout their business cycle."
+          }
+        },
+        "closing": "We don't just distribute products.<br><span class=\"text-[#02ab74]\">We build infrastructure</span> so our agents can grow."
+      },
+      "liderazgo": {
+        "badge": "Leadership",
+        "title": "Leadership that understands the business because it lives the business.",
+        "intro": "Curiman Brokers Group is led by professionals with experience in distribution, sales, agent development, operations, and organizational growth within the insurance and financial services industry.",
+        "premise": "CBG's growth depends on our agents' growth.",
+        "actionsTitle": "We actively work on:",
+        "actions": {
+          "strategy": {
+            "title": "Strategy",
+            "desc": "Business plans tailored to every stage of the agent's career."
+          },
+          "systems": {
+            "title": "Systems",
+            "desc": "Replicable processes that scale without friction."
+          },
+          "training": {
+            "title": "Training",
+            "desc": "Continuous education in products, sales, and leadership."
+          },
+          "tech": {
+            "title": "Technology",
+            "desc": "Tools that accelerate agent productivity."
+          },
+          "carriers": {
+            "title": "Carrier relationships",
+            "desc": "Strategic partnerships with leading industry carriers."
+          },
+          "support": {
+            "title": "Support structures",
+            "desc": "Operational support at every stage of the business."
+          }
+        },
+        "cultureTitle": "Our culture",
+        "pillars": {
+          "service": "Service",
+          "discipline": "Discipline",
+          "education": "Education",
+          "innovation": "Innovation",
+          "integrity": "Integrity",
+          "growth": "Growth"
+        }
+      },
+      "alcance": {
+        "badge": "Reach",
+        "title": "An organization built to grow with you.",
+        "intro": "A network of more than 3,000 agents and an infrastructure designed to support life insurance distribution and retirement solutions across different markets in the United States.",
+        "stats": {
+          "agents": "Active agents",
+          "states": "States covered",
+          "carriers": "Partner carriers"
+        },
+        "ecosystemTitle": "Our ecosystem",
+        "ecosystemSubtitle": "We connect three fundamental elements for agent growth.",
+        "ecosystem": {
+          "carriers": {
+            "title": "Carriers",
+            "desc": "Leading companies with competitive products and solid backing."
+          },
+          "cbg": {
+            "title": "Curiman Brokers Group",
+            "desc": "Infrastructure, support, training, and business strategy."
+          },
+          "agents": {
+            "title": "Independent Agents",
+            "desc": "Professionals who build their business with our support."
+          }
+        },
+        "profilesTitle": "Our community",
+        "profiles": {
+          "starter": {
+            "title": "New agents",
+            "desc": "Support from day one to build a solid career."
+          },
+          "producer": {
+            "title": "Experienced producers",
+            "desc": "Tools and systems to scale production to a higher level."
+          },
+          "leader": {
+            "title": "Agency leaders",
+            "desc": "Support to build and manage your own organization."
+          }
+        }
+      },
+      "mision": {
+        "badge": "Mission",
+        "title": "Empowering the independent agent.",
+        "intro": "Our mission is to empower agents so they can build a solid, scalable, and sustainable business.",
+        "pillars": {
+          "products": "Competitive products",
+          "education": "Continuous education",
+          "technology": "Technology",
+          "strategy": "Business strategies",
+          "support": "Comprehensive support"
+        },
+        "outcomesTitle": "We aim to develop...",
+        "outcomes": {
+          "producers": "Better producers",
+          "professionals": "Better professionals",
+          "leaders": "Better leaders"
+        }
+      },
+      "propuesta": {
+        "badge": "Value Proposition",
+        "title": "Your business. Our backing.",
+        "subtitle": "A specialized support ecosystem.",
+        "intro": "At Curiman Brokers Group we believe an agent doesn't just need a contract with an insurance company. They need an organization behind them. That's why we've built a specialized support ecosystem that accompanies the agent before, during, and after every sale.",
+        "services": {
+          "caseManagement": {
+            "title": "Case Management",
+            "desc": "We help you structure and follow up on your cases, especially when they require deeper analysis, strategy, or coordination."
+          },
+          "training": {
+            "title": "Training",
+            "desc": "Continuous education in products, concepts, sales strategies, and business development to help you grow professionally."
+          },
+          "newBusiness": {
+            "title": "New Business",
+            "desc": "We accompany your applications from submission through the carrier process, helping identify and resolve requirements."
+          },
+          "marketing": {
+            "title": "Marketing",
+            "desc": "Tools, content, and strategies to help you communicate better, generate opportunities, and strengthen your market presence."
+          },
+          "contracting": {
+            "title": "Contracting & Commissions",
+            "desc": "Support with contracting, appointments, levels, and commission-related processes so you can focus on producing."
+          },
+          "eft": {
+            "title": "EFT",
+            "desc": "Specialized follow-up to facilitate obtaining and managing the information needed to complete payment and issuance processes."
+          },
+          "afterIssue": {
+            "title": "After Issue",
+            "desc": "Our work doesn't end when a policy is issued. We support you in post-issue processes to help you deliver better service to your clients."
+          }
+        }
+      }
     }
   }
 }

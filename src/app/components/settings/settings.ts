@@ -103,16 +103,6 @@ export class Settings implements OnInit, OnDestroy {
   private document = inject(DOCUMENT);
   private translate = inject(TranslateService);
 
-  // ==================================================================
-  // MEDIA QUERY PARA TEMA AUTOMÁTICO
-  // ==================================================================
-
-  private mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
-  private systemThemeChangeHandler = () => {
-    if (this.selectedTheme === ThemeEnum.AUTO) {
-      this.themeService.applyTheme('auto');
-    }
-  };
 
   // ==================================================================
   // CICLO DE VIDA
@@ -126,7 +116,7 @@ export class Settings implements OnInit, OnDestroy {
     this.loadUserData();
     this.loadPreferences();
     this.setupAutoSave();
-    this.mediaQueryList.addEventListener('change', this.systemThemeChangeHandler);
+
   }
 
   /** Configura el auto-guardado para el formulario de perfil */
@@ -148,7 +138,6 @@ export class Settings implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.mediaQueryList.removeEventListener('change', this.systemThemeChangeHandler);
   }
 
   // ==================================================================
@@ -201,7 +190,6 @@ export class Settings implements OnInit, OnDestroy {
           this.selectedTheme = prefs.theme;
           this.convocatoriaEnabled = prefs.convocatoria_enabled;
 
-          this.applyTheme(this.selectedTheme);
           this.navService.setConvocatoriaEnabled(this.convocatoriaEnabled);
         },
         error: () => this.alertService.error(this.translate.instant('settings.alerts.loadPrefsError'), '')
@@ -290,11 +278,7 @@ export class Settings implements OnInit, OnDestroy {
       });
   }
 
-  /** Aplica tema al documento delegando al ThemeService */
-  private applyTheme(theme: ThemeEnum): void {
-    const appTheme: AppTheme = theme === ThemeEnum.DARK ? 'dark' : theme === ThemeEnum.AUTO ? 'auto' : 'light';
-    this.themeService.applyTheme(appTheme);
-  }
+
 
   // ==================================================================
   // CONVOCATORIAS

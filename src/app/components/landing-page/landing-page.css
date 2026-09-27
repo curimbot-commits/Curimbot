@@ -4,12 +4,51 @@
 }
 
 /* ==========================================================================
+   SCROLL 
+   ========================================================================== */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px; 
+}
+
+body {
+    overscroll-behavior-y: none; 
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .animate-marquee,
+    .animate-fade-in,
+    .animate-fade-in-up,
+    .animate-fade-in-down { animation: none; }
+    .animate-on-scroll {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+}
+
+/* Optimización GPU para el video parallax */
+video {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* ==========================================================================
    ANIMACIONES
    ========================================================================== */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes menuSlideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes rotate-gradient {
+    to { --angle: 360deg; }
+}
 
 .animate-fade-in { animation: fadeIn 1.2s ease-out forwards; }
 .animate-fade-in-up { animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -19,44 +58,181 @@
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
 
-/* GSAP Initial States - Removiendo opacity 0 forzado para asegurar visibilidad si falla el script */
-.gsap-feature-card, .gsap-role-card {
-    will-change: transform, opacity;
+/* ==========================================================================
+   BARRA DE PROGRESO DE SCROLL (Header)
+   ========================================================================== */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    transform-origin: left;
+    transform: scaleX(0);
+    background: linear-gradient(90deg, #02ab74, #4cc9f0, #7209b7);
+    z-index: 100;
+    transition: transform 0.1s linear;
+    pointer-events: none;
 }
 
-.animate-on-scroll {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+/* ==========================================================================
+   GSAP INITIAL STATES
+   ========================================================================== */
+.gsap-feature-card,
+.gsap-role-card {
+    will-change: transform, opacity;
+    transform-style: preserve-3d;
+    perspective: 1000px;
 }
-.animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
 
 /* ==========================================================================
    ELEMENTOS NAVEGACIÓN
    ========================================================================== */
-.nav-link-custom { position: relative; transition: all 0.3s ease; }
+.nav-link-custom {
+    position: relative;
+    transition: all 0.3s ease;
+}
 .nav-link-custom::after {
-    content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1.5px;
-    background-color: #02ab74; transition: width 0.3s ease;
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background-color: #02ab74;
+    transition: width 0.3s ease;
 }
 .nav-link-custom:hover::after { width: 100%; }
-.shadow-3xl { box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.6); }
 
-/* ==========================================================================
-   MODO OSCURO CORPORATIVO (ESPECIALIZACIÓN)
-   ========================================================================== */
-:host-context(html.dark) .bg-white {
-    background-color: #000000 !important;
+.shadow-3xl {
+    box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.6);
 }
 
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+section.relative.min-h-\[110vh\]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.6) 100%);
+    pointer-events: none;
+    z-index: 5;
+}
 
-/* Lucide icons en dark mode */
+.gsap-hero-title {
+    text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+}
+
+.animate-marquee {
+    mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+
+/* ==========================================================================
+   CARDS 
+   ========================================================================== */
+.gsap-feature-card,
+.gsap-role-card {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s ease,
+                border-color 0.4s ease,
+                background-color 0.4s ease;
+}
+
+.gsap-feature-card:hover {
+    transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+}
+
+.gsap-role-card:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+/* ==========================================================================
+   COMPANY 
+   ========================================================================== */
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+.aspect-square.bg-gradient-to-br {
+    position: relative;
+}
+
+.aspect-square.bg-gradient-to-br::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--angle), #02ab74, #4cc9f0, #7209b7, #02ab74);
+    z-index: -1;
+    animation: rotate-gradient 4s linear infinite;
+    opacity: 0.6;
+    filter: blur(2px);
+}
+
+/* ==========================================================================
+   BOTONES 
+   ========================================================================== */
+button,
+a[href^="#"] {
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.3s ease,
+                background-color 0.3s ease,
+                color 0.3s ease;
+}
+
+button:active {
+    transform: scale(0.96);
+}
+
+/* Glow en botones CTA principales */
+button.bg-\[\#02ab74\]:hover {
+    box-shadow: 0 10px 40px -10px rgba(2, 171, 116, 0.6),
+                0 0 0 1px rgba(2, 171, 116, 0.3);
+}
+
+/* ==========================================================================
+   MOBILE MENU 
+   ========================================================================== */
+.lg\:hidden.absolute.top-full {
+    animation: menuSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top;
+}
+
+/* ==========================================================================
+   MODO OSCURO
+   ========================================================================== */
+:host-context(html.dark) .bg-white {
+    background-color: #050505 !important;
+}
+
+:host-context(html.dark) .bg-gray-50 {
+    background-color: #0d0d0d !important;
+}
+
 :host-context(html.dark) lucide-angular {
     filter: drop-shadow(0 0 10px rgba(2, 171, 116, 0.2));
 }
 
-@media (max-width: 768px) {
-    .animate-marquee { animation-duration: 40s; }
+
+:host-context(html.dark) .gsap-feature-card:hover,
+:host-context(html.dark) .gsap-role-card:hover {
+    box-shadow: 0 0 40px -10px rgba(2, 171, 116, 0.3),
+                inset 0 0 0 1px rgba(2, 171, 116, 0.2);
 }
 
-html { scroll-behavior: smooth; }
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 768px) {
+    .animate-marquee { animation-duration: 40s; }
+
+    
+    .gsap-feature-card:hover,
+    .gsap-role-card:hover {
+        transform: translateY(-4px);
+    }
+}

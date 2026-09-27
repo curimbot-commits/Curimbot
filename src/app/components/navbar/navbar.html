@@ -1,35 +1,36 @@
-<div class="h-screen bg-gray-50 font-sans flex flex-col md:flex-row" >
+<div class="h-screen bg-gray-50 font-sans flex flex-col md:flex-row">
 
   <!-- TOPBAR (Visible SÓLO en Móvil) -->
-  <header class="md:hidden z-40 fixed top-0 w-full flex items-center justify-between px-6 py-4 shadow-md bg-white border-b border-gray-100 transition-all duration-300">
-    <div class="flex items-center gap-3" >
-      <div class="p-2 bg-gradient-to-br from-[#02ab74] to-[#7209b7] rounded-lg shadow-sm" >
-        <lucide-angular class="w-6 h-6 text-black" name="bot"></lucide-angular>
+  <header
+    class="md:hidden z-40 fixed top-0 w-full flex items-center justify-between px-6 py-4 shadow-md bg-white border-b border-gray-100 transition-all duration-300">
+    <div class="flex items-center gap-3">
+      <div class="p-2 bg-gradient-to-br from-[#02ab74] to-[#7209b7] rounded-lg shadow-sm">
+        <div class="w-6 h-6">
+          <app-eye-tracker [color]="'#ffffff'"></app-eye-tracker>
+        </div>
       </div>
       <h1 class="text-lg font-bold tracking-wide text-[#070025]">Curim AI</h1>
     </div>
 
     <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none"
-      (click)="toggleMobileMenu()"
-      aria-label="Toggle Menu">
+      (click)="toggleMobileMenu()" aria-label="Toggle Menu">
       <lucide-angular [name]="isMobileMenuOpen ? 'x' : 'menu'" class="w-6 h-6"></lucide-angular>
     </button>
   </header>
 
   <!-- BACKDROP (Fondo Oscuro para Móvil) -->
   @if (isMobileMenuOpen) {
-    <div
-      class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-40 md:hidden transition-opacity"
-      (click)="toggleMobileMenu()"
-      aria-hidden="true">
-    </div>
+  <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-40 md:hidden transition-opacity"
+    (click)="toggleMobileMenu()" aria-hidden="true">
+  </div>
   }
 
   <!-- MAIN APP WRAPPER -->
   <div class="flex flex-1 w-full pt-[73px] md:pt-0">
 
     <!-- SIDEBAR (Navegación Lateral Unificada) -->
-    <nav class="sidebar fixed md:relative z-50 top-0 left-0 h-full w-72 bg-white border-r border-gray-100 shadow-2xl md:shadow-none flex flex-col transform transition-transform duration-300 ease-in-out"
+    <nav
+      class="sidebar fixed md:relative z-50 top-0 left-0 h-full w-72 bg-white border-r border-gray-100 shadow-2xl md:shadow-none flex flex-col transform transition-transform duration-300 ease-in-out"
       [ngClass]="isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
       <!-- HEADER DEL SIDEBAR -->
@@ -41,7 +42,8 @@
           <h1 class="text-xl font-bold tracking-tight text-[#070025]">CURIM</h1>
         </div>
         <!-- Botón de cierre en móvil -->
-        <button (click)="toggleMobileMenu()" class="md:hidden p-2 -mr-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+        <button (click)="toggleMobileMenu()"
+          class="md:hidden p-2 -mr-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
           <lucide-angular name="x" class="w-5 h-5"></lucide-angular>
         </button>
       </div>
@@ -49,17 +51,16 @@
       <!-- ENLACES DE NAVEGACIÓN -->
       <div class="flex-1 px-4 py-6 overflow-y-auto space-y-2">
         @for (item of visibleNavItems; track item) {
-          <button
-            class="w-full flex items-center gap-3 px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-300 group"
-                    [ngClass]="activeItem === item.id 
+        <button
+          class="w-full flex items-center gap-3 px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-300 group"
+          [ngClass]="activeItem === item.id 
                         ? 'bg-[#02ab74]/10 text-[#02ab74] shadow-sm' 
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-[#070025]'"
-            (click)="setActive(item.id)">
-            <lucide-angular [name]="item.icon" class="w-5 h-5 transition-transform duration-300 group-hover:scale-110"
-              [ngClass]="activeItem === item.id ? 'text-[#02ab74]' : 'text-gray-400 group-hover:text-[#070025]'">
-            </lucide-angular>
-            <span class="tracking-wide">{{ item.label | translate }}</span>
-          </button>
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-[#070025]'" (click)="setActive(item.id)">
+          <lucide-angular [name]="item.icon" class="w-5 h-5 transition-transform duration-300 group-hover:scale-110"
+            [ngClass]="activeItem === item.id ? 'text-[#02ab74]' : 'text-gray-400 group-hover:text-[#070025]'">
+          </lucide-angular>
+          <span class="tracking-wide">{{ item.label | translate }}</span>
+        </button>
         }
       </div>
 
@@ -67,11 +68,12 @@
       <div class="px-4 py-6 border-t border-gray-100 bg-gray-50/50 mt-auto">
         <button
           class="w-full flex items-center gap-3 px-4 py-3.5 text-sm font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-xl transition-all duration-300 group shadow-sm"
-          (click)="logout()"
-          [disabled]="isLoggingOut">
+          (click)="logout()" [disabled]="isLoggingOut">
 
-          <lucide-angular name="log-out" class="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1"></lucide-angular>
-          <span class="tracking-wide">{{ isLoggingOut ? ('navbar.loggingOut' | translate) : ('navbar.logout' | translate) }}</span>
+          <lucide-angular name="log-out"
+            class="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1"></lucide-angular>
+          <span class="tracking-wide">{{ isLoggingOut ? ('navbar.loggingOut' | translate) : ('navbar.logout' |
+            translate) }}</span>
         </button>
       </div>
     </nav>

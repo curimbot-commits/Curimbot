@@ -149,7 +149,13 @@
     "email": "Correo Electrónico",
     "namePlaceholder": "Ingresa tu nombre completo",
     "emailPlaceholder": "Ingresa tu correo electrónico",
-    "notifications": "Notificaciones",
+    "notifications": {
+      "title": "Notificaciones",
+      "email": "Notificaciones por correo",
+      "push": "Notificaciones push",
+      "weeklySummary": "Resumen semanal",
+      "testEmail": "Enviar correo de prueba"
+    },
     "emailNotifs": "Notificaciones por Email",
     "emailNotifsDesc": "Recibe actualizaciones importantes por correo",
     "pushNotifs": "Notificaciones Push",
@@ -157,18 +163,24 @@
     "weeklySummary": "Resumen Semanal",
     "weeklySummaryDesc": "Recibe un resumen de actividad cada semana",
     "summaryFormat": "Formato del reporte",
-    "testEmail": "Enviar Email de Prueba",
-
     "preferences": "Preferencias",
     "language": "Idioma",
     "theme": "Tema de Interfaz",
     "saveChanges": "Guardar Cambios",
     "saving": "Guardando...",
-    "errors": {
-      "required": "Este campo es requerido",
-      "invalidEmail": "Email inválido",
-      "minLength": "Mínimo 2 caracteres",
-      "maxLength": "Máximo 100 caracteres"
+    "profile": {
+      "title": "Perfil",
+      "name": "Nombre",
+      "email": "Correo electrónico"
+    },
+    "interface": {
+      "title": "Interfaz",
+      "language": "Idioma",
+      "theme": "Tema"
+    },
+    "convocatoria": {
+      "title": "Convocatorias",
+      "description": "Activa o desactiva el acceso a convocatorias."
     },
     "languages": {
       "es": "Español",
@@ -180,20 +192,26 @@
       "auto": "Automático"
     },
     "alerts": {
-      "loadUserError": "Error al cargar datos del usuario",
-      "loadPrefsError": "Error al cargar preferencias",
-      "profileSuccess": "Perfil actualizado correctamente",
-      "profileError": "Error al actualizar perfil",
-      "notifSuccess": "Preferencias de notificaciones actualizadas",
-      "notifError": "Error al actualizar preferencias",
-      "langSuccess": "Idioma actualizado",
-      "langError": "Error al cambiar idioma",
-      "themeSuccess": "Tema actualizado",
-      "themeError": "Error al cambiar tema",
-      "convSuccess": "Convocatoria actualizada correctamente",
-      "convError": "Error actualizando convocatoria",
-      "emailSuccess": "Email de prueba enviado. Revisa tu bandeja de entrada.",
-      "emailError": "Error al enviar email de prueba"
+      "profileSuccess": "Perfil actualizado correctamente.",
+      "profileError": "No se pudo actualizar el perfil.",
+      "loadUserError": "No se pudo cargar la información del usuario.",
+      "loadPrefsError": "No se pudieron cargar tus preferencias.",
+      "notifSuccess": "Preferencias de notificaciones actualizadas.",
+      "notifError": "No se pudieron actualizar las notificaciones.",
+      "langSuccess": "Idioma actualizado.",
+      "langError": "No se pudo actualizar el idioma.",
+      "themeSuccess": "Tema actualizado.",
+      "themeError": "No se pudo actualizar el tema.",
+      "convSuccess": "Acceso a convocatorias actualizado.",
+      "convError": "No se pudo actualizar el acceso a convocatorias.",
+      "emailSuccess": "Correo de prueba enviado.",
+      "emailError": "No se pudo enviar el correo de prueba."
+    },
+    "errors": {
+      "required": "Este campo es obligatorio.",
+      "invalidEmail": "Correo electrónico inválido.",
+      "minLength": "El valor es demasiado corto.",
+      "maxLength": "El valor es demasiado largo."
     }
   },
   "navbar": {
@@ -264,8 +282,8 @@
     "greeting": "Hola, ¿en qué te puedo ayudar hoy con tus documentos?",
     "inputPlaceholder": "Envía un mensaje a Curim...",
     "suggestionsTitle": "Sugerencias de preguntas:",
-    "startVoice": "Iniciar chat por voz en Athenia",
-    "poweredBy": "Powered by OpenAI & Athenia",
+    "startVoice": "Iniciar chat por voz en Curim",
+    "poweredBy": "Powered by OpenAI & Curim",
     "toggleOpen": "Abrir chat",
     "toggleClose": "Cerrar chat",
     "minimize": "Minimizar chat",
@@ -279,7 +297,7 @@
     },
     "close": "Cerrar chat",
     "emptyTitle": "¿En qué puedo ayudarte?",
-    "emptySubtitle": "Athenia puede responder preguntas sobre tus documentos, ayudarte a redactar o resumir información compleja.",
+    "emptySubtitle": "Curim puede responder preguntas sobre tus documentos, ayudarte a redactar o resumir información compleja.",
     "sources": "Fuentes",
     "inputLabel": "Mensaje",
     "send": "Enviar mensaje",
@@ -752,48 +770,32 @@
   },
   "landing": {
     "nav": {
-      "company": "Trayectoria",
-      "features": "IA Assistant",
-      "roles": "Soluciones",
-      "platform": "PLATAFORMA →"
+      "home": "Inicio",
+      "company": "Compañía",
+      "features": "Plataforma",
+      "roles": "Roles",
+      "platform": "Entrar"
     },
     "mobileMenu": {
-      "company": "Trayectoria",
-      "features": "IA Assistant",
-      "roles": "Soluciones",
-      "enterPlatform": "Entrar a la Plataforma"
+      "company": "Compañía",
+      "features": "Plataforma",
+      "roles": "Roles",
+      "enterPlatform": "Entrar a la plataforma"
     },
     "hero": {
-      "title1": "Curim AI",
-      "title2": "Assistant",
-      "subtitle": "No es solo una herramienta, es tu socio estratégico que entiende tus documentos mejor que nadie.",
-      "startNow": "Empezar Ahora",
-      "ourTrajectory": "Nuestra Trayectoria"
+      "title1": "El futuro del",
+      "title2": "seguro inteligente",
+      "subtitle": "Una plataforma de crecimiento para el agente independiente.",
+      "startNow": "Comenzar ahora",
+      "ourTrajectory": "Nuestra trayectoria"
     },
     "partners": {
-      "trustedBy": "Empresas que confían en nosotros"
-    },
-    "company": {
-      "badge": "Trayectoria y Liderazgo",
-      "title": "La Agencia Hispana #1 <br> en los Estados Unidos.",
-      "description": "Fundada en 2014, Curiman Brokers Group ha revolucionado el mercado financiero. Nuestra misión es simple: <strong class=\"text-gray-900 dark:text-gray-200\">empoderar a la comunidad hispana</strong> a través de conocimiento y tecnología de punta.",
-      "stats": {
-        "states": "Estados de la Unión",
-        "agents": "Agentes Expertos"
-      },
-      "badgeCard": {
-        "title": "Liderazgo Hispano",
-        "desc": "Reconocidos nacionalmente por nuestra excelencia y compromiso con la comunidad."
-      },
-      "ranking": {
-        "value": "#1",
-        "label": "Ranking Nacional"
-      }
+      "trustedBy": "Empresas con las que trabajamos"
     },
     "featuresSection": {
-      "badge": "Tecnología de Vanguardia",
-      "title": "Curim AI Assistant",
-      "subtitle": "No es solo una herramienta, es tu socio estratégico que entiende tus documentos mejor que nadie."
+      "badge": "Plataforma",
+      "title": "Todo lo que necesitas, en un solo lugar",
+      "subtitle": "Herramientas diseñadas para que te concentres en lo que realmente genera crecimiento: servir a tus clientes."
     },
     "features": {
       "upload": {
@@ -819,11 +821,35 @@
       "security": {
         "title": "Seguridad Robusta",
         "desc": "Tus documentos y datos están protegidos con cifrado de grado militar. Tu privacidad es nuestra máxima prioridad."
+      },
+      "ai": {
+        "title": "Inteligencia Artificial",
+        "desc": "Análisis predictivo y automatización para acelerar tu proceso de ventas."
+      },
+      "analytics": {
+        "title": "Analítica en tiempo real",
+        "desc": "Dashboards y reportes que te muestran el pulso de tu negocio al instante."
+      },
+      "crm": {
+        "title": "CRM inteligente",
+        "desc": "Gestiona clientes, pólizas y oportunidades desde un solo lugar."
+      },
+      "training": {
+        "title": "Entrenamiento continuo",
+        "desc": "Contenido en producto, ventas y liderazgo diseñado por expertos."
+      },
+      "support": {
+        "title": "Soporte especializado",
+        "desc": "Equipo dedicado para acompañarte en cada etapa de tu negocio."
+      },
+      "carriers": {
+        "title": "Alianzas estratégicas",
+        "desc": "Acceso a productos competitivos de las compañías líderes de la industria."
       }
     },
     "rolesSection": {
-      "badge": "Adaptabilidad Total",
-      "title": "Soluciones por Rol"
+      "badge": "Para quién es",
+      "title": "Un ecosistema para cada etapa de tu carrera"
     },
     "personas": {
       "agents": {
@@ -861,32 +887,271 @@
           "Reducción de tiempos de espera",
           "Satisfacción del cliente"
         ]
+      },
+      "agent": {
+        "title": "Agente independiente",
+        "description": "Comienza tu carrera con el respaldo de una organización completa.",
+        "benefits": [
+          "Contratación simplificada",
+          "Entrenamiento continuo",
+          "Herramientas de venta"
+        ]
+      },
+      "producer": {
+        "title": "Productor experimentado",
+        "description": "Escala tu producción con sistemas y tecnología de nivel empresarial.",
+        "benefits": [
+          "Case management",
+          "Marketing profesional",
+          "Soporte de new business"
+        ]
+      },
+      "leader": {
+        "title": "Líder de agencia",
+        "description": "Construye y administra tu propia organización con nuestro respaldo.",
+        "benefits": [
+          "Contracting & commissions",
+          "Desarrollo de líderes",
+          "Estrategia de crecimiento"
+        ]
+      },
+      "recruiter": {
+        "title": "Reclutador",
+        "description": "Atrae y desarrolla talento con un ecosistema probado de soporte.",
+        "benefits": [
+          "Herramientas de reclutamiento",
+          "Onboarding estructurado",
+          "Acompañamiento constante"
+        ]
       }
     },
-    "cta": {
-      "title": "Impulsa tu Agencia Hoy Mismo.",
-      "button": "Acceso a la Plataforma"
-    },
     "footer": {
-      "description": "Innovación tecnológica para el mercado de seguros hispano en Estados Unidos.",
-      "company": "Compañía",
-      "companyLinks": {
-        "about": "Sobre Curiman Group",
-        "mission": "Nuestra Misión",
-        "careers": "Carreras"
+      "description": "Plataforma de crecimiento para agentes y agencias independientes en la industria de seguros y servicios financieros.",
+      "rights": "Todos los derechos reservados.",
+      "trust": {
+        "ranked": "#1 Agencia Hispana",
+        "states": "50 Estados",
+        "agents": "+3,000 Agentes"
       },
-      "product": "Producto",
-      "productLinks": {
-        "features": "Características",
-        "security": "Seguridad",
-        "faq": "FAQ"
+      "columns": {
+        "product": "Producto",
+        "company": "Compañía",
+        "contact": "Contacto"
       },
-      "legal": "Legal",
+      "contactLinks": {
+        "phone": "Teléfono",
+        "address": "Dirección"
+      },
       "legalLinks": {
         "privacy": "Privacidad",
-        "terms": "Términos"
+        "terms": "Términos",
+        "cookies": "Cookies",
+        "licenses": "Licencias"
       },
-      "copyright": "© 2025 CURIM AI. Powered by Curiman Brokers Group."
+      "carriersStrip": "Respaldados por las compañías líderes de la industria"
+    },
+    "promise": {
+      "badge": "NUESTRA PROMESA",
+      "title": "La infraestructura detrás del agente independiente",
+      "you": {
+        "title": "Tú",
+        "item1": "Tú desarrollas las relaciones.",
+        "item2": "Tú haces las recomendaciones.",
+        "item3": "Tú construyes tu negocio."
+      },
+      "us": {
+        "title": "Nosotros",
+        "statement": "Nosotros construimos el soporte detrás de ti.",
+        "brand": "Curiman Brokers Group"
+      },
+      "objective": "Porque en Curiman Brokers Group nuestro objetivo no es simplemente que tengas acceso a productos. Nuestro objetivo es ayudarte a producir más, operar mejor y construir un negocio que pueda crecer contigo.",
+      "tagline": "ERES INDEPENDIENTE, PERO NO ESTÁS SOLO.",
+      "subtagline": "La infraestructura detrás del agente independiente"
+    },
+    "company": {
+      "badge": "Nuestra empresa",
+      "title": "Construimos <span class=\"text-[#02ab74]\">infraestructura</span> para que nuestros agentes puedan crecer.",
+      "description": "Curiman Brokers Group es una plataforma de crecimiento para agentes y agencias independientes, con una comunidad de miles de agentes y alianzas estratégicas con compañías líderes.",
+      "stats": {
+        "states": "Estados cubiertos",
+        "agents": "Agentes activos",
+        "statesValue": "50",
+        "agentsValue": "3K+"
+      },
+      "badgeCard": {
+        "title": "Liderazgo Hispano",
+        "desc": "Reconocidos nacionalmente por nuestra excelencia y compromiso con la comunidad."
+      },
+      "ranking": {
+        "value": "#1",
+        "label": "Agencia Hispana"
+      },
+      "certificate": {
+        "issuer": "National Life Group",
+        "alt": "Certificado National Life Group - Curiman Brokers #1 Agencia Hispana de Vida",
+        "hoverTitle": "Certificado Oficial — Agencia Hispana #1"
+      },
+      "trayectoria": {
+        "badge": "Trayectoria",
+        "title": "Construyendo agentes.<br>Desarrollando líderes.<br>Transformando negocios.",
+        "intro": "Curiman Brokers Group nace con una visión clara: crear una organización donde el agente independiente no tenga que construir su negocio solo. A través de los años, CBG ha evolucionado de ser una organización enfocada en distribución de productos de seguros a convertirse en una verdadera plataforma de crecimiento para agentes y agencias independientes.",
+        "milestones": {
+          "origin": {
+            "title": "El origen",
+            "desc": "CBG nace con una visión clara: crear una organización donde el agente independiente no tenga que construir su negocio solo."
+          },
+          "growth": {
+            "title": "Crecimiento",
+            "desc": "Expansión de nuestra comunidad de agentes y consolidación de alianzas estratégicas con compañías líderes de la industria."
+          },
+          "platform": {
+            "title": "La plataforma",
+            "desc": "Evolución de una organización de distribución a una verdadera plataforma de crecimiento para agentes y agencias independientes."
+          },
+          "today": {
+            "title": "Hoy",
+            "desc": "Una comunidad de miles de agentes forma parte de nuestro ecosistema, respaldada por un equipo especializado e infraestructura diseñada para acompañarlos en todo el ciclo de su negocio."
+          }
+        },
+        "closing": "No solamente distribuimos productos.<br><span class=\"text-[#02ab74]\">Construimos infraestructura</span> para que nuestros agentes puedan crecer."
+      },
+      "liderazgo": {
+        "badge": "Liderazgo",
+        "title": "Liderazgo que entiende el negocio porque vive el negocio.",
+        "intro": "Curiman Brokers Group es liderado por profesionales con experiencia en distribución, ventas, desarrollo de agentes, operaciones y crecimiento de organizaciones dentro de la industria de seguros y servicios financieros.",
+        "premise": "El crecimiento de CBG depende del crecimiento de nuestros agentes.",
+        "actionsTitle": "Trabajamos activamente en:",
+        "actions": {
+          "strategy": {
+            "title": "Estrategia",
+            "desc": "Planes comerciales adaptados a cada etapa del agente."
+          },
+          "systems": {
+            "title": "Sistemas",
+            "desc": "Procesos replicables que escalan sin fricción."
+          },
+          "training": {
+            "title": "Entrenamiento",
+            "desc": "Formación continua en producto, venta y liderazgo."
+          },
+          "tech": {
+            "title": "Tecnología",
+            "desc": "Herramientas que aceleran la productividad del agente."
+          },
+          "carriers": {
+            "title": "Relaciones con carriers",
+            "desc": "Alianzas estratégicas con compañías líderes de la industria."
+          },
+          "support": {
+            "title": "Estructuras de soporte",
+            "desc": "Acompañamiento operativo en cada etapa del negocio."
+          }
+        },
+        "cultureTitle": "Nuestra cultura",
+        "pillars": {
+          "service": "Servicio",
+          "discipline": "Disciplina",
+          "education": "Educación",
+          "innovation": "Innovación",
+          "integrity": "Integridad",
+          "growth": "Crecimiento"
+        }
+      },
+      "alcance": {
+        "badge": "Alcance",
+        "title": "Una organización construida para crecer contigo.",
+        "intro": "Una red de más de 3,000 agentes y una infraestructura diseñada para apoyar la distribución de seguros de vida y soluciones de retiro en diferentes mercados de los Estados Unidos.",
+        "stats": {
+          "agents": "Agentes activos",
+          "states": "Estados cubiertos",
+          "carriers": "Carriers aliados"
+        },
+        "ecosystemTitle": "Nuestro ecosistema",
+        "ecosystemSubtitle": "Conectamos tres elementos fundamentales para el crecimiento del agente.",
+        "ecosystem": {
+          "carriers": {
+            "title": "Carriers",
+            "desc": "Compañías líderes con productos competitivos y respaldo sólido."
+          },
+          "cbg": {
+            "title": "Curiman Brokers Group",
+            "desc": "Infraestructura, soporte, entrenamiento y estrategia comercial."
+          },
+          "agents": {
+            "title": "Agentes Independientes",
+            "desc": "Profesionales que construyen su negocio con nuestro respaldo."
+          }
+        },
+        "profilesTitle": "Nuestra comunidad",
+        "profiles": {
+          "starter": {
+            "title": "Agentes que comienzan",
+            "desc": "Acompañamiento desde el primer día para construir una carrera sólida."
+          },
+          "producer": {
+            "title": "Productores experimentados",
+            "desc": "Herramientas y sistemas para escalar la producción a un nivel superior."
+          },
+          "leader": {
+            "title": "Líderes de agencia",
+            "desc": "Soporte para construir y administrar organizaciones propias."
+          }
+        }
+      },
+      "mision": {
+        "badge": "Misión",
+        "title": "Empoderar al agente independiente.",
+        "intro": "Nuestra misión es empoderar al agente para que pueda construir un negocio sólido, escalable y sostenible.",
+        "pillars": {
+          "products": "Productos competitivos",
+          "education": "Educación continua",
+          "technology": "Tecnología",
+          "strategy": "Estrategias comerciales",
+          "support": "Soporte integral"
+        },
+        "outcomesTitle": "Buscamos desarrollar...",
+        "outcomes": {
+          "producers": "Mejores productores",
+          "professionals": "Mejores profesionales",
+          "leaders": "Mejores líderes"
+        }
+      },
+      "propuesta": {
+        "badge": "Propuesta de Valor",
+        "title": "Tu negocio. Nuestro respaldo.",
+        "subtitle": "Un ecosistema de soporte especializado.",
+        "intro": "En Curiman Brokers Group creemos que un agente no necesita solamente un contrato con una compañía de seguros. Necesita una organización detrás de él. Por eso hemos construido un ecosistema de soporte especializado que acompaña al agente antes, durante y después de cada venta.",
+        "services": {
+          "caseManagement": {
+            "title": "Case Management",
+            "desc": "Te ayudamos a estructurar y dar seguimiento a tus casos, especialmente cuando requieren mayor análisis, estrategia o coordinación."
+          },
+          "training": {
+            "title": "Training",
+            "desc": "Educación continua en productos, conceptos, estrategias de venta y desarrollo de negocio para ayudarte a crecer profesionalmente."
+          },
+          "newBusiness": {
+            "title": "New Business",
+            "desc": "Acompañamos tus aplicaciones desde su envío hasta su proceso con la compañía, ayudando a identificar y resolver requerimientos."
+          },
+          "marketing": {
+            "title": "Marketing",
+            "desc": "Herramientas, contenido y estrategias para ayudarte a comunicar mejor, generar oportunidades y fortalecer tu presencia en el mercado."
+          },
+          "contracting": {
+            "title": "Contracting & Commissions",
+            "desc": "Apoyo en contrataciones, appointments, niveles y procesos relacionados con tus comisiones para que puedas concentrarte en producir."
+          },
+          "eft": {
+            "title": "EFT",
+            "desc": "Seguimiento especializado para facilitar la obtención y administración de la información necesaria para completar procesos de pago y emisión."
+          },
+          "afterIssue": {
+            "title": "After Issue",
+            "desc": "Nuestro trabajo no termina cuando una póliza es emitida. Te acompañamos en procesos posteriores a la emisión para ayudarte a brindar un mejor servicio a tus clientes."
+          }
+        }
+      }
     }
   }
 }

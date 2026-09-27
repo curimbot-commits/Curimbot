@@ -1,0 +1,117 @@
+<!-- HEADER DINÁMICO -->
+<header class="fixed top-0 z-30 w-full transition-all duration-500 border-b" [ngClass]="isScrolled
+    ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-gray-200/20 dark:border-gray-100/30 shadow-lg py-3'
+    : 'bg-transparent border-transparent py-5 backdrop-blur-sm'">
+
+  <div class="container mx-auto px-6 flex items-center justify-between">
+
+    <!-- LOGO -->
+    <a routerLink="/" class="flex items-center gap-3 group cursor-pointer shrink-0" (click)="scrollToTop()">
+      <div
+        class="p-2.5 bg-gradient-to-br from-[#02ab74] via-[#02ab74] to-[#7209b7] rounded-xl shadow-lg transition-transform group-hover:scale-110">
+        <div class="w-6 h-6">
+          <app-eye-tracker [color]="'#ffffff'"></app-eye-tracker>
+        </div>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-xl font-black tracking-tighter leading-none">CURIM AI</span>
+        <span class="text-[10px] font-black tracking-[0.2em] uppercase opacity-70">By Curiman Brokers Group</span>
+      </div>
+    </a>
+
+    <!-- NAV DESKTOP -->
+    <nav class="hidden lg:flex items-center gap-6 xl:gap-8 text-[11px] xl:text-xs font-black uppercase tracking-widest">
+
+      @for (link of companyLinks; track link.path) {
+      <a [routerLink]="link.path" routerLinkActive="text-[#02ab74]" [routerLinkActiveOptions]="{ exact: false }"
+        class="nav-link-custom transition-colors" [ngClass]="isScrolled
+             ? 'text-gray-700 dark:text-gray-200 hover:text-[#02ab74]'
+             : 'text-white hover:text-[#02ab74]'">
+        {{ link.labelKey | translate }}
+      </a>
+      }
+
+      <!-- Divisor -->
+      <div class="w-px h-5 mx-1 transition-colors"
+        [ngClass]="isScrolled ? 'bg-gray-300 dark:bg-white/20' : 'bg-white/20'"></div>
+
+      <!-- Language Toggle -->
+      <button (click)="toggleLanguage()"
+        [attr.aria-label]="'Cambiar idioma a ' + (currentLang() === 'es' ? 'English' : 'Español')"
+        class="flex items-center gap-1.5 px-3 py-2.5 rounded-xl transition-all hover:scale-110 active:scale-95 shadow-sm border font-black text-[10px] tracking-widest uppercase"
+        [ngClass]="isScrolled
+                ? 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700'
+                : 'bg-white/10 text-white backdrop-blur-md border-white/20'">
+        <lucide-angular name="languages" class="w-4 h-4"></lucide-angular>
+        <span>{{ currentLang() === 'es' ? 'ES' : 'EN' }}</span>
+      </button>
+
+      <!-- Theme Toggle -->
+      <button (click)="theme.toggle()" aria-label="Toggle theme"
+        class="p-2.5 rounded-xl transition-all hover:scale-110 active:scale-95 shadow-sm border" [ngClass]="isScrolled
+                ? 'bg-white dark:bg-gray-800 text-gray-800 dark:text-yellow-400 border-gray-200 dark:border-gray-700'
+                : 'bg-white/10 text-white backdrop-blur-md border-white/20'">
+        <lucide-angular [name]="theme.themeIcon()" class="w-4 h-4"></lucide-angular>
+      </button>
+
+      <!-- Login CTA -->
+      <button (click)="goToLogin()" class="ml-1 px-6 xl:px-8 py-3 bg-[#02ab74] hover:bg-[#028a5f] text-white text-[10px] font-black rounded-xl
+                     shadow-xl hover:shadow-[#02ab74]/40 transition-all hover:-translate-y-1 active:translate-y-0
+                     uppercase tracking-[0.15em]">
+        {{ 'landing.nav.platform' | translate }}
+      </button>
+    </nav>
+
+    <!-- MOBILE TOGGLE -->
+    <div class="flex lg:hidden items-center gap-3">
+
+      <!-- Language Toggle Mobile -->
+      <button (click)="toggleLanguage()" aria-label="Toggle language"
+        class="flex items-center gap-1 px-2.5 py-2 rounded-lg transition-colors font-black text-[10px] tracking-widest uppercase"
+        [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
+        <lucide-angular name="languages" class="w-4 h-4"></lucide-angular>
+        <span>{{ currentLang() === 'es' ? 'ES' : 'EN' }}</span>
+      </button>
+
+      <button (click)="theme.toggle()" aria-label="Toggle theme" class="p-2 rounded-lg transition-colors"
+        [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
+        <lucide-angular [name]="theme.themeIcon()" class="w-5 h-5"></lucide-angular>
+      </button>
+      <button (click)="toggleMobileMenu()" aria-label="Toggle menu" class="p-2 rounded-lg transition-colors"
+        [ngClass]="isScrolled ? 'text-gray-700 dark:text-gray-200' : 'text-white'">
+        <lucide-angular [name]="mobileMenuOpen ? 'x' : 'menu'" class="w-6 h-6"></lucide-angular>
+      </button>
+    </div>
+  </div>
+
+  <!-- MOBILE MENU -->
+  @if (mobileMenuOpen) {
+  <div
+    class="lg:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/10 p-6 shadow-2xl animate-fade-in-down backdrop-blur-lg">
+    <nav class="flex flex-col gap-1 text-gray-900 dark:text-white">
+
+      <!-- Los 5 links como acordeón -->
+      @for (link of companyLinks; track link.path) {
+      <a [routerLink]="link.path" routerLinkActive="text-[#02ab74]" [routerLinkActiveOptions]="{ exact: false }"
+        (click)="closeMobileMenu()" class="py-3 text-base font-bold hover:text-[#02ab74] transition-colors">
+        {{ link.labelKey | translate }}
+      </a>
+      }
+
+      <hr class="border-gray-100 dark:border-white/10 my-2">
+
+      <!-- Language Toggle Mobile (grande) -->
+      <button (click)="toggleLanguage()"
+        class="w-full py-3 mb-2 border-2 border-gray-200 dark:border-white/20 text-gray-900 dark:text-white font-bold rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
+        <lucide-angular name="languages" class="w-5 h-5"></lucide-angular>
+        {{ currentLang() === 'es' ? 'Switch to English' : 'Cambiar a Español' }}
+      </button>
+
+      <button (click)="goToLogin()"
+        class="w-full py-3 bg-[#02ab74] hover:bg-[#028a5f] text-white font-bold rounded-xl shadow-lg transition-all active:scale-95">
+        {{ 'landing.mobileMenu.enterPlatform' | translate }}
+      </button>
+    </nav>
+  </div>
+  }
+</header>

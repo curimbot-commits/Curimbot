@@ -1,0 +1,88 @@
+<app-header></app-header>
+
+<main>
+
+  <!-- ============================================= -->
+  <!-- HERO FULL-BLEED      -->
+  <!-- ============================================= -->
+  <section
+    class="gsap-hero-section relative h-screen min-h-[700px] max-h-[950px] flex items-center overflow-hidden bg-black">
+
+    <!-- Imagen con parallax -->
+    <img src="assets/images/PropuestaValor/PropuestaValor1.webp" alt="Propuesta de valor Curim AI"
+      class="gsap-hero-image absolute inset-0 w-full h-full object-cover object-center will-change-transform"
+      loading="eager" fetchpriority="high" />
+
+    <!-- Overlays -->
+    <div class="absolute inset-0 bg-black/55"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/20"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/60"></div>
+    <div class="absolute inset-0 bg-gradient-to-br from-[#7209b7]/15 via-transparent to-[#02ab74]/20 mix-blend-overlay">
+    </div>
+
+    <!-- Contenido -->
+    <div class="container mx-auto px-6 relative z-10 pt-24">
+      <div class="max-w-3xl">
+
+        <span
+          class="gsap-hero-badge inline-flex items-center gap-2 bg-[#7209b7] text-white font-black tracking-[0.3em] uppercase text-[10px] px-4 py-2 rounded-full mb-6 shadow-lg shadow-[#7209b7]/40 backdrop-blur-sm">
+          <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+          {{ 'landing.company.propuesta.badge' | translate }}
+        </span>
+
+        <h1
+          class="gsap-hero-title text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.95] mb-4 drop-shadow-2xl"
+          [innerHTML]="'landing.company.propuesta.title' | translate"></h1>
+
+        <p class="gsap-hero-subtitle text-2xl md:text-3xl font-black text-[#02ab74] tracking-tight mb-8 drop-shadow-lg">
+          {{ 'landing.company.propuesta.subtitle' | translate }}
+        </p>
+
+        <p class="gsap-hero-sub text-lg text-white/90 leading-relaxed font-medium max-w-2xl drop-shadow-lg"
+          [innerHTML]="'landing.company.propuesta.intro' | translate"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================= -->
+  <!-- SECCIÓN SIGUIENTE                              -->
+  <!-- ============================================= -->
+  <section class="relative bg-white dark:bg-[#080808] transition-colors pt-16 pb-24 overflow-hidden">
+
+    <div
+      class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#7209b7]/10 rounded-full blur-3xl -z-10 pointer-events-none">
+    </div>
+    <div
+      class="absolute top-0 right-0 w-[400px] h-[400px] bg-[#02ab74]/10 rounded-full blur-3xl -z-10 pointer-events-none">
+    </div>
+
+    <div class="container mx-auto px-6 relative">
+
+      <!-- ============ GRID DE SERVICIOS ============ -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        @for (s of services; track s.key; let i = $index) {
+        <div
+          class="gsap-service-card p-10 rounded-[2.5rem] bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-[#02ab74]/40 hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#02ab74]/10 transition-all group"
+          [ngClass]="{ 'lg:col-start-2': i === 6 }">
+
+          <div
+            class="gsap-service-icon w-14 h-14 rounded-2xl bg-white dark:bg-white/10 flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform">
+            <lucide-angular [name]="s.icon" class="w-6 h-6 text-[#02ab74]"></lucide-angular>
+          </div>
+
+          <h3 class="text-lg font-black text-gray-900 dark:text-white mb-3 tracking-tight uppercase">
+            {{ 'landing.company.propuesta.services.' + s.key + '.title' | translate }}
+          </h3>
+
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+            {{ 'landing.company.propuesta.services.' + s.key + '.desc' | translate }}
+          </p>
+        </div>
+        }
+
+      </div>
+    </div>
+  </section>
+</main>
+<app-footer></app-footer>

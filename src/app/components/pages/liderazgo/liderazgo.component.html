@@ -1,0 +1,139 @@
+<app-header></app-header>
+
+<main>
+
+  <section
+    class="gsap-hero-section relative h-screen min-h-[700px] max-h-[900px] flex items-center overflow-hidden bg-black">
+    <!-- Imagen de fondo -->
+    <img src="assets/images/Liderazgo/Liderazgo2.webp" alt="Liderazgo Curim AI"
+      class="gsap-hero-image absolute inset-0 w-full h-full object-cover object-center will-change-transform"
+      loading="eager" fetchpriority="high" />
+
+    <!-- Overlays -->
+    <div class="absolute inset-0 bg-black/55"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/20"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/60"></div>
+    <div class="absolute inset-0 bg-gradient-to-br from-[#02ab74]/15 via-transparent to-[#7209b7]/20 mix-blend-overlay">
+    </div>
+
+    <!-- Contenido -->
+    <div class="container mx-auto px-6 relative z-10 pt-32 pb-24">
+      <div class="max-w-3xl">
+
+        <span
+          class="gsap-hero-badge inline-flex items-center gap-2 bg-[#7209b7] text-white font-black tracking-[0.3em] uppercase text-[10px] px-4 py-2 rounded-full mb-6 shadow-lg shadow-[#7209b7]/40 backdrop-blur-sm">
+          <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+          {{ 'landing.company.liderazgo.badge' | translate }}
+        </span>
+
+        <h1
+          class="gsap-hero-title text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.95] mb-8 drop-shadow-2xl"
+          [innerHTML]="'landing.company.liderazgo.title' | translate"></h1>
+
+        <p class="gsap-hero-sub text-lg md:text-xl text-white/90 leading-relaxed font-medium max-w-2xl drop-shadow-lg"
+          [innerHTML]="'landing.company.liderazgo.intro' | translate"></p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============================================= -->
+  <!-- RESTO DE LA PÁGINA                             -->
+  <!-- ============================================= -->
+<section class="relative bg-gray-50 dark:bg-[#0a0a0a] transition-colors pt-12 pb-24">
+    <div
+      class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#7209b7]/10 rounded-full blur-3xl -z-10 pointer-events-none">
+    </div>
+    <div
+      class="absolute bottom-40 left-0 w-[400px] h-[400px] bg-[#02ab74]/10 rounded-full blur-3xl -z-10 pointer-events-none">
+    </div>
+
+    <div class="container mx-auto px-6 relative">
+
+      <!-- ============ PREMISA DESTACADA ============ -->
+      <div
+        class="gsap-premise mb-20 p-10 md:p-14 rounded-[3rem] bg-[#02ab74]/5 dark:bg-[#02ab74]/10 border border-[#02ab74]/20 relative overflow-hidden">
+        <!-- Decoración lateral -->
+        <div class="absolute -right-16 -top-16 w-64 h-64 bg-[#02ab74]/20 rounded-full blur-3xl"></div>
+        <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-[#7209b7]/15 rounded-full blur-3xl"></div>
+
+        <p class="gsap-premise-text relative text-2xl md:text-3xl font-black text-[#02ab74] tracking-tight leading-snug"
+          [innerHTML]="'landing.company.liderazgo.premise' | translate"></p>
+      </div>
+
+      <!-- ============ ACCIONES DE LIDERAZGO ============ -->
+      <h2 class="gsap-section-title text-2xl font-black text-gray-900 dark:text-white mb-10 tracking-tight">
+        {{ 'landing.company.liderazgo.actionsTitle' | translate }}
+      </h2>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
+        @for (a of leadershipActions; track a.key) {
+        <div
+          class="gsap-action-card p-8 bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 hover:border-[#02ab74]/40 hover:-translate-y-1 transition-all group">
+          <div
+            class="gsap-action-icon w-12 h-12 rounded-xl bg-[#02ab74]/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <lucide-angular [name]="a.icon" class="w-5 h-5 text-[#02ab74]"></lucide-angular>
+          </div>
+          <h3 class="text-base font-bold text-gray-900 dark:text-white mb-2">
+            {{ 'landing.company.liderazgo.actions.' + a.key + '.title' | translate }}
+          </h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+            {{ 'landing.company.liderazgo.actions.' + a.key + '.desc' | translate }}
+          </p>
+        </div>
+        }
+      </div>
+
+      <!-- ============ CULTURA  ============ -->
+      <div class="gsap-culture-block grid lg:grid-cols-2 gap-12 items-center">
+
+        <!-- Imagen -->
+        <div class="relative group order-2 lg:order-1">
+          <div
+            class="absolute -inset-4 bg-gradient-to-tr from-[#02ab74]/20 via-[#7209b7]/15 to-transparent rounded-[3rem] blur-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-700">
+          </div>
+
+          <div class="relative rounded-[2.5rem] overflow-hidden border border-gray-100 dark:border-white/10 shadow-2xl">
+            <img src="assets/images/Liderazgo/Liderazgo1.webp" alt="Cultura y valores Curim AI"
+              class="gsap-culture-image w-full h-[420px] md:h-[500px] object-cover transition-transform duration-700 group-hover:scale-105 will-change-transform"
+              loading="lazy" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-[#02ab74]/10 to-[#7209b7]/15 mix-blend-overlay"></div>
+
+            <!-- Etiqueta flotante -->
+            <div class="absolute bottom-6 left-6 right-6 flex items-center gap-3">
+              <div class="w-2 h-2 rounded-full bg-[#7209b7] animate-pulse"></div>
+              <span class="text-white font-black text-[10px] tracking-[0.3em] uppercase drop-shadow-lg">
+                {{ 'landing.company.liderazgo.cultureTitle' | translate }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pilares -->
+        <div class="order-1 lg:order-2">
+          <h2
+            class="gsap-section-title text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-10">
+            {{ 'landing.company.liderazgo.cultureTitle' | translate }}
+          </h2>
+
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            @for (p of pillars; track p.key) {
+            <div
+              class="gsap-pillar flex flex-col items-center p-6 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 text-center hover:border-[#7209b7]/40 transition-all">
+              <div class="w-12 h-12 rounded-full bg-[#7209b7]/10 flex items-center justify-center mb-4">
+                <lucide-angular [name]="p.icon" class="w-5 h-5 text-[#7209b7]"></lucide-angular>
+              </div>
+              <span class="text-xs font-black uppercase tracking-widest text-gray-800 dark:text-gray-200">
+                {{ 'landing.company.liderazgo.pillars.' + p.key | translate }}
+              </span>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+<app-footer></app-footer>

@@ -1,0 +1,107 @@
+<app-header></app-header>
+
+<main>
+
+  <!-- ============================================= -->
+  <!-- HERO.                                         -->
+  <!-- ============================================= -->
+  <section
+    class="gsap-hero-section relative h-screen min-h-[700px] max-h-[950px] flex items-center overflow-hidden bg-black">
+
+    <!-- Imagen -->
+    <img src="assets/images/Mision/Mision1.webp" alt="Misión Curim AI"
+      class="gsap-hero-image absolute inset-0 w-full h-full object-cover object-center will-change-transform"
+      loading="eager" fetchpriority="high" />
+
+    <!-- Overlays -->
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/20"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/70"></div>
+    <div class="absolute inset-0 bg-gradient-to-br from-[#02ab74]/15 via-transparent to-[#7209b7]/20 mix-blend-overlay">
+    </div>
+
+    <!-- Contenido -->
+    <div class="container mx-auto px-6 relative z-10 pt-24">
+      <div class="max-w-3xl">
+
+        <span
+          class="gsap-hero-badge inline-flex items-center gap-2 bg-[#02ab74] text-white font-black tracking-[0.3em] uppercase text-[10px] px-4 py-2 rounded-full mb-6 shadow-lg shadow-[#02ab74]/40 backdrop-blur-sm">
+          <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+          {{ 'landing.company.mision.badge' | translate }}
+        </span>
+
+        <h1
+          class="gsap-hero-title text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.95] mb-8 drop-shadow-2xl"
+          [innerHTML]="'landing.company.mision.title' | translate"></h1>
+
+        <p class="gsap-hero-sub text-lg md:text-xl text-white/90 leading-relaxed font-medium max-w-2xl drop-shadow-lg"
+          [innerHTML]="'landing.company.mision.intro' | translate"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================= -->
+  <!-- SECCIÓN SIGUIENTE                              -->
+  <!-- ============================================= -->
+  <section class="relative bg-gray-50 dark:bg-[#0a0a0a] transition-colors pt-16 pb-24 overflow-hidden">
+
+    <div
+      class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#02ab74]/10 rounded-full blur-3xl -z-10 pointer-events-none">
+    </div>
+    <div
+      class="absolute bottom-40 left-0 w-[400px] h-[400px] bg-[#7209b7]/10 rounded-full blur-3xl -z-10 pointer-events-none">
+    </div>
+
+    <div class="container mx-auto px-6 relative">
+
+      <!-- ============ PILARES ============ -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-24">
+        @for (p of pillars; track p.key) {
+        <div
+          class="gsap-pillar-card p-8 rounded-3xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 text-center hover:border-[#02ab74]/40 hover:-translate-y-1 transition-all">
+          <div
+            class="gsap-pillar-icon w-12 h-12 mx-auto rounded-xl bg-[#02ab74]/10 flex items-center justify-center mb-5">
+            <lucide-angular [name]="p.icon" class="w-5 h-5 text-[#02ab74]"></lucide-angular>
+          </div>
+          <h3 class="text-sm font-black text-gray-900 dark:text-white tracking-tight mb-2">
+            {{ 'landing.company.mision.pillars.' + p.key | translate }}
+          </h3>
+        </div>
+        }
+      </div>
+
+      <!-- ============ RESULTADOS ============ -->
+      <div class="mb-12 text-center animate-on-scroll">
+        <h2 class="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tighter">
+          {{ 'landing.company.mision.outcomesTitle' | translate }}
+        </h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        @for (o of outcomes; track o.key) {
+        <div
+          class="gsap-outcome-card p-10 rounded-[2.5rem] bg-gradient-to-br from-[#02ab74]/10 to-[#7209b7]/10 border border-[#02ab74]/20 text-center relative overflow-hidden group hover:border-[#02ab74]/50 transition-all">
+          <!-- Glow decorativo -->
+          <div
+            class="absolute -top-16 -right-16 w-40 h-40 bg-[#02ab74]/20 rounded-full blur-3xl opacity-60 group-hover:opacity-100 transition-opacity">
+          </div>
+          <div
+            class="absolute -bottom-16 -left-16 w-40 h-40 bg-[#7209b7]/20 rounded-full blur-3xl opacity-60 group-hover:opacity-100 transition-opacity">
+          </div>
+
+          <div
+            class="gsap-outcome-icon relative w-16 h-16 mx-auto rounded-full bg-white dark:bg-gray-900 flex items-center justify-center mb-6 shadow-lg">
+            <lucide-angular [name]="o.icon" class="w-7 h-7 text-[#02ab74]"></lucide-angular>
+          </div>
+
+          <h3 class="relative text-xl font-black text-gray-900 dark:text-white tracking-tight">
+            {{ 'landing.company.mision.outcomes.' + o.key | translate }}
+          </h3>
+        </div>
+        }
+      </div>
+
+    </div>
+  </section>
+</main>
+<app-footer></app-footer>

@@ -1,15 +1,25 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 // src/app/features/landing/components/landing-page.component.ts
 
-import { Component, HostListener, OnInit, AfterViewInit, inject, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnInit,
+  AfterViewInit,
+  OnDestroy,
+  inject,
+  PLATFORM_ID,
+  ElementRef,
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { ThemeService, AppTheme } from 'src/app/services/theme/theme.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { HeaderComponent } from 'src/app/shared/components/header/header.component';
+import { FooterComponent } from 'src/app/shared/components/footer/footer.component';
+import { GsapAnimationService } from 'src/app/shared/components/animacion/gsap-animation.service';
 
 /**
  * Interfaz para características del producto.
@@ -27,7 +37,14 @@ interface Persona {
   key: string;
 }
 
-
+/**
+ * Interfaz para empresas aliadas / partners.
+ */
+interface Partner {
+  name: string;
+  logo: string;
+  alt: string;
+}
 
 /**
  * Landing Page principal de la aplicación.
@@ -39,12 +56,14 @@ interface Persona {
   imports: [
     CommonModule,
     LucideAngularModule,
-    TranslateModule
+    TranslateModule,
+    HeaderComponent,
+    FooterComponent,
   ],
   templateUrl: './landing-page.html',
-  styleUrl: './landing-page.css'
+  styleUrl: './landing-page.css',
 })
-export class LandingPage implements OnInit, AfterViewInit {
+export class LandingPage implements OnInit, AfterViewInit, OnDestroy {
   // ==================================================================
   // SERVICIOS
   // ==================================================================
@@ -52,9 +71,24 @@ export class LandingPage implements OnInit, AfterViewInit {
   private router = inject(Router);
   private themeService = inject(ThemeService);
   private platformId = inject(PLATFORM_ID);
+  private el = inject(ElementRef<HTMLElement>);
+  private gsapService = inject(GsapAnimationService);
+
+  // ==================================================================
+  // ESTADO PÚBLICO
+  // ==================================================================
 
   isScrolled = false;
   mobileMenuOpen = false;
+  currentYear = new Date().getFullYear();
+
+  // ==================================================================
+  // ESTADO PRIVADO
+  // ==================================================================
+
+  private scrollRafId: number | null = null;
+  private lastScrollY = 0;
+  private gsapCtx?: any;
 
   // ==================================================================
   // DATOS ESTÁTICOS
@@ -66,147 +100,128 @@ export class LandingPage implements OnInit, AfterViewInit {
     { icon: 'fas fa-microphone', key: 'voice' },
     { icon: 'fas fa-history', key: 'history' },
     { icon: 'fas fa-file-contract', key: 'summary' },
-    { icon: 'fas fa-lock', key: 'security' }
+    { icon: 'fas fa-lock', key: 'security' },
   ];
 
   readonly personas: Persona[] = [
     { icon: 'Briefcase', key: 'agents' },
     { icon: 'Building2', key: 'directors' },
     { icon: 'Scale', key: 'compliance' },
-    { icon: 'History', key: 'support' }
+    { icon: 'History', key: 'support' },
   ];
 
-  readonly partners = [
-    { name: 'Aetna' },
-    { name: 'Cigna' },
-    { name: 'Humana' },
-    { name: 'UnitedHealthcare' },
-    { name: 'BlueCross BlueShield' },
-    { name: 'Molina Healthcare' }
+  readonly partners: Partner[] = [
+    { name: 'Americo', logo: 'assets/images/partners/Americo.webp', alt: 'Americo' },
+    { name: 'F&G', logo: 'assets/images/partners/FG.webp', alt: 'Fidelity & Guaranty Life' },
+    { name: 'National Life Group', logo: 'assets/images/partners/NLG.webp', alt: 'National Life Group' },
+    { name: 'American-Amicable', logo: 'assets/images/partners/americanami.webp', alt: 'American-Amicable' },
+    { name: 'Mutual of Omaha', logo: 'assets/images/partners/mutual-of-omaha.webp', alt: 'Mutual of Omaha' },
   ];
 
   // ==================================================================
-  // ANIMACIONES DE SCROLL
+  // LIFECYCLE
   // ==================================================================
-
-  private intersectionObserver?: IntersectionObserver;
 
   ngOnInit(): void {
-    this.setupScrollAnimations();
   }
 
-  ngAfterViewInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      gsap.registerPlugin(ScrollTrigger);
-      this.initGsapAnimations();
+  async ngAfterViewInit(): Promise<void> {
+    // Inicialización centralizada en el servicio (espera assets + refresh + kill).
+    this.gsapCtx = await this.gsapService.createContext(
+      this.el.nativeElement,
+      ({ gsap, ScrollTrigger }) => {
+        // 1) HERO con video
+        this.gsapService.initHeroVideo(gsap, {
+          titleSelector: '.gsap-hero-title',
+          subSelector: '.gsap-hero-sub',
+          buttonsSelector: '.gsap-hero-btns',
+        });
+
+        // 2) Parallax del video.
+        this.gsapService.initVideoParallax(gsap, ScrollTrigger, 'video', 'section.relative');
+
+        // 3) Feature cards: stagger.
+        this.gsapService.initStagger(gsap, ScrollTrigger, {
+          selector: '.gsap-feature-card',
+          y: 50,
+          stagger: 0.1,
+          duration: 1,
+          trigger: '#features',
+          start: 'top 85%',
+        });
+
+        // 4) Role cards: stagger con pop elástico.
+        this.gsapService.initStagger(gsap, ScrollTrigger, {
+          selector: '.gsap-role-card',
+          y: 50,
+          stagger: 0.15,
+          duration: 1,
+          trigger: '#roles',
+          start: 'top 85%',
+        });
+
+        // 5) Reveals genéricos (.animate-on-scroll).
+        this.gsapService.initScrollReveals(gsap, ScrollTrigger);
+
+
+        // 6) Promise cards: stagger.
+        this.gsapService.initStagger(gsap, ScrollTrigger, {
+          selector: '.gsap-promise-card',
+          y: 50,
+          stagger: 0.2,
+          duration: 1,
+          trigger: '#promise',
+          start: 'top 85%',
+        });
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.gsapService.revertContext(this.gsapCtx);
+    this.gsapService.killAllScrollTriggers();
+
+    if (this.scrollRafId !== null) {
+      cancelAnimationFrame(this.scrollRafId);
+      this.scrollRafId = null;
     }
   }
 
-  private initGsapAnimations(): void {
-    // 1. Hero Entrance Timeline
-    const heroTl = gsap.timeline({ defaults: { ease: 'power4.out', duration: 1.2 } });
+  // ==================================================================
+  // UTILIDADES
+  // ==================================================================
 
-    // Set initial states via GSAP directly
-    gsap.set(['.gsap-hero-title', '.gsap-hero-sub', '.gsap-hero-btns'], { opacity: 0, y: 30 });
-
-    heroTl.to('.gsap-hero-title', { opacity: 1, y: 0, delay: 0.3 })
-          .to('.gsap-hero-sub', { opacity: 1, y: 0 }, '-=0.8')
-          .to('.gsap-hero-btns', { opacity: 1, y: 0 }, '-=0.6');
-
-    // 1.1 Hero Parallax
-    gsap.to('video', {
-      scrollTrigger: {
-        trigger: 'section.relative',
-        start: 'top top',
-        end: 'bottom top',
-        scrub: true
-      },
-      y: 150,
-      ease: 'none'
-    });
-
-    // 2. Feature Cards ScrollTrigger
-    gsap.fromTo('.gsap-feature-card', 
-      { autoAlpha: 0, y: 50 },
-      {
-        scrollTrigger: {
-          trigger: '#features',
-          start: 'top 85%',
-          toggleActions: 'play none none none'
-        },
-        autoAlpha: 1,
-        y: 0,
-        duration: 1,
-        stagger: 0.1,
-        ease: 'power3.out'
-      }
-    );
-
-    // 3. Role Cards ScrollTrigger
-    gsap.fromTo('.gsap-role-card', 
-      { autoAlpha: 0, scale: 0.9 },
-      {
-        scrollTrigger: {
-          trigger: '#roles',
-          start: 'top 85%',
-          toggleActions: 'play none none none'
-        },
-        autoAlpha: 1,
-        scale: 1,
-        duration: 1,
-        stagger: 0.15,
-        ease: 'back.out(1.7)'
-      }
-    );
+  /**
+   * Maneja errores de carga de imagen.
+   */
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+    const fallback = img.nextElementSibling as HTMLElement;
+    if (fallback) {
+      fallback.classList.remove('hidden');
+      fallback.classList.add('flex');
+    }
   }
 
-  /** Configura animaciones de aparición al hacer scroll */
-  private setupScrollAnimations(): void {
-    const options: IntersectionObserverInit = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -100px 0px'
-    };
+  // ==================================================================
+  // SCROLL
+  // ==================================================================
 
-    this.intersectionObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, options);
-
-    // Delay para asegurar que el DOM esté listo
-    setTimeout(() => {
-      document.querySelectorAll('.animate-on-scroll').forEach(el => {
-        this.intersectionObserver?.observe(el);
-      });
-    }, 100);
-  }
-
-  @HostListener('window:scroll')
+  @HostListener('window:scroll', [])
   onWindowScroll(): void {
-    this.isScrolled = window.scrollY > 50;
-    this.animateOnScroll();
-  }
+    if (this.scrollRafId !== null) return;
 
-  /** Alterna entre tema claro y oscuro */
-  toggleTheme(): void {
-    const nextTheme: AppTheme = this.themeService.isDark ? 'light' : 'dark';
-    this.themeService.setTheme(nextTheme);
-  }
+    this.scrollRafId = requestAnimationFrame(() => {
+      const currentY = window.scrollY;
 
-  /** Devuelve el icono actual del tema */
-  get themeIcon(): string {
-    return this.themeService.isDark ? 'sun' : 'moon';
-  }
-
-  /** Animación fallback (en caso de que IntersectionObserver no funcione) */
-  private animateOnScroll(): void {
-    document.querySelectorAll('.animate-on-scroll').forEach(el => {
-      const rect = el.getBoundingClientRect();
-      if (rect.top < window.innerHeight - 100) {
-        el.classList.add('visible');
+      const shouldBeScrolled = currentY > 50;
+      if (this.isScrolled !== shouldBeScrolled) {
+        this.isScrolled = shouldBeScrolled;
       }
+
+      this.lastScrollY = currentY;
+      this.scrollRafId = null;
     });
   }
 
@@ -214,41 +229,39 @@ export class LandingPage implements OnInit, AfterViewInit {
   // NAVEGACIÓN
   // ==================================================================
 
-  /** Redirige al login */
+  /** Redirige al login. */
   goToLogin(): void {
     this.router.navigate(['/login']);
   }
 
+  /** Vuelve al inicio de la página con scroll suave. */
   scrollToTop(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /** Scroll suave a una sección específica con offset del header. */
   scrollToSection(event: Event, sectionId: string): void {
     event.preventDefault();
     const element = document.getElementById(sectionId);
-    if (element) {
-      const headerOffset = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+    if (!element) return;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
+    const headerOffset = 80;
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth',
+    });
   }
 
+  /** Abre/cierra el menú móvil. */
   toggleMobileMenu(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
   }
 
-  ngOnDestroy(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      ScrollTrigger.getAll().forEach(t => t.kill());
-    }
-    this.intersectionObserver?.disconnect();
-  }
-
+  /** Cierra el menú móvil. */
   closeMobileMenu(): void {
     this.mobileMenuOpen = false;
   }

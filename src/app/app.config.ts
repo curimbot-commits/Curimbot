@@ -88,16 +88,13 @@ export const appConfig: ApplicationConfig = {
     //    el ciclo DI con AuthInterceptor.
     {
       provide: APP_INITIALIZER,
-      useFactory: (auth: Auth) => () => {
-        auth.initAuthState();
-        return Promise.resolve(); // no bloquea el arranque
-      },
+      useFactory: (auth: Auth) => () => auth.initAuthState(),
       deps: [Auth],
       multi: true,
     },
 
     // 1) Tema
-    {
+     {
       provide: APP_INITIALIZER,
       useFactory: (themeService: ThemeService) => () => themeService.init(),
       deps: [ThemeService],

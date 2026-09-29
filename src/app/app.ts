@@ -36,7 +36,6 @@ export class App implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.setupRouteChangeValidation();
-    this.setupSessionCleanup();
   }
 
   ngOnDestroy(): void {
@@ -81,10 +80,10 @@ export class App implements OnInit, OnDestroy {
   /**
    * Limpia `sessionStorage` al cerrar o recargar la pestaña.
    * Previene fugas de datos sensibles en sesiones compartidas.
-   */
+   
   private setupSessionCleanup(): void {
     window.addEventListener('beforeunload', () => {
       sessionStorage.clear();
     });
-  }
+  }*/
 }

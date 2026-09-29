@@ -30,7 +30,6 @@ export const routes: Routes = [
         (m) => m.LandingPage
       ),
     title: 'CURIM',
-    canActivate: [redirectIfAuthenticatedGuard],
     pathMatch: 'full',
   },
   {
@@ -104,7 +103,7 @@ export const routes: Routes = [
   // ========================================
   {
     path: 'company',
-    canActivate: [redirectIfAuthenticatedGuard],
+    
     children: [
       {
         path: 'trayectoria',

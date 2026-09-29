@@ -75,7 +75,7 @@ export class TwoVerification implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    sessionStorage.removeItem('temp_2fa_auth');
+    //sessionStorage.removeItem('temp_2fa_auth');
   }
 
   toggleBackup(): void {

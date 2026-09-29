@@ -8,7 +8,7 @@ import { catchError, map } from 'rxjs/operators';
 export const redirectIfAuthenticatedGuard: CanActivateFn = (): Observable<boolean | UrlTree> | boolean | UrlTree => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  
+
   if (!authService.isAuthenticated()) {
     return true;
   }
@@ -22,7 +22,7 @@ export const redirectIfAuthenticatedGuard: CanActivateFn = (): Observable<boolea
         return router.createUrlTree([defaultRoute]);
       }),
       catchError(() => {
-        authService.logout().subscribe();
+        authService.logout({ navigate: false }).subscribe();
         return of(true);
       })
     );

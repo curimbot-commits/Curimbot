@@ -77,22 +77,34 @@ export class Auth {
    * constructor, porque dispara una petición HTTP que requiere que
    * HttpClient esté completamente construido.
    */
-  public initAuthState(): void {
+  public initAuthState(): Promise<void> {
     if (typeof window === 'undefined') {
-      return;
+      return Promise.resolve();
     }
     if (window.location.pathname.includes('/callback')) {
-      return;
+      return Promise.resolve();
     }
 
-    this.getUserProfile().subscribe({
-      next: (user) => {
-        this.currentUserSubject.next(this.mapUserInfoToUser(user));
-        this.isAuthenticatedSubject.next(true);
-      },
-      error: () => {
-        this.clearSession();
-      },
+    const hasSessionHint = sessionStorage.getItem('hadSession') === '1';
+
+    if (!hasSessionHint) {
+      this.clearSession();
+      return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve) => {
+      this.getUserProfile().subscribe({
+        next: (user) => {
+          this.currentUserSubject.next(this.mapUserInfoToUser(user));
+          this.isAuthenticatedSubject.next(true);
+          resolve();
+        },
+        error: () => {
+          this.clearSession();
+          sessionStorage.removeItem('hadSession');
+          resolve();   // resolve igual, sin bloquear el arranque
+        },
+      });
     });
   }
 
@@ -164,6 +176,7 @@ export class Auth {
           }
           this.clearSession();
           this.setAuthData();
+          sessionStorage.setItem('hadSession', '1');
         }),
         switchMap((response) => {
           if (response.requires_2fa) return of(response);
@@ -216,6 +229,7 @@ export class Auth {
         tap(() => {
           this.clearSession();
           this.setAuthData();
+          sessionStorage.setItem('hadSession', '1');
         }),
         switchMap((response) =>
           this.getUserProfile().pipe(
@@ -283,7 +297,10 @@ export class Auth {
         withCredentials: true,
       })
       .pipe(
-        tap(() => this.setAuthData()),
+        tap(() => {
+          this.setAuthData();
+          sessionStorage.setItem('hadSession', '1');
+        }),
         switchMap((response) =>
           this.getUserProfile().pipe(
             tap((user) =>
@@ -299,16 +316,29 @@ export class Auth {
   /**
    * Cierra la sesión del usuario.
    */
-  logout(): Observable<any> {
+  logout(options: { navigate?: boolean } = { navigate: true }): Observable<any> {
+    const shouldNavigate = options.navigate !== false;
+
+    // Si no hay sesión, no dispares el backend (evita 401 espurios)
+    if (!this.isAuthenticated()) {
+      this.clearSession();
+      sessionStorage.removeItem('hadSession');
+      if (shouldNavigate) {
+        setTimeout(() => window.location.replace('/login'), 100);
+      }
+      return of({ message: 'Sin sesión activa' });
+    }
+
     return this.http
       .post(`${this.AUTH_URL}/logout`, {}, { withCredentials: true })
       .pipe(
         catchError(() => of({ message: 'Sesión cerrada con advertencias' })),
         finalize(() => {
           this.clearSession();
-          setTimeout(() => {
-            window.location.href = '/login';
-          }, 100);
+          sessionStorage.removeItem('hadSession');
+          if (shouldNavigate) {
+            setTimeout(() => window.location.replace('/login'), 100);
+          }
         })
       );
   }
@@ -357,6 +387,7 @@ export class Auth {
         tap((user) => {
           this.currentUserSubject.next(this.mapUserInfoToUser(user));
           this.isAuthenticatedSubject.next(true);
+          sessionStorage.setItem('hadSession', '1');
         }),
         catchError(this.handleError)
       );

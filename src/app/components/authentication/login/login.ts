@@ -64,6 +64,22 @@ export class Login implements OnInit, OnDestroy {
 
   // ==================== CICLO DE VIDA ====================
   ngOnInit(): void {
+    const { expired, message } = this.route.snapshot.queryParams;
+    if (expired === 'true' && message) {
+      this.alertService.warning(
+        'Sesión',
+        decodeURIComponent(message),
+        5000
+      );
+    }
+    if (expired || message) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {},
+        replaceUrl: true,
+      });
+    }
+
     if (this.authService.isAuthenticated()) {
       this.router.navigate([this.returnUrl]);
       return;

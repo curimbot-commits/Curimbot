@@ -12,6 +12,7 @@ import { User } from '../../domain/models/user.model';
 import { AlertService } from '@shared/components/alert/alert.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EyeTrackerComponent } from 'src/app/shared/components/Robot/eye-tracker.component';
+import { ProfileAvatar } from 'src/app/shared/components/profile-avatar/profile-avatar';
 
 /**
  * Item de navegación en la barra lateral.
@@ -36,8 +37,9 @@ interface NavItem {
     RouterModule,
     LucideAngularModule,
     TranslateModule,
-    EyeTrackerComponent
-],
+    EyeTrackerComponent,
+    ProfileAvatar
+  ],
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css']
 })
@@ -51,6 +53,7 @@ export class Navbar implements OnInit, OnDestroy {
   isLoggingOut = false;
   visibleNavItems: NavItem[] = [];
   isMobileMenuOpen = false;
+  isCollapsed = false;
 
   // ==================================================================
   // SUSCRIPCIONES
@@ -84,7 +87,7 @@ export class Navbar implements OnInit, OnDestroy {
     { id: 'voice', icon: 'Bot', label: 'navbar.curim', route: '/app/voice', roles: ['user', 'admin'] },
   ];
 
-  
+
 
   // ==================================================================
   // CICLO DE VIDA
@@ -114,7 +117,7 @@ export class Navbar implements OnInit, OnDestroy {
     });
   }
 
-  
+
 
   /** Suscribe a cambios de ruta para resaltar item activo */
   private subscribeToRouteChanges(): void {
@@ -230,4 +233,34 @@ export class Navbar implements OnInit, OnDestroy {
 
     setTimeout(() => this.router.navigate(['/']), 500);
   }
+  toggleCollapse(): void {
+    this.isCollapsed = !this.isCollapsed;
+  }
+
+  // Estado del tooltip
+  tooltip = {
+    visible: false,
+    text: '',
+    top: 0,
+    left: 0
+  };
+
+  showTooltip(event: MouseEvent, item: NavItem): void {
+    if (!this.isCollapsed) return;
+
+    const target = event.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+
+    this.tooltip = {
+      visible: true,
+      text: this.translate.instant(item.label),
+      top: rect.top + rect.height / 2,
+      left: rect.right + 12
+    };
+  }
+
+  hideTooltip(): void {
+    this.tooltip.visible = false;
+  }
+
 }

@@ -11,7 +11,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { AlertService } from '@shared/components/alert/alert.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AtheniaChat } from '../athenia-chat/athenia-chat';
-import {  AtheniaVoice } from '../athenia-voice/athenia-voice';
+import { AtheniaVoice } from '../athenia-voice/athenia-voice';
 
 
 
@@ -61,11 +61,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
   // ==================== CICLO DE VIDA ====================
 
   ngOnInit(): void {
-    if (this.authService.isAuthenticated()) {
-      this.loadDocuments();
-    } else {
-      this.router.navigate(['/login']);
-    }
+    this.loadDocuments();
   }
 
   ngOnDestroy(): void {
@@ -80,7 +76,7 @@ export class DocumentComponent implements OnInit, OnDestroy {
     this.atheniaChat?.toggle();
   }
 
-  
+
 
   // ==================== SUBIDA DE ARCHIVOS ====================
 
@@ -169,35 +165,31 @@ export class DocumentComponent implements OnInit, OnDestroy {
 
   /** Carga todos los documentos del usuario autenticado */
   loadDocuments(): void {
-  this.loading = true; // Activar loading
-  
-  // Verificar autenticación antes de cargar
-  if (!this.authService.isAuthenticated()) {
-    this.router.navigate(['/login']);
-    return;
+    this.loading = true;
+
+    this.documentService.listDocuments()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.documents = response.items || [];
+          this.loading = false;
+        },
+        error: (error) => {
+          this.loading = false;
+          this.documents = [];
+
+          if (error.status === 401) {
+            return;
+          }
+
+          // Otros errores: sí muestra alerta
+          this.alertService.error(
+            this.translate.instant(error.backendDetail || 'document.alerts.loadError'),
+            ''
+          );
+        },
+      });
   }
-  
-  this.documentService.listDocuments()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (response) => {
-        this.documents = response.items || [];
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error cargando documentos:', error);
-        this.documents = [];
-        this.loading = false;
-        
-        if (error.message.includes('401') || error.message.includes('autenticación')) {
-          this.alertService.error(this.translate.instant('document.alerts.sessionExpired'), '');
-          setTimeout(() => this.authService.logout(), 2000);
-        } else {
-          this.alertService.error(this.translate.instant('document.alerts.loadError'), '');
-        }
-      }
-    });
-}
 
   /**
    * Filtra documentos por tipo de archivo.
@@ -374,13 +366,13 @@ export class DocumentComponent implements OnInit, OnDestroy {
   }
 
   get paginatedDocuments(): DocumentWithMetadata[] {
-  if (!this.documents || !Array.isArray(this.documents) || this.documents.length === 0) {
-    return [];
+    if (!this.documents || !Array.isArray(this.documents) || this.documents.length === 0) {
+      return [];
+    }
+    const start = this.currentPage * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.documents.slice(start, end);
   }
-  const start = this.currentPage * this.itemsPerPage;
-  const end = start + this.itemsPerPage;
-  return this.documents.slice(start, end);
-}
 
   onPageChange(page: number): void {
     if (page > 0 && page <= this.totalPages) {

@@ -31,12 +31,19 @@ const PUBLIC_ENDPOINTS = [
   '/auth/login-with-2fa',
   '/auth/health',
   '/auth/google/',
-  '/auth/github/',
   '/auth/oauth/set-cookies',
+  '/auth/refresh',
+  '/auth/me',
+  '/auth/logout',
 ];
 
 function isPublicEndpoint(url: string): boolean {
-  return PUBLIC_ENDPOINTS.some((endpoint) => url.includes(endpoint));
+  try {
+    const path = new URL(url, window.location.origin).pathname;
+    return PUBLIC_ENDPOINTS.some((endpoint) => path.startsWith(endpoint));
+  } catch {
+    return PUBLIC_ENDPOINTS.some((endpoint) => url.includes(endpoint));
+  }
 }
 
 // ==================================================================
@@ -47,9 +54,9 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Saltar autenticación para endpoints públicos
+
   if (isPublicEndpoint(req.url)) {
-    return next(req);
+    return next(req.clone({ withCredentials: true }));
   }
 
   const authReq = req.clone({ withCredentials: true });
@@ -79,6 +86,14 @@ function handle401Error(
   authService: AuthService,
   router: Router
 ): Observable<HttpEvent<any>> {
+
+  if (!authService.isAuthenticated()) {
+    return throwError(() => new HttpErrorResponse({
+      status: 401,
+      statusText: 'Unauthorized',
+      url: request.url,
+    }));
+  }
 
   if (isRefreshing) {
     return waitForTokenRefresh(request, next);

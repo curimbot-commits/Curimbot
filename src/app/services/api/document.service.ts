@@ -14,20 +14,59 @@ export class DocumentService {
   private http = inject(HttpClient);
 
   private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorKey = 'login.errors.unexpectedErrorTitle';
+    let errorKey = 'document.errors.unexpected';
+
     if (error.error instanceof ErrorEvent) {
       return throwError(() => new Error(error.error.message));
     }
+
     switch (error.status) {
-      case 0: errorKey = 'login.errors.connectionErrorTitle'; break;
-      case 401: errorKey = 'login.errors.invalidCredentialsTitle'; break;
-      case 403: errorKey = 'login.errors.forbiddenAccessTitle'; break;
-      case 404: errorKey = 'login.errors.resourceNotFoundTitle'; break;
-      case 500: case 502: case 503: case 504: errorKey = 'login.errors.serverErrorTitle'; break;
+      case 0:
+        errorKey = 'document.errors.connection';
+        break;
+      case 400:
+        errorKey = 'document.errors.badRequest';
+        break;
+      case 401:
+        errorKey = 'document.errors.unauthorized';
+        break;
+      case 403:
+        errorKey = 'document.errors.forbidden';
+        break;
+      case 404:
+        errorKey = 'document.errors.notFound';
+        break;
+      case 413:
+        errorKey = 'document.errors.tooLarge';
+        break;
+      case 415:
+        errorKey = 'document.errors.unsupportedType';
+        break;
+      case 422:
+        errorKey = 'document.errors.invalidData';
+        break;
+      case 429:
+        errorKey = 'document.errors.tooManyRequests';
+        break;
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        errorKey = 'document.errors.serverError';
+        break;
+      default:
+        errorKey = 'document.errors.unexpected';
     }
+
     const customError: any = new Error(errorKey);
     customError.status = error.status;
     customError.originalError = error;
+
+    const detail = error.error?.detail;
+    if (typeof detail === 'string') {
+      customError.backendDetail = detail;
+    }
+
     return throwError(() => customError);
   }
 
@@ -86,8 +125,8 @@ export class DocumentService {
     let params = new HttpParams().set('skip', (options?.skip ?? 0).toString()).set('limit', (options?.limit ?? 20).toString());
     if (options?.fileType) params = params.set('file_type', options.fileType);
     if (options?.text) params = params.set('text', options.text);
-    return this.http.get<PaginatedDocumentsResponse>(`${this.DOCUMENTS_URL}/`, { 
-      params 
+    return this.http.get<PaginatedDocumentsResponse>(`${this.DOCUMENTS_URL}/`, {
+      params
     }).pipe(catchError((err) => this.handleError(err)));
   }
 

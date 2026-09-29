@@ -274,6 +274,19 @@
       "deleteSuccess": "El documento '{{name}}' ha sido eliminado permanentemente.",
       "deleteError": "No se pudo eliminar el documento. Inténtalo más tarde.",
       "viewError": "No se pudo abrir el visor para el archivo '{{name}}'."
+    },
+    "errors": {
+      "connection": "No se pudo conectar con el servidor. Revisa tu conexión.",
+      "badRequest": "Solicitud inválida.",
+      "unauthorized": "Tu sesión expiró. Inicia sesión nuevamente.",
+      "forbidden": "No tienes permisos para realizar esta acción.",
+      "notFound": "Documento no encontrado.",
+      "tooLarge": "El archivo es demasiado grande (máximo 50MB).",
+      "unsupportedType": "Tipo de archivo no soportado.",
+      "invalidData": "Los datos enviados no son válidos.",
+      "tooManyRequests": "Demasiadas solicitudes. Espera un momento.",
+      "serverError": "Error del servidor. Intenta más tarde.",
+      "unexpected": "Error inesperado al procesar la solicitud."
     }
   },
   "chat": {

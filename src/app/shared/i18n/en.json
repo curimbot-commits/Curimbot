@@ -274,6 +274,19 @@
       "deleteSuccess": "Document '{{name}}' has been permanently deleted.",
       "deleteError": "Could not delete the document. Please try again later.",
       "viewError": "Could not open the viewer for '{{name}}'."
+    },
+    "errors": {
+      "connection": "Could not connect to the server. Check your connection.",
+      "badRequest": "Invalid request.",
+      "unauthorized": "Your session expired. Please log in again.",
+      "forbidden": "You don't have permission to perform this action.",
+      "notFound": "Document not found.",
+      "tooLarge": "File is too large (max 50MB).",
+      "unsupportedType": "Unsupported file type.",
+      "invalidData": "The submitted data is invalid.",
+      "tooManyRequests": "Too many requests. Please wait.",
+      "serverError": "Server error. Please try again later.",
+      "unexpected": "Unexpected error processing the request."
     }
   },
   "history": {

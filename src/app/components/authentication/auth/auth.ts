@@ -170,7 +170,7 @@ export class Auth {
           if (response.requires_2fa) {
             sessionStorage.setItem(
               'temp_2fa_auth',
-              JSON.stringify({ email, password })
+              JSON.stringify({ email, challenge_token: response.challenge_token })
             );
             throw { requires2FA: true, message: response.message || '2FA requerido' };
           }
@@ -196,15 +196,9 @@ export class Auth {
    * Inicia sesión con verificación de dos factores (2FA).
    */
   loginWith2FA(loginData: Login2FARequest): Observable<any> {
-    if (
-      !loginData.username ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginData.username.trim())
-    ) {
-      return throwError(() => new Error('Correo electrónico inválido'));
-    }
-    if (!loginData.password || loginData.password.length < 8) {
+    if (!loginData.challenge_token) {
       return throwError(
-        () => new Error('La contraseña debe tener al menos 8 caracteres')
+        () => new Error('Sesión de verificación expirada. Inicia sesión nuevamente')
       );
     }
     if (
@@ -215,8 +209,7 @@ export class Auth {
     }
 
     const body = new HttpParams()
-      .set('username', loginData.username)
-      .set('password', loginData.password)
+      .set('challenge_token', loginData.challenge_token)
       .set('totp_code', loginData.code)
       .set('single_session', (loginData.single_session ?? true).toString());
 

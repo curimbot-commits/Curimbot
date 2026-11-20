@@ -128,17 +128,16 @@ export class UserService {
     return this.http.get<AuthStatsSummary>(`${this.AUTH_URL}/stats/summary`);
   }
 
-  loginWith2FA(data: { username: string; password: string; code: string; single_session?: boolean }): Observable<Token> {
+  loginWith2FA(data: { challenge_token: string; code: string; single_session?: boolean }): Observable<Token> {
 
     const body = new URLSearchParams();
-    body.set('grant_type', 'password');
-    body.set('username', data.username);
-    body.set('password', data.password);
+    body.set('challenge_token', data.challenge_token);
+    body.set('totp_code', data.code);
     if (data.single_session !== undefined) {
       body.set('single_session', String(data.single_session));
     }
 
-    const url = `${this.AUTH_URL}/login-with-2fa?totp_code=${encodeURIComponent(data.code)}`;
+    const url = `${this.AUTH_URL}/login-with-2fa`;
 
     return this.http.post<Token>(url, body.toString(), {
       headers: {

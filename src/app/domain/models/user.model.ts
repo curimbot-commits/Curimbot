@@ -98,7 +98,9 @@ interface LoginRequest {
   client_secret?: string | null;
 }
 
-export interface Login2FARequest extends LoginRequest {
+/** Segundo paso del login con 2FA: ya no se reenvía la contraseña. */
+export interface Login2FARequest {
+  challenge_token: string;
   code: string;
   single_session?: boolean;
 }
@@ -121,9 +123,13 @@ export interface TwoFADisableRequest {
 }
 export type AuthStatsSummary = Record<string, unknown>;
 
+/**
+ * Estado temporal entre el login y la verificación 2FA (sessionStorage).
+ * Guarda el challenge_token del backend (5 min, un solo uso), nunca la contraseña.
+ */
 export interface Temp2FAAuth {
   email: string;
-  password: string;
+  challenge_token: string;
 }
 
 export interface ActiveSession {

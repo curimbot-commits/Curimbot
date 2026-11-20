@@ -64,7 +64,7 @@ export class TwoVerification implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const tempAuth = this.tempAuth;
-    if (!tempAuth?.email || !tempAuth?.password) {
+    if (!tempAuth?.email || !tempAuth?.challenge_token) {
       this.router.navigate(['/login']);
       return;
     }
@@ -126,8 +126,7 @@ export class TwoVerification implements OnInit, OnDestroy {
     this.isLoading = true;
 
     this.authService.loginWith2FA({
-      username: tempAuth.email,
-      password: tempAuth.password,
+      challenge_token: tempAuth.challenge_token,
       code: code,
       single_session: true
     }).pipe(takeUntil(this.destroy$))

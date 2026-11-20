@@ -1,23 +1,26 @@
-
-
 import { UserInfoResponse } from "./user.model";
 
 /** -----------------------------------------------------
- * 📌 Tipos compartidos y enums
+ * Tipos compartidos y enums
  * ----------------------------------------------------- */
-export type DocumentType = 'pdf' | 'docx' | 'txt' | 'all';
-export type TimeRange = 'year' | 'week' | 'month';
+export type DocumentType = "pdf" | "docx" | "txt" | "all";
+export type TimeRange = "year" | "week" | "month";
 
-export enum ActivityAction {
-  UPLOAD = 'upload',
-  VIEW = 'view',
-  DELETE = 'delete',
-  DOWNLOAD = 'download',
-  SHARE = 'share',
+/** Canal por el que el usuario interactuó con la IA */
+export enum AIChannel {
+  TEXT = "text",
+  VOICE = "voice",
+}
+
+/** Estado de la respuesta de la IA */
+export enum AIInteractionStatus {
+  SUCCESS = "success",
+  ERROR = "error",
+  NO_CONTEXT = "no_context",
 }
 
 /** -----------------------------------------------------
- * 📁 Documentos
+ * Documentos
  * ----------------------------------------------------- */
 
 interface BaseDocument {
@@ -31,7 +34,7 @@ interface BaseDocument {
 
 export interface Document extends BaseDocument {
   id: number;
-  created_at: string; 
+  created_at: string;
 }
 
 export interface DocumentCreate extends BaseDocument {
@@ -51,8 +54,8 @@ export interface DocumentWithMetadata {
   view_count: number;
   tags?: string[];
   matchScore?: number;
-  upload_date: string; 
-  uploaded_by_name: string; 
+  upload_date: string;
+  uploaded_by_name: string;
 }
 
 export interface DocumentSearchParams {
@@ -71,17 +74,19 @@ export interface PaginatedResponse<T> {
   search_params?: Record<string, unknown>;
 }
 
-export type PaginatedDocumentsResponse = PaginatedResponse<DocumentWithMetadata>;
+export type PaginatedDocumentsResponse =
+  PaginatedResponse<DocumentWithMetadata>;
 
 export interface UserExtended extends UserInfoResponse {
   documentsCount: number;
   lastActivity: string;
   documents: DocumentWithMetadata[];
-  status?: 'active' | 'inactive';
+  status?: "active" | "inactive";
   profile_photo_url?: string | null;
 }
+
 /** -----------------------------------------------------
- * 📊 Dashboard y estadísticas
+ * Dashboard y estadísticas
  * ----------------------------------------------------- */
 
 export interface DashboardStats {
@@ -113,22 +118,16 @@ export interface ChartDataPoint {
 }
 
 export interface SystemHealth {
-  status: 'healthy' | 'warning' | 'critical';
+  status: "healthy" | "warning" | "critical";
   cpu_usage: number;
   memory_usage: number;
   storage_usage: number;
   active_users: number;
   response_time: number;
 }
-export interface UserActivity {
-  user_id: number;
-  user_name: string;
-  total_actions: number;
-  last_activity: string;
-  most_common_action: ActivityAction;
-}
+
 /** -----------------------------------------------------
- * 👤 Usuarios
+ * Usuarios
  * ----------------------------------------------------- */
 
 export interface StorageStats {
@@ -144,96 +143,186 @@ export interface UserSummary {
   user_email: string;
   storage: StorageStats;
   dashboard: DashboardStats;
-  recent_activities_count: number;
-  last_activity: string | null;
+  recent_interactions_count: number;
+  last_interaction: string | null;
   generated_at: string;
 }
 
 /** -----------------------------------------------------
- * 📝 Actividades
+ * Interacciones con la IA (Curim)
  * ----------------------------------------------------- */
 
-export interface Activity {
-  id: string;
-  document: Document;
-  type: ActivityAction;
-  date: Date;
+/**
+ * Información detallada de una fuente usada por la IA.
+ * `sources_info` es un array de estos objetos.
+ */
+export interface AISourceInfo {
+  document_id?: number;
+  filename?: string;
+  snippet?: string;
+  relevance_score?: number;
+  [key: string]: unknown;
 }
 
-export interface ActivityLog {
+/**
+ * Registro de una interacción del usuario con la IA.
+ * Reemplaza al antiguo `ActivityLog`.
+ */
+export interface AIInteractionLog {
   id: number;
-  action: ActivityAction;
-  document_id: number;
-  document_name: string;
-  document_type: string;
-  user_id: number;
+  user_id: number | null;
   user_name: string;
+  question: string;
+  answer: string | null;
+  channel: AIChannel;
+  confidence: number | null;
+  status: AIInteractionStatus;
+  error_message: string | null;
+  sources: number[] | null;
+  sources_info: AISourceInfo[] | null;
+  processing_time_ms: number | null;
+  from_cache: boolean;
+  conversation_id: number | null;
   timestamp: string;
-  ip_address: string | null;
-  user_email: string;
 }
 
-interface ActivityVisualConfig {
+/**
+ * Configuración visual para mostrar una interacción IA.
+ */
+interface AIInteractionVisualConfig {
   icon: string;
   color: string;
   label: string;
   badge: string;
 }
 
-export const activityConfig: Record<ActivityAction | 'default', ActivityVisualConfig> = {
-  [ActivityAction.UPLOAD]: {
-    icon: 'fas fa-upload',
-    color: 'text-success',
-    label: 'Subida',
-    badge: 'badge-success',
+/**
+ * Mapa de configuración visual: combina channel + status.
+ * La clave es `${channel}_${status}`.
+ */
+export const aiInteractionConfig: Record<
+  string,
+  AIInteractionVisualConfig
+> = {
+  // Texto
+  text_success: {
+    icon: "message-square",
+    color: "bg-blue-500",
+    label: "Consulta (texto)",
+    badge: "badge-info",
   },
-  [ActivityAction.VIEW]: {
-    icon: 'fas fa-eye',
-    color: 'text-info',
-    label: 'Vista',
-    badge: 'badge-info',
+  text_error: {
+    icon: "message-square-x",
+    color: "bg-red-500",
+    label: "Error (texto)",
+    badge: "badge-danger",
   },
-  [ActivityAction.DELETE]: {
-    icon: 'fas fa-trash-alt',
-    color: 'text-danger',
-    label: 'Eliminada',
-    badge: 'badge-danger',
+  text_no_context: {
+    icon: "message-square-dashed",
+    color: "bg-yellow-500",
+    label: "Sin contexto (texto)",
+    badge: "badge-warning",
   },
-  [ActivityAction.DOWNLOAD]: {
-    icon: 'fas fa-download',
-    color: 'text-primary',
-    label: 'Descargada',
-    badge: 'badge-primary',
+
+  // Voz
+  voice_success: {
+    icon: "mic",
+    color: "bg-purple-500",
+    label: "Consulta (voz)",
+    badge: "badge-purple",
   },
-  [ActivityAction.SHARE]: {
-    icon: 'fas fa-share-alt',
-    color: 'text-warning',
-    label: 'Compartida',
-    badge: 'badge-warning',
+  voice_error: {
+    icon: "mic-off",
+    color: "bg-red-500",
+    label: "Error (voz)",
+    badge: "badge-danger",
   },
-  default: {
-    icon: 'fas fa-question-circle',
-    color: 'text-muted',
-    label: 'Desconocida',
-    badge: 'badge-secondary',
+  voice_no_context: {
+    icon: "mic-off",
+    color: "bg-yellow-500",
+    label: "Sin contexto (voz)",
+    badge: "badge-warning",
   },
 };
 
+const DEFAULT_INTERACTION_CONFIG: AIInteractionVisualConfig = {
+  icon: "message-circle",
+  color: "bg-gray-500",
+  label: "Interacción IA",
+  badge: "badge-secondary",
+};
+
 /**
- * Devuelve la configuración visual de una acción.
+ * Devuelve la configuración visual para una interacción IA.
+ *
+ * @param channel "text" | "voice"
+ * @param status "success" | "error" | "no_context"
  */
-export function getActivityConfig(type: ActivityAction | string): ActivityVisualConfig {
-  return activityConfig[type as ActivityAction] || activityConfig.default;
+export function getAIInteractionConfig(
+  channel: string,
+  status: string
+): AIInteractionVisualConfig {
+  const key = `${channel}_${status}`;
+
+  return aiInteractionConfig[key] || DEFAULT_INTERACTION_CONFIG;
 }
-/*
-interface ValidationError {
-  detail: {
-    loc: (string | number)[];
-    msg: string;
-    type: string;
-  }[];
+
+/**
+ * Devuelve un ícono Lucide según el canal.
+ */
+export function getChannelIcon(channel: string): string {
+  return channel === AIChannel.VOICE ? "mic" : "message-square";
 }
-*/
+
+/**
+ * Devuelve la clase CSS de badge según el estado.
+ */
+export function getStatusBadgeClass(status: string): string {
+  switch (status) {
+    case AIInteractionStatus.SUCCESS:
+      return "text-green-700 bg-green-50 border border-green-200";
+
+    case AIInteractionStatus.ERROR:
+      return "text-red-700 bg-red-50 border border-red-200";
+
+    case AIInteractionStatus.NO_CONTEXT:
+      return "text-yellow-700 bg-yellow-50 border border-yellow-200";
+
+    default:
+      return "text-gray-700 bg-gray-50 border border-gray-200";
+  }
+}
+
+/**
+ * Devuelve la etiqueta legible del canal.
+ */
+export function getChannelLabel(channel: string): string {
+  return channel === AIChannel.VOICE ? "Voz" : "Texto";
+}
+
+/**
+ * Devuelve la etiqueta legible del estado.
+ */
+export function getStatusLabel(status: string): string {
+  switch (status) {
+    case AIInteractionStatus.SUCCESS:
+      return "Exitosa";
+
+    case AIInteractionStatus.ERROR:
+      return "Error";
+
+    case AIInteractionStatus.NO_CONTEXT:
+      return "Sin contexto";
+
+    default:
+      return "Desconocido";
+  }
+}
+
+/** -----------------------------------------------------
+ * Upload response
+ * ----------------------------------------------------- */
+
 export interface DocumentUploadResponse {
   successful_uploads: Document[];
   failed_uploads: Record<string, string>[];

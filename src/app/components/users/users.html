@@ -25,331 +25,373 @@
     <div class="flex flex-col lg:flex-row gap-4">
       <div class="flex-1 relative">
         <lucide-angular name="search"
-        class="absolute left-2 top-1/2 -translate-y-1/4 w-5 h-5 text-gray-400"></lucide-angular>
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"></lucide-angular>
         <input type="text" [placeholder]="'users.searchPlaceholder' | translate" [(ngModel)]="searchQuery"
           class="pl-10 rounded-lg border border-gray-200 focus:border-[#02ab74] focus:ring-[#02ab74] w-full" />
-        </div>
+      </div>
 
-        <div class="flex flex-wrap gap-2 sm:gap-3">
-          <select [(ngModel)]="roleFilter" class="flex-1 min-w-[120px] sm:w-40 rounded-lg border-gray-200">
-            <option value="all">{{ 'users.filters.allRoles' | translate }}</option>
-            <option value="admin">{{ 'users.filters.admin' | translate }}</option>
-            <option value="editor">{{ 'users.filters.editor' | translate }}</option>
-            <option value="user">{{ 'users.filters.user' | translate }}</option>
-          </select>
+      <div class="flex flex-wrap gap-2 sm:gap-3">
+        <select [(ngModel)]="roleFilter" class="flex-1 min-w-[120px] sm:w-40 rounded-lg border-gray-200">
+          <option value="all">{{ 'users.filters.allRoles' | translate }}</option>
+          <option value="admin">{{ 'users.filters.admin' | translate }}</option>
+          <option value="editor">{{ 'users.filters.editor' | translate }}</option>
+          <option value="user">{{ 'users.filters.user' | translate }}</option>
+        </select>
 
-          <select [(ngModel)]="statusFilter" class="flex-1 min-w-[120px] sm:w-40 rounded-lg border-gray-200">
-            <option value="all">{{ 'users.filters.allStatus' | translate }}</option>
-            <option value="active">{{ 'users.filters.active' | translate }}</option>
-            <option value="inactive">{{ 'users.filters.inactive' | translate }}</option>
-          </select>
-        </div>
+        <select [(ngModel)]="statusFilter" class="flex-1 min-w-[120px] sm:w-40 rounded-lg border-gray-200">
+          <option value="all">{{ 'users.filters.allStatus' | translate }}</option>
+          <option value="active">{{ 'users.filters.active' | translate }}</option>
+          <option value="inactive">{{ 'users.filters.inactive' | translate }}</option>
+        </select>
       </div>
     </div>
+  </div>
 
-    <!-- Loading State -->
-    @if (isLoading) {
-      <div class="p-12 text-center">
-        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#02ab74]"></div>
-        <p class="text-gray-600 mt-4">{{ 'users.loading' | translate }}</p>
-      </div>
-    }
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="p-12 text-center border border-gray-200 rounded-xl">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#02ab74]"></div>
+      <p class="text-gray-600 mt-4">{{ 'users.loading' | translate }}</p>
+    </div>
+  }
 
-    <!-- Users Table (Desktop) -->
-    @if (!isLoading) {
-      <div class="hidden md:block border border-gray-200 rounded-xl overflow-hidden">
-        <div class="p-6 border-b border-gray-200 bg-gray-50 flex items-center space-x-3">
-          <div class="p-2 bg-[#02ab74] rounded-lg">
-            <lucide-angular name="users" class="w-6 h-6 text-white"></lucide-angular>
-          </div>
-          <h2 class="text-[#070025]">{{ 'users.table.title' | translate }}</h2>
+  <!-- Users Table (Desktop) -->
+  @if (!isLoading) {
+    <div class="hidden md:block border border-gray-200 rounded-xl">
+      <div class="p-6 border-b border-gray-200 bg-gray-50 flex items-center space-x-3 rounded-t-xl">
+        <div class="p-2 bg-[#02ab74] rounded-lg">
+          <lucide-angular name="users" class="w-6 h-6 text-white"></lucide-angular>
         </div>
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead class="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">{{ 'users.table.user' | translate }}</th>
-                <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">{{ 'users.table.role' | translate }}</th>
-                <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">{{ 'users.table.status' | translate }}</th>
-                <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">{{ 'users.table.documents' | translate }}</th>
-                <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">{{ 'users.table.lastActivity' | translate }}
-                </th>
-                <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">{{ 'users.table.actions' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              @for (user of filteredUsers; track user.id) {
-                <tr class="hover:bg-gray-50 transition-colors">
-                  <td class="px-6 py-4">
-                    <div class="flex items-center space-x-3">
-                      <app-profile-avatar [size]="2.5" [showEditControls]="false" [userData]="user"
-                        [userPhotoUrl]="user.profile_photo_url">
-                      </app-profile-avatar>
-                      <div>
-                        <p class="text-[#070025]">{{ user.name }}</p>
-                        <p class="text-sm text-gray-600">{{ user.email }}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4">
-                    <div class="relative w-full max-w-[140px]">
-                      <select [(ngModel)]="user.role" (change)="handleChangeRole(user.id, user.role)"
-                        [ngClass]="getRoleBadgeClasses(user.role)"
-                        class="appearance-none w-full pr-10 py-1.5 pl-3 text-xs font-bold focus:outline-none focus:ring-2 border rounded-lg transition cursor-pointer">
-                        <option [ngValue]="UserRole.ADMIN">{{ 'users.filters.admin' | translate }}</option>
-                        <option [ngValue]="UserRole.USER">{{ 'users.filters.user' | translate }}</option>
-                      </select>
-                      <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                        <lucide-angular name="chevron-down" class="w-3.5 h-3.5 text-gray-500 opacity-60"></lucide-angular>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4">
-                            <span class="px-2 py-1 text-sm rounded-full" [ngClass]="{
-                                'bg-green-100 text-green-700': user.is_active,
-                                'bg-gray-100 text-gray-700': !user.is_active
-                            }">
-                      {{ user.is_active ? ('users.status.active' | translate) : ('users.status.inactive' | translate) }}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4">
-                    <button (click)="handleViewDocuments(user)"
-                      class="flex items-center gap-2 text-[#02ab74] hover:text-[#028a5f] transition-colors">
-                      <lucide-angular name="FileText" class="w-4 h-4"></lucide-angular>
-                      <span>{{ user.documentsCount }} {{ 'users.documentsCount' | translate }}</span>
-                    </button>
-                  </td>
-                  <td class="px-6 py-4 text-sm text-gray-600">{{ user.lastActivity }}</td>
-                  <td class="px-6 py-4 text-right">
-                    <div class="relative inline-block text-left" (clickOutside)="closeMenu()">
-                      <button (click)="toggleMenu(user.id)"
-                        class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition"
-                        aria-haspopup="true" aria-expanded="true">
-                        <lucide-angular name="MoreVertical" class="w-5 h-5 text-gray-600"></lucide-angular>
-                      </button>
-                      @if (openMenuId === user.id) {
-                        <div
-                          class="absolute right-0 z-10 mt-2 w-52 origin-top-right rounded-md bg-white border border-gray-200 shadow-lg">
-                          <div class="py-1 text-sm">
-                            <button (click)="handleViewDocuments(user); closeMenu()"
-                              class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-gray-700">
-                              <lucide-angular name="Eye" class="w-4 h-4"></lucide-angular>
-                              {{ 'users.menu.viewDocs' | translate }}
-                            </button>
-                            <button (click)="handleToggleStatus(user.id); closeMenu()"
-                              class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-gray-700">
-                              <lucide-angular [name]="user.is_active ? 'UserX' : 'UserCheck'"
-                              class="w-4 h-4"></lucide-angular>
-                              {{ user.is_active ? ('users.menu.deactivate' | translate) : ('users.menu.activate' | translate) }}
-                            </button>
-                            <div class="border-t my-1"></div>
-                            <button (click)="openDeleteDialog(user); closeMenu()"
-                              class="w-full text-left px-4 py-2 hover:bg-red-50 flex items-center gap-2 text-red-600">
-                              <lucide-angular name="Trash2" class="w-4 h-4"></lucide-angular>
-                              {{ 'users.menu.delete' | translate }}
-                            </button>
-                          </div>
-                        </div>
-                      }
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-        @if (filteredUsers.length === 0 && !isLoading) {
-          <div class="p-12 text-center">
-            <lucide-angular name="users" class="w-12 h-12 text-gray-400 mx-auto mb-4"></lucide-angular>
-            <h3 class="text-[#070025] mb-2">{{ 'users.empty.title' | translate }}</h3>
-            <p class="text-gray-600">{{ 'users.empty.subtitle' | translate }}</p>
-          </div>
-        }
+        <h2 class="text-[#070025]">{{ 'users.table.title' | translate }}</h2>
       </div>
-    }
 
-    <!-- Users Cards (Mobile) -->
-    @if (!isLoading) {
-      <div class="md:hidden space-y-4">
-        @for (user of filteredUsers; track user.id) {
-          <div class="p-4 border border-gray-200 rounded-xl bg-white shadow-sm space-y-4">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <app-profile-avatar [size]="2.5" [showEditControls]="false" [userData]="user"
-                  [userPhotoUrl]="user.profile_photo_url">
-                </app-profile-avatar>
-                <div>
-                  <p class="text-[#070025] font-semibold text-sm">{{ user.name }}</p>
-                  <p class="text-[11px] text-gray-500 truncate max-w-[150px]">{{ user.email }}</p>
-                </div>
-              </div>
-              <div class="flex gap-1">
-                <button (click)="handleToggleStatus(user.id)"
-                  class="p-2 rounded-lg transition-colors"
-                  [ngClass]="user.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'">
-                  <lucide-angular [name]="user.is_active ? 'UserCheck' : 'UserX'" class="w-5 h-5"></lucide-angular>
-                </button>
-                <button (click)="openDeleteDialog(user)" class="p-2 rounded-lg bg-red-50 text-red-600">
-                  <lucide-angular name="Trash2" class="w-5 h-5"></lucide-angular>
-                </button>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">{{ 'users.table.role' | translate }}</p>
-                <select [(ngModel)]="user.role" (change)="handleChangeRole(user.id, user.role)"
-                  class="w-full bg-transparent border-none p-0 text-sm font-bold focus:ring-0">
-                  <option [ngValue]="UserRole.ADMIN">{{ 'users.filters.admin' | translate }}</option>
-                  <option [ngValue]="UserRole.USER">{{ 'users.filters.user' | translate }}</option>
-                </select>
-              </div>
-              <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
-                <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">{{ 'users.table.documents' | translate }}</p>
-                <button (click)="handleViewDocuments(user)" class="text-[#02ab74] text-sm font-bold flex items-center gap-1">
-                  <lucide-angular name="FileText" class="w-3 h-3"></lucide-angular>
-                  {{ user.documentsCount }}
-                </button>
-              </div>
-            </div>
-            <div class="flex items-center justify-between text-[11px] text-gray-500 pt-1">
-              <div class="flex items-center gap-1">
-                <lucide-angular name="Clock" class="w-3 h-3"></lucide-angular>
-                {{ user.lastActivity }}
-              </div>
-                <span class="px-2 py-0.5 rounded-full font-bold" [ngClass]="{
-                    'bg-green-100 text-green-700': user.is_active,
-                    'bg-gray-100 text-gray-700': !user.is_active
-                }">
-                {{ user.is_active ? ('users.status.active' | translate) : ('users.status.inactive' | translate) }}
-              </span>
-            </div>
-          </div>
-        }
-        @if (filteredUsers.length === 0) {
-          <div class="py-12 text-center">
-            <lucide-angular name="users" class="w-12 h-12 text-gray-300 mx-auto mb-2"></lucide-angular>
-            <p class="text-gray-500 font-medium">{{ 'users.empty.title' | translate }}</p>
-          </div>
-        }
-      </div>
-    }
-
-    <!-- Documents Dialog -->
-    @if (showDocumentsDialog) {
-      <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="documents-modal-title"
-        role="dialog" aria-modal="true">
-        <div class="flex min-h-screen items-center justify-center px-4 text-center sm:block sm:p-0">
-          <!-- Backdrop -->
-          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
-          (click)="showDocumentsDialog = false"></div>
-          <!-- Trick to center modal contents on small screens -->
-          <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-          <!-- Modal content -->
-          <div class="inline-block align-middle bg-white rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:max-w-xl w-full max-h-[80vh] overflow-y-auto"
-            role="dialog" aria-modal="true" aria-labelledby="documents-modal-title">
-            <!-- Header -->
-            <div class="px-6 pt-5 pb-4">
-              <h3 class="text-lg font-medium leading-6 text-[#070025]" id="documents-modal-title">
-                {{ 'users.docsDialog.title' | translate }} {{ selectedUser?.name }}
-              </h3>
-              <p class="mt-2 text-sm text-gray-600">
-                {{ 'users.docsDialog.subtitle' | translate }}
-              </p>
-            </div>
-            <!-- Body -->
-            <div class="px-6 py-4 space-y-3">
-              @if (selectedUser && selectedUser.documents.length > 0) {
-                @for (doc of selectedUser.documents; track doc.id) {
-                  <div class="p-4 border border-gray-200 rounded-lg">
-                    <div class="flex items-start justify-between">
-                      <div class="flex items-start gap-3 flex-1">
-                        <div class="p-2 rounded-md"
-                          style="background: linear-gradient(to bottom right, #02ab74, #7209b7);">
-                          <lucide-angular name="FileText" class="w-5 h-5 text-white"></lucide-angular>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                          <h4 class="text-[#070025] mb-2 truncate">{{ doc.filename }}</h4>
-                          <div class="flex flex-wrap gap-3 text-sm text-gray-600">
-                            <span class="flex items-center gap-1">
-                              <span
-                                class="px-2 py-1 text-xs bg-gray-100 border border-gray-300 rounded">{{
-                              doc.file_type }}</span>
-                            </span>
-                            <span class="flex items-center gap-1">
-                              <lucide-angular name="Calendar" class="w-4 h-4"></lucide-angular>
-                              {{ doc.upload_date | date: "d MMM y" }}
-                            </span>
-                            <span>{{ formatFileSize(doc.size) }}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <button class="action-btn" (click)="viewDocument(doc)"
-                        [title]="viewedDocuments.has(doc.id) ? ('users.docsDialog.viewedTooltip' | translate) : ('users.docsDialog.viewTooltip' | translate)"
-                        class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-1 text-sm">
-                        <lucide-angular name="Eye" class="w-4 h-4"></lucide-angular>
-                        {{ 'users.docsDialog.view' | translate }}
-                      </button>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">{{ 'users.table.user' | translate }}</th>
+              <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">{{ 'users.table.role' | translate }}</th>
+              <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">{{ 'users.table.status' | translate }}</th>
+              <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">{{ 'users.table.documents' | translate }}</th>
+              <th class="px-6 py-3 text-left text-xs text-gray-600 uppercase tracking-wider">{{ 'users.table.lastActivity' | translate }}</th>
+              <th class="px-6 py-3 text-right text-xs text-gray-600 uppercase tracking-wider">{{ 'users.table.actions' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (user of paginatedUsers; track user.id) {
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4">
+                  <div class="flex items-center space-x-3">
+                    <app-profile-avatar [size]="2.5" [showEditControls]="false" [userData]="user"
+                      [userPhotoUrl]="user.profile_photo_url">
+                    </app-profile-avatar>
+                    <div>
+                      <p class="text-[#070025]">{{ user.name }}</p>
+                      <p class="text-sm text-gray-600">{{ user.email }}</p>
                     </div>
                   </div>
-                }
-              }
-              @if (selectedUser && selectedUser.documents.length === 0) {
-                <div class="text-center py-8">
-                  <lucide-angular name="FileText" class="w-12 h-12 text-gray-300 mx-auto mb-3"></lucide-angular>
-                  <p class="text-gray-600">{{ 'users.docsDialog.noDocs' | translate }}</p>
-                </div>
-              }
+                </td>
+                <td class="px-6 py-4">
+                  <div class="relative inline-block">
+                    <select [(ngModel)]="user.role" (change)="handleChangeRole(user.id, user.role)"
+                      class="appearance-none cursor-pointer pl-3 pr-8 py-1 text-xs font-semibold rounded-full border-0 focus:outline-none focus:ring-2 focus:ring-offset-1 transition"
+                      [ngClass]="getRoleBadgeClasses(user.role)">
+                      <option [ngValue]="UserRole.ADMIN">{{ 'users.filters.admin' | translate }}</option>
+                      <option [ngValue]="UserRole.USER">{{ 'users.filters.user' | translate }}</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                      <lucide-angular name="chevron-down" class="w-3 h-3 opacity-80"></lucide-angular>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <span class="px-2 py-1 text-sm rounded-full" [ngClass]="{
+                    'bg-green-100 text-green-700': user.is_active,
+                    'bg-gray-100 text-gray-700': !user.is_active
+                  }">
+                    {{ user.is_active ? ('users.status.active' | translate) : ('users.status.inactive' | translate) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <button (click)="handleViewDocuments(user)"
+                    class="flex items-center gap-2 text-[#02ab74] hover:text-[#028a5f] transition-colors">
+                    <lucide-angular name="FileText" class="w-4 h-4"></lucide-angular>
+                    <span>{{ user.documentsCount }} {{ 'users.documentsCount' | translate }}</span>
+                  </button>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-600">{{ user.lastActivity }}</td>
+                <td class="px-6 py-4 text-right">
+                  <button (click)="toggleMenu(user.id, $event)"
+                    class="inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition"
+                    aria-haspopup="true" aria-expanded="true">
+                    <lucide-angular name="MoreVertical" class="w-5 h-5 text-gray-600"></lucide-angular>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination (Desktop) -->
+      @if (filteredUsers.length > 0) {
+        <div class="p-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="text-sm text-gray-600">
+            Mostrando
+            <span class="font-medium">{{ pageStart }}</span> -
+            <span class="font-medium">{{ pageEnd }}</span>
+            de <span class="font-medium">{{ filteredUsers.length }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1"
+              class="px-3 py-2 rounded-lg border border-gray-300 transition disabled:opacity-50 hover:bg-gray-50">
+              <lucide-angular name="ChevronLeft" class="w-5 h-5"></lucide-angular>
+            </button>
+            <span class="px-3 py-2 text-sm text-gray-600">{{ currentPage }} / {{ totalPages }}</span>
+            <button (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages"
+              class="px-3 py-2 rounded-lg border border-gray-300 transition disabled:opacity-50 hover:bg-gray-50">
+              <lucide-angular name="ChevronRight" class="w-5 h-5"></lucide-angular>
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (filteredUsers.length === 0) {
+        <div class="p-12 text-center">
+          <lucide-angular name="users" class="w-12 h-12 text-gray-400 mx-auto mb-4"></lucide-angular>
+          <h3 class="text-[#070025] mb-2">{{ 'users.empty.title' | translate }}</h3>
+          <p class="text-gray-600">{{ 'users.empty.subtitle' | translate }}</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Users Cards (Mobile) -->
+  @if (!isLoading) {
+    <div class="md:hidden space-y-4">
+      @for (user of paginatedUsers; track user.id) {
+        <div class="p-4 border border-gray-200 rounded-xl bg-white shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <app-profile-avatar [size]="2.5" [showEditControls]="false" [userData]="user"
+                [userPhotoUrl]="user.profile_photo_url">
+              </app-profile-avatar>
+              <div>
+                <p class="text-[#070025] font-semibold text-sm">{{ user.name }}</p>
+                <p class="text-[11px] text-gray-500 truncate max-w-[150px]">{{ user.email }}</p>
+              </div>
             </div>
-            <!-- Footer -->
-            <div class="bg-gray-50 px-6 py-3 flex flex-row-reverse">
-              <button (click)="showDocumentsDialog = false"
-                class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#02ab74] text-base font-medium text-white hover:bg-[#028a5f] sm:text-sm">
-                {{ 'users.docsDialog.close' | translate }}
+            <div class="flex gap-1">
+              <button (click)="handleToggleStatus(user.id)"
+                class="p-2 rounded-lg transition-colors"
+                [ngClass]="user.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'">
+                <lucide-angular [name]="user.is_active ? 'UserCheck' : 'UserX'" class="w-5 h-5"></lucide-angular>
+              </button>
+              <button (click)="openDeleteDialog(user)" class="p-2 rounded-lg bg-red-50 text-red-600">
+                <lucide-angular name="Trash2" class="w-5 h-5"></lucide-angular>
               </button>
             </div>
           </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+              <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">{{ 'users.table.role' | translate }}</p>
+              <div class="relative inline-block w-full">
+                <select [(ngModel)]="user.role" (change)="handleChangeRole(user.id, user.role)"
+                  class="appearance-none cursor-pointer w-full pl-3 pr-8 py-1 text-xs font-semibold rounded-full border-0 focus:outline-none focus:ring-2 transition"
+                  [ngClass]="getRoleBadgeClasses(user.role)">
+                  <option [ngValue]="UserRole.ADMIN">{{ 'users.filters.admin' | translate }}</option>
+                  <option [ngValue]="UserRole.USER">{{ 'users.filters.user' | translate }}</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <lucide-angular name="chevron-down" class="w-3 h-3 opacity-80"></lucide-angular>
+                </div>
+              </div>
+            </div>
+            <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+              <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">{{ 'users.table.documents' | translate }}</p>
+              <button (click)="handleViewDocuments(user)" class="text-[#02ab74] text-sm font-bold flex items-center gap-1">
+                <lucide-angular name="FileText" class="w-3 h-3"></lucide-angular>
+                {{ user.documentsCount }}
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-[11px] text-gray-500 pt-1">
+            <div class="flex items-center gap-1">
+              <lucide-angular name="Clock" class="w-3 h-3"></lucide-angular>
+              {{ user.lastActivity }}
+            </div>
+            <span class="px-2 py-0.5 rounded-full font-bold" [ngClass]="{
+              'bg-green-100 text-green-700': user.is_active,
+              'bg-gray-100 text-gray-700': !user.is_active
+            }">
+              {{ user.is_active ? ('users.status.active' | translate) : ('users.status.inactive' | translate) }}
+            </span>
+          </div>
+        </div>
+      }
+
+      <!-- Pagination (Mobile) -->
+      @if (filteredUsers.length > 0) {
+        <div class="p-4 border border-gray-200 rounded-xl flex items-center justify-between gap-4 bg-white">
+          <div class="text-xs text-gray-600">
+            {{ pageStart }}-{{ pageEnd }} de {{ filteredUsers.length }}
+          </div>
+          <div class="flex items-center gap-2">
+            <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1"
+              class="p-2 rounded-lg border border-gray-300 disabled:opacity-50">
+              <lucide-angular name="ChevronLeft" class="w-4 h-4"></lucide-angular>
+            </button>
+            <span class="px-2 py-2 text-xs text-gray-600">{{ currentPage }}/{{ totalPages }}</span>
+            <button (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages"
+              class="p-2 rounded-lg border border-gray-300 disabled:opacity-50">
+              <lucide-angular name="ChevronRight" class="w-4 h-4"></lucide-angular>
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (filteredUsers.length === 0) {
+        <div class="py-12 text-center">
+          <lucide-angular name="users" class="w-12 h-12 text-gray-300 mx-auto mb-2"></lucide-angular>
+          <p class="text-gray-500 font-medium">{{ 'users.empty.title' | translate }}</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ============================================================= -->
+  <!-- FLOATING ACTION MENU + BACKDROP (al final, fuera de todo)    -->
+  <!-- ============================================================= -->
+
+  <!-- Backdrop transparente para cerrar al hacer click fuera -->
+  @if (openMenuId !== null) {
+    <div class="fixed inset-0 z-[55]" (click)="closeMenu()"></div>
+  }
+
+  <!-- Menú flotante con position: fixed -->
+  @if (openMenuUser; as menuUser) {
+    <div
+      class="fixed z-[60] w-52 rounded-md bg-white border border-gray-200 shadow-lg"
+      [style.top.px]="menuPosition.top"
+      [style.left.px]="menuPosition.left">
+      <div class="py-1 text-sm">
+        <button (click)="handleViewDocuments(menuUser); closeMenu()"
+          class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-gray-700">
+          <lucide-angular name="Eye" class="w-4 h-4"></lucide-angular>
+          {{ 'users.menu.viewDocs' | translate }}
+        </button>
+        <button (click)="handleToggleStatus(menuUser.id); closeMenu()"
+          class="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-gray-700">
+          <lucide-angular [name]="menuUser.is_active ? 'UserX' : 'UserCheck'" class="w-4 h-4"></lucide-angular>
+          {{ menuUser.is_active ? ('users.menu.deactivate' | translate) : ('users.menu.activate' | translate) }}
+        </button>
+        <div class="border-t my-1"></div>
+        <button (click)="openDeleteDialog(menuUser); closeMenu()"
+          class="w-full text-left px-4 py-2 hover:bg-red-50 flex items-center gap-2 text-red-600">
+          <lucide-angular name="Trash2" class="w-4 h-4"></lucide-angular>
+          {{ 'users.menu.delete' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Documents Dialog -->
+  @if (showDocumentsDialog) {
+    <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="documents-modal-title"
+      role="dialog" aria-modal="true">
+      <div class="flex min-h-screen items-center justify-center px-4 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+          (click)="showDocumentsDialog = false"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-middle bg-white rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:max-w-xl w-full max-h-[80vh] overflow-y-auto"
+          role="dialog" aria-modal="true" aria-labelledby="documents-modal-title">
+          <div class="px-6 pt-5 pb-4">
+            <h3 class="text-lg font-medium leading-6 text-[#070025]" id="documents-modal-title">
+              {{ 'users.docsDialog.title' | translate }} {{ selectedUser?.name }}
+            </h3>
+            <p class="mt-2 text-sm text-gray-600">
+              {{ 'users.docsDialog.subtitle' | translate }}
+            </p>
+          </div>
+          <div class="px-6 py-4 space-y-3">
+            @if (selectedUser && selectedUser.documents.length > 0) {
+              @for (doc of selectedUser.documents; track doc.id) {
+                <div class="p-4 border border-gray-200 rounded-lg">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-start gap-3 flex-1">
+                      <div class="p-2 rounded-md"
+                        style="background: linear-gradient(to bottom right, #02ab74, #7209b7);">
+                        <lucide-angular name="FileText" class="w-5 h-5 text-white"></lucide-angular>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <h4 class="text-[#070025] mb-2 truncate">{{ doc.filename }}</h4>
+                        <div class="flex flex-wrap gap-3 text-sm text-gray-600">
+                          <span class="px-2 py-1 text-xs bg-gray-100 border border-gray-300 rounded">{{ doc.file_type }}</span>
+                          <span class="flex items-center gap-1">
+                            <lucide-angular name="Calendar" class="w-4 h-4"></lucide-angular>
+                            {{ doc.upload_date | date: "d MMM y" }}
+                          </span>
+                          <span>{{ formatFileSize(doc.size) }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button (click)="viewDocument(doc)"
+                      [title]="viewedDocuments.has(doc.id) ? ('users.docsDialog.viewedTooltip' | translate) : ('users.docsDialog.viewTooltip' | translate)"
+                      class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-1 text-sm">
+                      <lucide-angular name="Eye" class="w-4 h-4"></lucide-angular>
+                      {{ 'users.docsDialog.view' | translate }}
+                    </button>
+                  </div>
+                </div>
+              }
+            }
+            @if (selectedUser && selectedUser.documents.length === 0) {
+              <div class="text-center py-8">
+                <lucide-angular name="FileText" class="w-12 h-12 text-gray-300 mx-auto mb-3"></lucide-angular>
+                <p class="text-gray-600">{{ 'users.docsDialog.noDocs' | translate }}</p>
+              </div>
+            }
+          </div>
+          <div class="bg-gray-50 px-6 py-3 flex flex-row-reverse">
+            <button (click)="showDocumentsDialog = false"
+              class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#02ab74] text-base font-medium text-white hover:bg-[#028a5f] sm:text-sm">
+              {{ 'users.docsDialog.close' | translate }}
+            </button>
+          </div>
         </div>
       </div>
-    }
+    </div>
+  }
 
-
-    <!-- Delete Confirmation Dialog -->
-    @if (showDeleteDialog) {
-      <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="delete-modal-title"
-        role="dialog" aria-modal="true">
-        <div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-          <!-- Backdrop -->
-          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+  <!-- Delete Confirmation Dialog -->
+  @if (showDeleteDialog) {
+    <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="delete-modal-title"
+      role="dialog" aria-modal="true">
+      <div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
           (click)="showDeleteDialog = false"></div>
-          <!-- Content -->
-          <div
-            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-            <!-- Header -->
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-              <div class="sm:flex sm:items-start">
-                <div class="mt-3 text-center sm:ml-4 sm:text-left">
-                  <h3 class="text-lg leading-6 font-medium text-[#070025]" id="delete-modal-title">
-                    {{ 'users.deleteDialog.title' | translate }}
-                  </h3>
-                  <div class="mt-2">
-                    <p class="text-sm text-gray-600">
-                      {{ 'users.deleteDialog.confirmText1' | translate }} <span class="font-medium">{{ userToDelete?.name
-                    }}</span> {{ 'users.deleteDialog.confirmText2' | translate }}
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+              <div class="mt-3 text-center sm:ml-4 sm:text-left">
+                <h3 class="text-lg leading-6 font-medium text-[#070025]" id="delete-modal-title">
+                  {{ 'users.deleteDialog.title' | translate }}
+                </h3>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-600">
+                    {{ 'users.deleteDialog.confirmText1' | translate }} <span class="font-medium">{{ userToDelete?.name }}</span> {{ 'users.deleteDialog.confirmText2' | translate }}
                     {{ 'users.deleteDialog.warning' | translate }}
                   </p>
                 </div>
               </div>
             </div>
           </div>
-          <!-- Body -->
           @if (userToDelete) {
-            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mx-4">
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mx-4 mb-4">
               <div class="flex items-start gap-3">
                 <lucide-angular name="Trash2" class="w-5 h-5 text-red-600 mt-0.5"></lucide-angular>
                 <div class="flex-1">
-                  <p class="text-sm text-red-800 mb-2">
-                    {{ 'users.deleteDialog.listTitle' | translate }}
-                  </p>
+                  <p class="text-sm text-red-800 mb-2">{{ 'users.deleteDialog.listTitle' | translate }}</p>
                   <ul class="text-sm text-red-700 space-y-1 list-disc list-inside">
                     <li>{{ 'users.deleteDialog.itemProfile' | translate }}</li>
                     <li>{{ userToDelete.documentsCount }} {{ 'users.deleteDialog.itemDocs' | translate }}</li>
@@ -360,7 +402,6 @@
               </div>
             </div>
           }
-          <!-- Footer -->
           <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button (click)="handleDeleteUser()" type="button"
               class="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm">

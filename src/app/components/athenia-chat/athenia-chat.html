@@ -1,19 +1,26 @@
-<!-- Modal de Chat -->
+<!-- ─────────────────────────────────────────────────────────── -->
+<!-- MODAL DE CHAT                                                -->
+<!-- ─────────────────────────────────────────────────────────── -->
 @if (isVisible) {
   <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-6"
     style="background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(6px);">
-    <div class="w-full sm:max-w-[720px] h-[92vh] sm:h-[80vh] flex flex-col overflow-hidden"
+
+    <div class="w-full sm:max-w-[760px] h-[92vh] sm:h-[80vh] flex flex-col overflow-hidden"
       style="background:#fff; border-radius: 20px; box-shadow: 0 24px 64px rgba(0,0,0,0.18); border: 1px solid #e2e8f0;">
-      <!-- ── HEADER ─────────────────────────────────────────────── -->
+
+      <!-- ── HEADER ─────────────────────────────────────────── -->
       <header class="flex items-center justify-between px-6 py-4 flex-shrink-0"
         style="background: linear-gradient(135deg, #02ab74 0%, #190379 100%); min-height: 68px;">
+
         <div class="flex items-center gap-3">
-          <!-- Logo mark -->
-          <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+          <!-- Logo con eye-tracker -->
+          <div class="group w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
             style="background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.25);">
-            <lucide-angular name="bot" class="w-5 h-5 text-white"></lucide-angular>
+            <div class="w-5 h-5">
+              <app-eye-tracker [color]="'#ffffff'"></app-eye-tracker>
+            </div>
           </div>
-          <!-- Title -->
+
           <div>
             <div class="flex items-center gap-2">
               <h3 style="font-family:'Inter',sans-serif; font-size:15px; font-weight:700; color:white; letter-spacing:0.02em;">
@@ -23,18 +30,16 @@
                 AI
               </span>
             </div>
-            @if (atheniaStatus) {
-              <p style="font-size:11px; color:rgba(255,255,255,0.65); margin-top:1px; font-weight:500;">
+            <p style="font-size:11px; color:rgba(255,255,255,0.65); margin-top:1px; font-weight:500;">
+              @if (atheniaStatus) {
                 {{ atheniaStatus.documents_indexed }} {{ 'chat.docsContext' | translate }}
-              </p>
-            }
-            @if (!atheniaStatus) {
-              <p style="font-size:11px; color:rgba(255,255,255,0.65); margin-top:1px; font-weight:500;">
+              } @else {
                 {{ 'chat.subtitleFallback' | translate }}
-              </p>
-            }
+              }
+            </p>
           </div>
         </div>
+
         <!-- Close -->
         <button (click)="toggle()" type="button" [attr.aria-label]="'chat.close' | translate"
           class="flex items-center justify-center w-8 h-8 rounded-lg transition-all"
@@ -44,16 +49,16 @@
           <lucide-angular name="x" class="w-4 h-4"></lucide-angular>
         </button>
       </header>
-      <!-- ── MENSAJES ────────────────────────────────────────────── -->
+
+      <!-- ── MENSAJES ───────────────────────────────────────── -->
       <main #messagesContainer
         class="flex-1 overflow-y-auto"
         style="background:#f8fafc; padding:24px; display:flex; flex-direction:column; gap:12px; scrollbar-width:thin; scrollbar-color:#e2e8f0 transparent;">
+
         <!-- Estado vacío -->
         @if (messages.length === 0) {
-          <div
-            class="flex flex-col items-center justify-center flex-1 text-center"
-            style="padding: 48px 32px;">
-            <div style="width:52px; height:52px; border-radius:14px; background:#fff; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; margin-bottom:20px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+          <div class="flex flex-col items-center justify-center flex-1 text-center" style="padding: 48px 32px;">
+            <div class="w-[52px] h-[52px] rounded-[14px] bg-white border border-[#e2e8f0] flex items-center justify-center mb-5 shadow-sm">
               <lucide-angular name="message-circle" class="w-6 h-6" style="color:#02ab74;"></lucide-angular>
             </div>
             <h4 style="font-family:'Inter',sans-serif; font-size:17px; font-weight:700; color:#0f172a; margin-bottom:8px; letter-spacing:-0.2px;">
@@ -64,39 +69,39 @@
             </p>
           </div>
         }
+
         <!-- Mensajes -->
         @for (message of messages; track message) {
-          <article
-            class="flex"
-            [class.flex-row-reverse]="message.role === 'user'">
-            <!-- Avatar AI -->
+          <article class="flex" [class.flex-row-reverse]="message.role === 'user'">
+
+            <!-- Avatar IA -->
             @if (message.role !== 'user') {
-              <div
-                style="width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,#02ab74,#190379); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-right:10px; margin-top:2px;">
-                <span style="color:white; font-size:10px; font-weight:800;">C</span>
+              <div class="group flex-shrink-0" style="margin-right:10px; margin-top:2px;">
+                <div class="p-2.5 bg-gradient-to-br from-[#02ab74] via-[#02ab74] to-[#7209b7] rounded-xl shadow-lg transition-transform group-hover:scale-110">
+                  <div class="w-6 h-6">
+                    <app-eye-tracker [color]="'#ffffff'"></app-eye-tracker>
+                  </div>
+                </div>
               </div>
             }
-            <!-- Contenedor de burbuja — max 65% del panel -->
-            <div class="max-w-[85%] sm:max-w-[65%]"
-              [class.flex-col]="true"
-              [class.items-end]="message.role === 'user'"
-              style="display:flex; flex-direction:column; gap:4px;">
-              <!-- Burbuja usuario -->
+
+            <!-- Burbuja -->
+            <div class="max-w-[85%] sm:max-w-[65%] flex flex-col gap-1"
+              [class.items-end]="message.role === 'user'">
+
               @if (message.role === 'user') {
-                <div
-                  style="background:#02ab74; color:white; padding:10px 16px; border-radius:16px; border-top-right-radius:4px; font-size:14px; line-height:1.6; font-weight:400; word-break:break-word;">
+                <div style="background:#02ab74; color:white; padding:10px 16px; border-radius:16px; border-top-right-radius:4px; font-size:14px; line-height:1.6; font-weight:400; word-break:break-word;">
                   {{ message.content }}
                 </div>
               }
-              <!-- Burbuja AI -->
+
               @if (message.role !== 'user') {
-                <div
-                  style="background:#fff; border:1px solid #e2e8f0; color:#0f172a; padding:10px 16px; border-radius:16px; border-top-left-radius:4px; font-size:14px; line-height:1.6; font-weight:400; word-break:break-word; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                <div style="background:#fff; border:1px solid #e2e8f0; color:#0f172a; padding:10px 16px; border-radius:16px; border-top-left-radius:4px; font-size:14px; line-height:1.6; font-weight:400; word-break:break-word; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
                   <div [innerHTML]="formatContent(message.content)" class="prose prose-sm max-w-none"></div>
+
                   <!-- Fuentes -->
                   @if (message.sources && message.sources.length > 0) {
-                    <div
-                      style="margin-top:10px; padding-top:10px; border-top:1px solid #f1f5f9;">
+                    <div style="margin-top:10px; padding-top:10px; border-top:1px solid #f1f5f9;">
                       <div class="flex flex-wrap gap-2">
                         @if (message.sources_info && message.sources_info.length > 0) {
                           @for (source of message.sources_info; track source.document_id) {
@@ -122,23 +127,36 @@
                 </div>
               }
             </div>
+
+            <!-- Avatar Usuario -->
+            @if (message.role === 'user') {
+              <div class="flex-shrink-0 flex items-center justify-center" style="margin-left:10px; margin-top:2px;">
+                <app-profile-avatar [size]="2"></app-profile-avatar>
+              </div>
+            }
           </article>
         }
+
         <!-- Cargando -->
         @if (isLoading) {
           <div class="flex items-start">
-            <div style="width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,#02ab74,#190379); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-right:10px;">
-              <span style="color:white; font-size:10px; font-weight:800;">C</span>
+            <div class="group flex-shrink-0" style="margin-right:10px;">
+              <div class="p-2.5 bg-gradient-to-br from-[#02ab74] via-[#02ab74] to-[#7209b7] rounded-xl shadow-lg transition-transform group-hover:scale-110">
+                <div class="w-6 h-6">
+                  <app-eye-tracker [color]="'#ffffff'"></app-eye-tracker>
+                </div>
+              </div>
             </div>
             <div style="background:#fff; border:1px solid #e2e8f0; border-radius:16px; border-top-left-radius:4px; padding:12px 16px; display:flex; gap:4px; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
-              <span style="width:5px; height:5px; border-radius:50%; background:#94a3b8; animation:typ 0.75s ease-in-out infinite;"></span>
-              <span style="width:5px; height:5px; border-radius:50%; background:#94a3b8; animation:typ 0.75s ease-in-out 0.15s infinite;"></span>
-              <span style="width:5px; height:5px; border-radius:50%; background:#94a3b8; animation:typ 0.75s ease-in-out 0.30s infinite;"></span>
+              <span class="w-[5px] h-[5px] rounded-full bg-slate-400" style="animation:typ 0.75s ease-in-out infinite;"></span>
+              <span class="w-[5px] h-[5px] rounded-full bg-slate-400" style="animation:typ 0.75s ease-in-out 0.15s infinite;"></span>
+              <span class="w-[5px] h-[5px] rounded-full bg-slate-400" style="animation:typ 0.75s ease-in-out 0.30s infinite;"></span>
             </div>
           </div>
         }
       </main>
-      <!-- ── INPUT ─────────────────────────────────────────────── -->
+
+      <!-- ── INPUT ─────────────────────────────────────────── -->
       <footer style="padding:16px 24px; background:#fff; border-top:1px solid #f1f5f9; flex-shrink:0;">
         <div style="display:flex; align-items:flex-end; gap:8px; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:14px; padding:8px 12px; transition:all 0.18s;"
           [style.border-color]="question.trim() ? '#02ab74' : '#e2e8f0'">
@@ -165,6 +183,7 @@
             }
           </button>
         </div>
+
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
           <span style="font-size:10px; font-weight:500; color:#94a3b8; letter-spacing:0.03em;">
             {{ 'chat.inputHint' | translate }}
@@ -186,7 +205,7 @@
 
 <style>
   @keyframes typ {
-  0%, 100% { opacity: 0.3; transform: translateY(0); }
-  50%       { opacity: 1;   transform: translateY(-3px); }
-}
+    0%, 100% { opacity: 0.3; transform: translateY(0); }
+    50%      { opacity: 1;   transform: translateY(-3px); }
+  }
 </style>

@@ -18,7 +18,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 /**
  * Componente de administración de usuarios.
  * Soporta: listado, filtrado, cambio de rol, activación/desactivación,
- * eliminación, visualización de documentos por usuario y estadísticas.
+ * eliminación, visualización de documentos, estadísticas y paginación.
  */
 @Component({
   selector: 'app-users',
@@ -32,10 +32,23 @@ export class Users implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // ==================== FILTROS DE BÚSQUEDA ====================
-  searchQuery = '';
-  roleFilter: 'all' | UserRole = 'all';
-  statusFilter: 'all' | 'active' | 'inactive' = 'all';
+  private _searchQuery = '';
+  get searchQuery() { return this._searchQuery; }
+  set searchQuery(v: string) { this._searchQuery = v; this.currentPage = 1; }
+
+  private _roleFilter: 'all' | UserRole = 'all';
+  get roleFilter() { return this._roleFilter; }
+  set roleFilter(v: 'all' | UserRole) { this._roleFilter = v; this.currentPage = 1; }
+
+  private _statusFilter: 'all' | 'active' | 'inactive' = 'all';
+  get statusFilter() { return this._statusFilter; }
+  set statusFilter(v: 'all' | 'active' | 'inactive') { this._statusFilter = v; this.currentPage = 1; }
+
   UserRole = UserRole;
+
+  // ==================== PAGINACIÓN ====================
+  readonly pageSize = 8;
+  currentPage = 1;
 
   // ==================== ESTADO DE UI ====================
   selectedUser: UserExtended | null = null;
@@ -44,6 +57,11 @@ export class Users implements OnInit, OnDestroy {
   showDocumentsDialog = false;
   showDeleteDialog = false;
   openMenuId: number | null = null;
+
+  // Coordenadas del menú flotante (position: fixed)
+  menuPosition = { top: 0, left: 0, openUpward: false };
+  private readonly menuHeight = 180;
+  private readonly menuWidth = 208;
 
   // ==================== DATOS ====================
   users: UserExtended[] = [];
@@ -62,17 +80,23 @@ export class Users implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadUsers();
+    window.addEventListener('scroll', this.onScrollClose, true);
   }
 
   ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.onScrollClose, true);
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  private onScrollClose = (): void => {
+    if (this.openMenuId !== null) {
+      this.closeMenu();
+    }
+  };
 
   // ==================== CARGA DE DATOS ====================
 
-  /** Carga usuarios y sus documentos asociados */
   loadUsers(): void {
     this.isLoading = true;
 
@@ -93,9 +117,6 @@ export class Users implements OnInit, OnDestroy {
       });
   }
 
-  /**
-   * Extiende modelo `User` a `UserExtended` con datos calculados.
-   */
   private convertToUserExtended(user: User): UserExtended {
     return {
       id: user.id,
@@ -112,28 +133,24 @@ export class Users implements OnInit, OnDestroy {
     };
   }
 
-  /** Asocia documentos a cada usuario y calcula última actividad */
   private loadUserDocuments(): void {
     this.documentService.getAllDocumentsMetadata(true)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (documents: DocumentWithMetadata[]) => {
-          // Crear referencias nuevas para que OnPush detecte los cambios
           this.users = this.users.map(user => {
             const userDocs = documents.filter(doc => doc.user_id === user.id);
             const lastActivity = userDocs.length > 0
               ? this.formatLastActivity(userDocs.reduce((latest, current) =>
-                  new Date(current.upload_date) > new Date(latest.upload_date) ? current : latest
-                ).upload_date)
+                new Date(current.upload_date) > new Date(latest.upload_date) ? current : latest
+              ).upload_date)
               : this.translate.instant('users.status.noActivity');
 
             return { ...user, documents: userDocs, documentsCount: userDocs.length, lastActivity };
           });
           this.cdr.markForCheck();
         },
-        error: () => {
-          // Silencioso: no afecta funcionalidad principal
-        }
+        error: () => { /* Silencioso */ }
       });
   }
 
@@ -143,7 +160,6 @@ export class Users implements OnInit, OnDestroy {
     return `${value} ${singular}${value !== 1 ? 's' : ''}`;
   }
 
-  /** Formato relativo de última actividad (ej: "Hace 5 minutos", "Ayer") */
   private formatLastActivity(dateString: string): string {
     const date = new Date(dateString);
     const now = new Date();
@@ -159,31 +175,52 @@ export class Users implements OnInit, OnDestroy {
     if (diffDays < 30) return `${this.translate.instant('users.time.ago')} ${this.pluralize(diffDays, this.translate.instant('users.time.day'))}`;
 
     return date.toLocaleString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
   }
 
   // ==================== FILTRADO DINÁMICO ====================
 
-  /** Usuarios filtrados por nombre, email, rol y estado */
   get filteredUsers(): UserExtended[] {
     return this.users.filter(user => {
       const matchesSearch =
-        user.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(this.searchQuery.toLowerCase());
+        user.name.toLowerCase().includes(this._searchQuery.toLowerCase()) ||
+        user.email.toLowerCase().includes(this._searchQuery.toLowerCase());
 
-      const matchesRole = this.roleFilter === 'all' || user.role === this.roleFilter;
+      const matchesRole = this._roleFilter === 'all' || user.role === this._roleFilter;
       const matchesStatus =
-        this.statusFilter === 'all' ||
-        (this.statusFilter === 'active' && user.is_active) ||
-        (this.statusFilter === 'inactive' && !user.is_active);
+        this._statusFilter === 'all' ||
+        (this._statusFilter === 'active' && user.is_active) ||
+        (this._statusFilter === 'inactive' && !user.is_active);
 
       return matchesSearch && matchesRole && matchesStatus;
     });
+  }
+
+  // ==================== PAGINACIÓN ====================
+
+  get paginatedUsers(): UserExtended[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredUsers.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredUsers.length / this.pageSize));
+  }
+
+  get pageStart(): number {
+    return this.filteredUsers.length === 0 ? 0 : (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get pageEnd(): number {
+    return Math.min(this.currentPage * this.pageSize, this.filteredUsers.length);
+  }
+
+  changePage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.closeMenu();
+    this.cdr.markForCheck();
   }
 
   // ==================== ESTADÍSTICAS ====================
@@ -199,7 +236,6 @@ export class Users implements OnInit, OnDestroy {
 
   // ==================== ACCIONES DE USUARIO ====================
 
-  /** Cambia rol de usuario */
   handleChangeRole(userId: number, newRole: UserRole): void {
     this.userService.updateUserRole(userId, { new_role: newRole })
       .pipe(takeUntil(this.destroy$))
@@ -210,6 +246,7 @@ export class Users implements OnInit, OnDestroy {
             this.users[index] = { ...this.users[index], role: updatedUser.new_role as UserRole };
           }
           this.alertService.success(this.translate.instant('users.alerts.roleUpdated', { name: this.users[index].name, role: this.getRoleLabel(updatedUser.new_role) }), '', 3000);
+          this.cdr.markForCheck();
         },
         error: () => {
           const user = this.users.find(u => u.id === userId);
@@ -219,7 +256,6 @@ export class Users implements OnInit, OnDestroy {
       });
   }
 
-  /** Activa o desactiva usuario */
   handleToggleStatus(userId: number): void {
     const user = this.users.find(u => u.id === userId);
     if (!user) return;
@@ -239,6 +275,7 @@ export class Users implements OnInit, OnDestroy {
           this.alertService[newStatus ? 'success' : 'warning'](
             newStatus ? this.translate.instant('users.alerts.userActivated', { name: user.name }) : this.translate.instant('users.alerts.userDeactivated', { name: user.name }), '', 3000
           );
+          this.cdr.markForCheck();
         },
         error: () => {
           this.alertService.error(this.translate.instant('users.alerts.error'), this.translate.instant('users.alerts.statusErrorDesc'), 3000);
@@ -246,19 +283,16 @@ export class Users implements OnInit, OnDestroy {
       });
   }
 
-  /** Muestra documentos del usuario */
   handleViewDocuments(user: UserExtended): void {
     this.selectedUser = user;
     this.showDocumentsDialog = true;
   }
 
-  /** Abre diálogo de confirmación para eliminar */
   openDeleteDialog(user: UserExtended): void {
     this.userToDelete = user;
     this.showDeleteDialog = true;
   }
 
-  /** Elimina usuario permanentemente */
   handleDeleteUser(): void {
     if (!this.userToDelete) return;
 
@@ -270,6 +304,11 @@ export class Users implements OnInit, OnDestroy {
           this.alertService.success(this.translate.instant('users.alerts.deletedTitle'), this.translate.instant('users.alerts.deletedDesc', { name: this.userToDelete?.name }), 3000);
           this.userToDelete = null;
           this.showDeleteDialog = false;
+
+          if (this.currentPage > this.totalPages) {
+            this.currentPage = this.totalPages;
+          }
+          this.cdr.markForCheck();
         },
         error: () => {
           this.alertService.error(this.translate.instant('users.alerts.error'), this.translate.instant('users.alerts.deleteErrorDesc', { name: this.userToDelete?.name }), 5000);
@@ -280,18 +319,59 @@ export class Users implements OnInit, OnDestroy {
 
   // ==================== UI Y ESTILOS ====================
 
-  /** Ícono según tipo de alerta */
+  /** Abre/cierra el menú de acciones con posicionamiento dinámico (fixed) */
+  toggleMenu(userId: number, event?: MouseEvent): void {
+    if (this.openMenuId === userId) {
+      this.openMenuId = null;
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.openMenuId = userId;
+
+    if (event) {
+      const btn = event.currentTarget as HTMLElement;
+      const rect = btn.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const openUpward = spaceBelow < this.menuHeight + 16;
+
+      // Clamp horizontal: nunca sale del viewport
+      let left = rect.right - this.menuWidth;
+      if (left < 8) left = 8;
+      if (left + this.menuWidth > window.innerWidth - 8) {
+        left = window.innerWidth - this.menuWidth - 8;
+      }
+
+      // Clamp vertical
+      let top = openUpward ? rect.top - this.menuHeight - 8 : rect.bottom + 8;
+      if (top < 8) top = 8;
+      if (top + this.menuHeight > window.innerHeight - 8) {
+        top = window.innerHeight - this.menuHeight - 8;
+      }
+
+      this.menuPosition = { top, left, openUpward };
+    }
+    this.cdr.markForCheck();
+  }
+
+  closeMenu(): void {
+    this.openMenuId = null;
+    this.cdr.markForCheck();
+  }
+
+  /** Devuelve el usuario del menú abierto */
+  get openMenuUser(): UserExtended | null {
+    if (this.openMenuId === null) return null;
+    return this.paginatedUsers.find(u => u.id === this.openMenuId) ?? null;
+  }
+
   getDefaultIcon(type: string): string {
     const icons: Record<string, string> = {
-      success: 'CheckCircle',
-      error: 'XCircle',
-      warning: 'AlertTriangle',
-      info: 'Info'
+      success: 'CheckCircle', error: 'XCircle', warning: 'AlertTriangle', info: 'Info'
     };
     return icons[type] || 'Info';
   }
 
-  /** Iniciales del usuario para avatar */
   getUserInitials(name: string): string {
     if (!name) return '??';
     const names = name.split(' ');
@@ -300,35 +380,25 @@ export class Users implements OnInit, OnDestroy {
       : name.substring(0, 2).toUpperCase();
   }
 
-  /** Toggle menú de acciones */
-  toggleMenu(userId: number): void {
-    this.openMenuId = this.openMenuId === userId ? null : userId;
-  }
-
-  closeMenu(): void {
-    this.openMenuId = null;
-  }
-
-  /** Clases CSS para badge de rol */
+  /** Clases CSS tipo Badge para el rol (estilo React) */
   getRoleBadgeClasses(role: string): string {
-    const base = 'px-3 py-1 rounded-full text-xs font-medium transition-colors duration-300 ease-in-out';
     const map: Record<string, string> = {
-      admin: 'bg-[#7209b7] text-white',
-      user: 'bg-gray-100 text-gray-700'
+      admin: 'bg-[#7209b7] text-white hover:bg-[#5f0899] focus:ring-[#7209b7]',
+      user: 'bg-[#02ab74] text-white hover:bg-[#028a5f] focus:ring-[#02ab74]',
+      editor: 'bg-blue-100 text-blue-700 hover:bg-blue-200 focus:ring-blue-400'
     };
-    return `${base} ${map[role] || 'bg-gray-200 text-gray-600'}`;
+    return map[role] || 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-400';
   }
 
-  /** Etiqueta legible del rol */
   getRoleLabel(role: string): string {
     const labels: Record<string, string> = {
       admin: this.translate.instant('users.filters.admin'),
-      user: this.translate.instant('users.filters.user')
+      user: this.translate.instant('users.filters.user'),
+      editor: this.translate.instant('users.filters.editor')
     };
     return labels[role] || 'Desconocido';
   }
 
-  /** Formato legible de tamaño de archivo */
   formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -337,9 +407,6 @@ export class Users implements OnInit, OnDestroy {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  // ==================== VISUALIZACIÓN DE DOCUMENTOS ====================
-
-  /** Abre documento en nueva pestaña */
   viewDocument(doc: DocumentWithMetadata): void {
     this.documentService.downloadDocument(+doc.id)
       .pipe(takeUntil(this.destroy$))

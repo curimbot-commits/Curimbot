@@ -11,7 +11,7 @@
     </div>
 
     <div class="flex gap-2">
-      <button (click)="exportActivities()" [disabled]="isLoadingActivities() || filteredActivities().length === 0"
+      <button (click)="exportActivities()" [disabled]="isLoadingActivities() || filteredInteractions().length === 0"
         class="flex items-center gap-2 px-4 py-2 text-white rounded-lg hover:shadow-lg smooth-transition disabled:opacity-50 disabled:cursor-not-allowed"
         style="background: linear-gradient(to bottom right, #028a5e, #5a058f);" aria-label="Exportar actividades">
         <lucide-angular name="Download" class="w-5 h-5"></lucide-angular>
@@ -19,6 +19,7 @@
       </button>
     </div>
   </div>
+  
 
   <!-- Búsqueda -->
   <div class="relative animate-fade-in-up stagger-2">
@@ -101,7 +102,7 @@
   <!-- Componente Dumb: Actividades Recientes -->
   @if (showContent()) {
     <app-recent-activities
-      [activities]="recentActivities()"
+      [interactions]="recentInteractions()"
       [searchQuery]="searchQuery()"
       [activeFilter]="activeFilter()"
       [isAdmin]="isAdmin()"

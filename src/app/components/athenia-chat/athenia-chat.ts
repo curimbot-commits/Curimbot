@@ -8,11 +8,13 @@ import { AtheniaService, ConversationMessage, AtheniaQueryRequest, AtheniaRespon
 import { DocumentService } from 'src/app/services/api/document.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { EyeTrackerComponent } from 'src/app/shared/components/Robot/eye-tracker.component';
+import { ProfileAvatar } from 'src/app/shared/components/profile-avatar/profile-avatar';
 
 @Component({
   selector: 'app-athenia-chat',
   standalone: true,
-  imports: [FormsModule, LucideAngularModule, TranslateModule],
+  imports: [FormsModule, LucideAngularModule, TranslateModule, EyeTrackerComponent, ProfileAvatar],
   templateUrl: './athenia-chat.html',
   styleUrl: './athenia-chat.css'
 })
@@ -31,6 +33,7 @@ export class AtheniaChat implements OnInit, OnDestroy {
   isLoading = false;
   isVisible = false;
   currentConversationId?: number;
+  hoveredMsgId: string | null = null;
 
   // Sugerencias actualizadas
   suggestions = [
@@ -41,7 +44,7 @@ export class AtheniaChat implements OnInit, OnDestroy {
 
   // Estadísticas
   atheniaStatus: any = {
-    is_ready: true,  
+    is_ready: true,
     documents_indexed: 0,
     cache_size: 0
   };
@@ -198,7 +201,7 @@ export class AtheniaChat implements OnInit, OnDestroy {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const isSubItem = /^\s{2,}[-*]\s+(.+)$/.exec(line);
-      const isItem    = /^\s*[-*]\s+(.+)$/.exec(line);
+      const isItem = /^\s*[-*]\s+(.+)$/.exec(line);
 
       if (isSubItem) {
         if (!inSubList) { result.push('<ul class="list-disc ml-8 my-1 space-y-0.5">'); inSubList = true; }
@@ -209,12 +212,12 @@ export class AtheniaChat implements OnInit, OnDestroy {
         result.push(`<li class="text-sm leading-relaxed">${isItem[1]}</li>`);
       } else {
         if (inSubList) { result.push('</ul>'); inSubList = false; }
-        if (inList)    { result.push('</ul>'); inList = false; }
+        if (inList) { result.push('</ul>'); inList = false; }
         result.push(line);
       }
     }
     if (inSubList) result.push('</ul>');
-    if (inList)    result.push('</ul>');
+    if (inList) result.push('</ul>');
 
     html = result.join('\n');
 
@@ -252,7 +255,7 @@ export class AtheniaChat implements OnInit, OnDestroy {
           // Si no, podemos intentar obtener el metadato primero, pero para velocidad abrimos el blob directamente.
           const url = window.URL.createObjectURL(blob);
           window.open(url, '_blank');
-          
+
           // Liberar memoria después de un tiempo
           setTimeout(() => window.URL.revokeObjectURL(url), 10000);
         },
@@ -261,5 +264,17 @@ export class AtheniaChat implements OnInit, OnDestroy {
           console.error('Error al abrir el documento fuente');
         }
       });
+  }
+  /**
+ * Copia el texto de un mensaje al portapapeles.
+ */
+  async copyMessage(text: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text);
+      // Opcional: feedback visual
+      console.log('Mensaje copiado');
+    } catch (err) {
+      console.error('Error al copiar:', err);
+    }
   }
 }

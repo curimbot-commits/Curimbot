@@ -9,7 +9,7 @@
 
   <!-- Stats -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @for (stat of stats; track stat) {
+    @for (stat of stats; track stat.label) {
       <div class="p-6 border border-gray-200 rounded-xl bg-white">
         <div class="flex items-center justify-between">
           <div>
@@ -27,31 +27,54 @@
   <!-- Filters and Search -->
   <div class="p-6 border border-gray-200 rounded-xl bg-white">
     <div class="flex flex-col sm:flex-row gap-4">
+      <!-- Search -->
       <div class="flex-1 relative">
         <lucide-angular name="search" class="absolute left-2 top-1/2 -translate-y-1/4 w-5 h-5 text-gray-400"></lucide-angular>
         <input
           type="text"
           [placeholder]="'history.searchPlaceholder' | translate"
           [(ngModel)]="searchQuery"
-          (input)="filterActivities()"
+          (input)="filterInteractions()"
           class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-[#02ab74] focus:ring-1 focus:ring-[#02ab74] focus:outline-none"
-          />
+        />
       </div>
-      <div class="sm:w-64">
+
+      <!-- Channel filter -->
+      <div class="sm:w-48">
         <div class="relative">
           <select
-            [(ngModel)]="filterType"
-            (change)="filterActivities()"
+            [(ngModel)]="filterChannel"
+            (change)="filterInteractions()"
             class="w-full appearance-none pl-10 pr-10 py-2 rounded-lg border border-gray-200 bg-white text-gray-900 focus:border-[#02ab74] focus:ring-1 focus:ring-[#02ab74] focus:outline-none"
-            >
-            <option value="all">{{ 'history.filters.all' | translate }}</option>
-            <option value="upload">{{ 'history.filters.upload' | translate }}</option>
-            <option value="download">{{ 'history.filters.download' | translate }}</option>
-            <option value="delete">{{ 'history.filters.delete' | translate }}</option>
-            <option value="error">{{ 'history.filters.error' | translate }}</option>
+          >
+            <option value="all">Todos los canales</option>
+            <option value="text">Texto</option>
+            <option value="voice">Voz</option>
           </select>
           <lucide-angular name="filter" class="absolute left-2 top-1/2 -translate-y-1/4 w-4 h-4 text-gray-600 pointer-events-none"></lucide-angular>
-          <div class="absolute right-3  top-1/2 -translate-y-1/4 pointer-events-none">
+          <div class="absolute right-3 top-1/2 -translate-y-1/4 pointer-events-none">
+            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status filter -->
+      <div class="sm:w-48">
+        <div class="relative">
+          <select
+            [(ngModel)]="filterStatus"
+            (change)="filterInteractions()"
+            class="w-full appearance-none pl-10 pr-10 py-2 rounded-lg border border-gray-200 bg-white text-gray-900 focus:border-[#02ab74] focus:ring-1 focus:ring-[#02ab74] focus:outline-none"
+          >
+            <option value="all">Todos los estados</option>
+            <option value="success">Exitosas</option>
+            <option value="error">Errores</option>
+            <option value="no_context">Sin contexto</option>
+          </select>
+          <lucide-angular name="activity" class="absolute left-2 top-1/2 -translate-y-1/4 w-4 h-4 text-gray-600 pointer-events-none"></lucide-angular>
+          <div class="absolute right-3 top-1/2 -translate-y-1/4 pointer-events-none">
             <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
@@ -61,7 +84,7 @@
     </div>
   </div>
 
-  <!-- Loading Indicator -->
+  <!-- Loading -->
   @if (loading) {
     <div class="text-center py-12">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#02ab74]"></div>
@@ -69,7 +92,7 @@
     </div>
   }
 
-  <!-- Error Message -->
+  <!-- Error -->
   @if (errorMessage && !loading) {
     <div class="p-6 border border-red-200 rounded-xl bg-red-50">
       <div class="flex items-center space-x-3">
@@ -79,44 +102,107 @@
     </div>
   }
 
-  <!-- Activity Timeline -->
+  <!-- Interactions Timeline (colapsable) -->
   @if (!loading && !errorMessage) {
     <div class="border border-gray-200 rounded-xl overflow-hidden">
       <div class="p-6 border-b border-gray-200 bg-gray-50">
         <div class="flex items-center space-x-3">
           <div class="p-2 bg-[#02ab74] rounded-lg">
-            <lucide-angular name="history" class="w-5 h-5 text-white"></lucide-angular>
+            <lucide-angular name="message-circle" class="w-5 h-5 text-white"></lucide-angular>
           </div>
-          <h2 class="text-[#070025] text-xl font-semibold">{{ 'history.recentActivity' | translate }}</h2>
+          <h2 class="text-[#070025] text-xl font-semibold">Interacciones recientes</h2>
         </div>
       </div>
       <div class="divide-y divide-gray-200">
-        @if (paginatedActivities.length > 0) {
-          @for (activity of paginatedActivities; track activity) {
-            <div class="p-4 sm:p-6 hover:bg-gray-50 transition-colors bg-white">
-              <div class="flex items-start space-x-4">
-                <!-- Icon -->
-                <div [class]="'p-3 rounded-lg flex-shrink-0 ' + getActivityColor(activity.action)">
-                  <lucide-angular [name]="getActivityIcon(activity.action)" class="w-5 h-5 text-white"></lucide-angular>
+        @if (paginatedInteractions.length > 0) {
+          @for (interaction of paginatedInteractions; track interaction.id) {
+            <div class="hover:bg-gray-50 transition-colors bg-white">
+
+              <!-- Header de la tarjeta (siempre visible) -->
+              <button
+                type="button"
+                (click)="toggleExpand(interaction.id)"
+                class="w-full text-left p-4 sm:p-6 flex items-start gap-4 focus:outline-none"
+              >
+                <!-- Channel icon -->
+                <div [class]="'p-3 rounded-lg flex-shrink-0 ' + getChannelColorClass(interaction.channel)">
+                  <lucide-angular [name]="getChannelIcon(interaction.channel)" class="w-5 h-5"></lucide-angular>
                 </div>
-                <!-- Content -->
+
+                <!-- Contenido resumido -->
                 <div class="flex-1 min-w-0">
-                  <div class="flex items-start justify-between mb-1">
-                    <h3 class="text-[#070025] font-semibold">{{ getActionLabel(activity.action) }}</h3>
-                    <lucide-angular
-                      [name]="getStatusIcon(activity.action)"
-                      [class]="'w-5 h-5 flex-shrink-0 ml-2 ' + getStatusColor(activity.action)"
-                    ></lucide-angular>
+                  <!-- Badges + fecha -->
+                  <div class="flex flex-wrap items-center gap-2 mb-2">
+                    <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + getChannelColorClass(interaction.channel)">
+                      {{ getChannelLabel(interaction.channel) }}
+                    </span>
+                    <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + getStatusBadgeClass(interaction.status)">
+                      {{ getStatusLabel(interaction.status) }}
+                    </span>
+                    @if (interaction.from_cache) {
+                      <span class="px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                        Cache
+                      </span>
+                    }
+                    <span class="text-xs text-gray-500 ml-auto flex items-center">
+                      <lucide-angular name="clock" class="w-3 h-3 mr-1"></lucide-angular>
+                      {{ interaction.timestamp | date:'d MMM yyyy, HH:mm' }}
+                    </span>
                   </div>
-                  <p class="text-gray-600 mb-2 break-words">
-                    {{ activity.document_name || ('history.unnamedDoc' | translate) }}
+
+                  <!-- Pregunta truncada -->
+                  <p class="text-[#070025] font-medium break-words">
+                    {{ getPreview(interaction.question, 120) }}
                   </p>
-                  <div class="flex items-center text-sm text-gray-500">
-                    <lucide-angular name="clock" class="w-4 h-4 mr-1"></lucide-angular>
-                    {{ activity.timestamp | date:'d MMM yyyy, HH:mm' }}
-                  </div>
                 </div>
-              </div>
+
+                <!-- Chevron rotatorio -->
+                <div class="flex-shrink-0 self-center">
+                  <lucide-angular
+                    name="chevron-down"
+                    [class]="'w-5 h-5 text-gray-400 transition-transform duration-200 ' + (isExpanded(interaction.id) ? 'rotate-180' : '')">
+                  </lucide-angular>
+                </div>
+              </button>
+
+              <!-- Contenido expandido (solo cuando isExpanded) -->
+              @if (isExpanded(interaction.id)) {
+                <div class="px-4 sm:px-6 pb-4 sm:pb-6 pl-16 sm:pl-20 animate-fade-in">
+                  <!-- Pregunta completa -->
+                  <div class="mb-3">
+                    <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Pregunta</p>
+                    <p class="text-[#070025] break-words whitespace-pre-line">
+                      {{ interaction.question }}
+                    </p>
+                  </div>
+
+                  <!-- Respuesta -->
+                  @if (hasAnswer(interaction)) {
+                    <div class="mb-3">
+                      <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Respuesta</p>
+                      <p class="text-gray-700 break-words whitespace-pre-line">
+                        {{ interaction.answer }}
+                      </p>
+                    </div>
+                  } @else if (interaction.error_message) {
+                    <div class="mb-3 p-3 bg-red-50 border border-red-100 rounded-lg">
+                      <p class="text-xs font-semibold text-red-600 uppercase mb-1">Error</p>
+                      <p class="text-red-700 text-sm break-words">
+                        {{ interaction.error_message }}
+                      </p>
+                    </div>
+                  }
+
+                  <!-- Fuentes -->
+                  @if (hasSources(interaction)) {
+                    <div class="flex items-center text-sm text-gray-500 mt-3">
+                      <lucide-angular name="file-text" class="w-4 h-4 mr-1"></lucide-angular>
+                      {{ getSourcesCount(interaction) }} fuente(s) utilizada(s)
+                    </div>
+                  }
+                </div>
+              }
+
             </div>
           }
         } @else {
@@ -131,39 +217,34 @@
           </div>
         }
       </div>
+
       <!-- Pagination -->
       @if (totalPages > 1) {
         <div class="p-4 sm:p-6 border-t border-gray-200 bg-gray-50">
           <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p class="text-xs sm:text-sm text-gray-600 block text-center sm:text-left w-full sm:w-auto">
-              {{ 'history.pagination.info' | translate:{current: currentPage, total: totalPages, count: filteredActivities.length} }}
+              Mostrando {{ currentPage }} de {{ totalPages }} — {{ filteredInteractions.length }} interacciones
             </p>
             <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto w-full sm:w-auto justify-center pb-2 sm:pb-0">
-              <!-- Previous Button -->
               <button
                 (click)="goToPage(currentPage - 1)"
                 [disabled]="currentPage === 1"
-                class="p-2 border border-gray-200 rounded-lg text-gray-600 hover:border-[#02ab74] hover:text-[#02ab74] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                [title]="'history.pagination.prevDesc' | translate">
+                class="p-2 border border-gray-200 rounded-lg text-gray-600 hover:border-[#02ab74] hover:text-[#02ab74] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <lucide-angular name="chevron-left" class="w-5 h-5"></lucide-angular>
               </button>
-              <!-- Page Numbers -->
               @for (page of getPageNumbers(); track page) {
                 <button
                   (click)="goToPage(page)"
-              [class]="page === currentPage 
-                ? 'w-10 h-10 rounded-lg bg-[#02ab74] text-white font-medium transition-colors' 
-                : 'w-10 h-10 rounded-lg border border-gray-200 text-gray-600 hover:border-[#02ab74] hover:text-[#02ab74] transition-colors'"
-                  >
+                  [class]="page === currentPage
+                    ? 'w-10 h-10 rounded-lg bg-[#02ab74] text-white font-medium transition-colors'
+                    : 'w-10 h-10 rounded-lg border border-gray-200 text-gray-600 hover:border-[#02ab74] hover:text-[#02ab74] transition-colors'">
                   {{ page }}
                 </button>
               }
-              <!-- Next Button -->
               <button
                 (click)="goToPage(currentPage + 1)"
                 [disabled]="currentPage === totalPages"
-                class="p-2 border border-gray-200 rounded-lg text-gray-600 hover:border-[#02ab74] hover:text-[#02ab74] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                [title]="'history.pagination.nextDesc' | translate">
+                class="p-2 border border-gray-200 rounded-lg text-gray-600 hover:border-[#02ab74] hover:text-[#02ab74] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <lucide-angular name="chevron-right" class="w-5 h-5"></lucide-angular>
               </button>
             </div>
@@ -173,30 +254,25 @@
     </div>
   }
 
-  <!-- Export Options -->
+  <!-- Export -->
   <div class="p-6 border border-gray-200 rounded-xl bg-white">
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div>
         <h3 class="text-[#070025] font-semibold mb-1">{{ 'history.export.title' | translate }}</h3>
-        <p class="text-sm text-gray-600">
-          {{ 'history.export.subtitle' | translate }}
-        </p>
+        <p class="text-sm text-gray-600">{{ 'history.export.subtitle' | translate }}</p>
       </div>
       <div class="flex gap-3">
         <button
           (click)="exportPDF()"
-          class="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:border-[#02ab74] hover:text-[#02ab74] transition-colors"
-          >
+          class="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:border-[#02ab74] hover:text-[#02ab74] transition-colors">
           {{ 'history.export.pdfBtn' | translate }}
         </button>
         <button
           (click)="exportExcel()"
-          class="px-4 py-2 bg-[#02ab74] hover:bg-[#028a5f] text-white rounded-lg transition-colors"
-          >
+          class="px-4 py-2 bg-[#02ab74] hover:bg-[#028a5f] text-white rounded-lg transition-colors">
           {{ 'history.export.excelBtn' | translate }}
         </button>
       </div>
     </div>
   </div>
-
 </div>

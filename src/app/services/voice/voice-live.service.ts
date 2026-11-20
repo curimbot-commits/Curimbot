@@ -30,8 +30,9 @@ const INITIAL_STATE: LiveVoiceState = {
 // (/api/v1/voice/token). La API key real de Gemini nunca llega al navegador.
 const GEMINI_WS_URL =
   'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained';
-// Debe coincidir con GEMINI_LIVE_MODEL del backend: el token solo permite ese modelo.
-const MODEL = 'models/gemini-2.5-flash-native-audio-preview-12-2025';
+// Respaldo si el backend no envía el modelo. El modelo real lo decide el
+// backend (GEMINI_LIVE_MODEL) y llega con el token: el token solo permite ese.
+const DEFAULT_MODEL = 'gemini-2.5-flash-native-audio-preview-12-2025';
 
 const BASE_SYSTEM = `Eres Curim, un asistente de voz inteligente especializado en documentos.
 
@@ -51,6 +52,9 @@ Por lo tanto:
 
 @Injectable({ providedIn: 'root' })
 export class VoiceLiveService implements OnDestroy {
+  /** Modelo de Gemini Live autorizado por el último token. */
+  private liveModel = DEFAULT_MODEL;
+
 
   private stateSubject      = new BehaviorSubject<LiveVoiceState>(INITIAL_STATE);
   private transcriptSubject = new ReplaySubject<TranscriptEntry>(50);
@@ -130,9 +134,10 @@ export class VoiceLiveService implements OnDestroy {
    */
   private async fetchVoiceToken(): Promise<string> {
     const r = await firstValueFrom(
-      this.http.get<{ token: string; expire_time: string }>(`${environment.apiUrl}/api/v1/voice/token`)
+      this.http.get<{ token: string; expire_time: string; model?: string }>(`${environment.apiUrl}/api/v1/voice/token`)
     );
     if (!r?.token) throw new Error('No se pudo obtener el token de voz');
+    this.liveModel = r.model || DEFAULT_MODEL;
     return r.token;
   }
 
@@ -251,7 +256,7 @@ export class VoiceLiveService implements OnDestroy {
   private sendSetup(): void {
     this.wsSend(JSON.stringify({
       setup: {
-        model: MODEL,
+        model: `models/${this.liveModel.replace('models/', '')}`,
         generationConfig: {
           responseModalities: ['AUDIO'],
           speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } } },

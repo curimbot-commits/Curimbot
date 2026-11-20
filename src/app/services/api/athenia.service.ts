@@ -2,7 +2,7 @@
 // src/app/services/athenia/athenia.service.ts
 
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -122,77 +122,5 @@ export class AtheniaService {
     return this.http
       .get<AtheniaStatus>(`${this.BASE_URL}/status`)
       .pipe(catchError(this.handleError));
-  }
-
-  // ==================================================================
-  // HISTORIAL
-  // ==================================================================
-
-  /**
-   * Obtiene el historial de conversaciones.
-   * @param conversationId ID de conversación (opcional)
-   * @param limit Número máximo de mensajes
-   * @returns Lista de mensajes
-   */
-  getHistory(conversationId?: number, limit = 50): Observable<ConversationMessage[]> {
-    let params = new HttpParams().set('limit', limit.toString());
-    if (conversationId) {
-      params = params.set('conversation_id', conversationId.toString());
-    }
-
-    return this.http
-      .get<
-        ConversationMessage[]
-      >(`${this.BASE_URL}/history`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  // ==================================================================
-  // GESTIÓN DE CACHÉ
-  // ==================================================================
-
-  /**
-   * Limpia el caché de respuestas de ATHENIA.
-   * @returns Confirmación del servidor
-   */
-  clearCache(): Observable<{ message: string }> {
-    return this.http
-      .delete<{ message: string }>(`${this.BASE_URL}/cache`)
-      .pipe(catchError(this.handleError));
-  }
-
-  /**
-   * Obtiene estadísticas del caché.
-   * @returns Métricas de rendimiento
-   */
-  getCacheStats(): Observable<any> {
-    return this.http
-      .get(`${this.BASE_URL}/cache/stats`)
-      .pipe(catchError(this.handleError));
-  }
-
-  // ==================================================================
-  // SINCRONIZACIÓN
-  // ==================================================================
-
-  /**
-   * Sincroniza documentos con el índice de ATHENIA.
-   * @param documentIds IDs de documentos a sincronizar (opcional)
-   * @param forceReindex Forzar reindexación completa
-   * @returns Estado de la operación
-   */
-  syncDocuments(documentIds?: number[], forceReindex = false): Observable<any> {
-    const payload = {
-      document_ids: documentIds,
-      force_reindex: forceReindex,
-    };
-
-    return this.http
-      .post(`${this.BASE_URL}/documents/sync`, payload)
-      .pipe(catchError(this.handleError));
-  }
-
-  getDocuments(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.API_URL}/documents/`);
   }
 }

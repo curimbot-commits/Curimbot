@@ -134,12 +134,6 @@ export class VoiceLiveService implements OnDestroy {
     this.patch({ status: 'DISCONNECTED', isListening: false, isSpeaking: false, error: null });
   }
 
-  interrupt(): void {
-    this.stopAllSources();
-    this.nextPlayTime = 0;
-    this.patch({ isSpeaking: false });
-  }
-
   // ─── Token ─────────────────────────────────────────────────
 
   /**

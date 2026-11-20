@@ -67,18 +67,3 @@ export interface ThemeOption {
     label: string;
     icon: string;
 }
-
-export interface LoginAlertConfig {
-    enabled: boolean;
-    notify_on_new_device: boolean;
-    notify_on_new_location: boolean;
-    notify_on_suspicious_activity: boolean;
-}
-
-export interface LoginAlertInfo {
-    device: string;
-    location: string;
-    ip_address: string;
-    timestamp: string;
-    is_suspicious: boolean;
-}

@@ -37,10 +37,6 @@ export interface Document extends BaseDocument {
   created_at: string;
 }
 
-export interface DocumentCreate extends BaseDocument {
-  uploaded_by: number;
-}
-
 export interface DocumentWithMetadata {
   id: number;
   filename: string;
@@ -56,11 +52,6 @@ export interface DocumentWithMetadata {
   matchScore?: number;
   upload_date: string;
   uploaded_by_name: string;
-}
-
-export interface DocumentSearchParams {
-  text?: string;
-  file_type?: DocumentType;
 }
 
 export interface PaginatedResponse<T> {
@@ -115,15 +106,6 @@ export interface ChartDataPoint {
   docx: number;
   txt: number;
   total: number;
-}
-
-export interface SystemHealth {
-  status: "healthy" | "warning" | "critical";
-  cpu_usage: number;
-  memory_usage: number;
-  storage_usage: number;
-  active_users: number;
-  response_time: number;
 }
 
 /** -----------------------------------------------------
@@ -184,87 +166,6 @@ export interface AIInteractionLog {
   from_cache: boolean;
   conversation_id: number | null;
   timestamp: string;
-}
-
-/**
- * Configuración visual para mostrar una interacción IA.
- */
-interface AIInteractionVisualConfig {
-  icon: string;
-  color: string;
-  label: string;
-  badge: string;
-}
-
-/**
- * Mapa de configuración visual: combina channel + status.
- * La clave es `${channel}_${status}`.
- */
-export const aiInteractionConfig: Record<
-  string,
-  AIInteractionVisualConfig
-> = {
-  // Texto
-  text_success: {
-    icon: "message-square",
-    color: "bg-blue-500",
-    label: "Consulta (texto)",
-    badge: "badge-info",
-  },
-  text_error: {
-    icon: "message-square-x",
-    color: "bg-red-500",
-    label: "Error (texto)",
-    badge: "badge-danger",
-  },
-  text_no_context: {
-    icon: "message-square-dashed",
-    color: "bg-yellow-500",
-    label: "Sin contexto (texto)",
-    badge: "badge-warning",
-  },
-
-  // Voz
-  voice_success: {
-    icon: "mic",
-    color: "bg-purple-500",
-    label: "Consulta (voz)",
-    badge: "badge-purple",
-  },
-  voice_error: {
-    icon: "mic-off",
-    color: "bg-red-500",
-    label: "Error (voz)",
-    badge: "badge-danger",
-  },
-  voice_no_context: {
-    icon: "mic-off",
-    color: "bg-yellow-500",
-    label: "Sin contexto (voz)",
-    badge: "badge-warning",
-  },
-};
-
-const DEFAULT_INTERACTION_CONFIG: AIInteractionVisualConfig = {
-  icon: "message-circle",
-  color: "bg-gray-500",
-  label: "Interacción IA",
-  badge: "badge-secondary",
-};
-
-/**
- * Devuelve la configuración visual para una interacción IA.
- *
- * @param channel "text" | "voice"
- * @param status "success" | "error" | "no_context"
- */
-export function getAIInteractionConfig(
-  channel: string,
-  status: string
-): AIInteractionVisualConfig {
-  const key = `${channel}_${status}`;
-
-  return aiInteractionConfig[key] || DEFAULT_INTERACTION_CONFIG;
 }
 
 /**

@@ -140,13 +140,6 @@ export class AlertService {
     }
 
     /**
-     * Cierra todas las alertas
-     */
-    dismissAll(): void {
-        this.alertsSubject.next([]);
-    }
-
-    /**
      * CONFIRM: Muestra una alerta tipo confirmación (Aceptar / Cancelar)
      * Retorna una Promise<boolean> que se resuelve cuando el usuario responde.
      */

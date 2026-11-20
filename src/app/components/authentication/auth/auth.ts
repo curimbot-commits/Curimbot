@@ -12,13 +12,10 @@ import {
 } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError, of } from 'rxjs';
 import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
-import { jwtDecode } from 'jwt-decode';
 import {
   User,
   UserCreate,
   UserInfoResponse,
-  LoginStatsResponse,
-  UserManagementResponse,
   UserRole,
   Login2FARequest,
 } from '../../../domain/models/user.model';
@@ -48,7 +45,6 @@ export class Auth {
   public readonly currentUser = this.currentUserSubject.asObservable();
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
-  public readonly isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
   private isRefreshing = false;
 
@@ -395,114 +391,10 @@ export class Auth {
     );
   }
 
-  changePassword(oldPassword: string, newPassword: string): Observable<any> {
-    return this.http
-      .patch(
-        `${this.AUTH_URL}/change-password`,
-        { old_password: oldPassword, new_password: newPassword },
-        { withCredentials: true }
-      )
-      .pipe(catchError(this.handleError));
-  }
-
-  getLoginStats(hours = 24): Observable<LoginStatsResponse> {
-    const params = new HttpParams().set('hours', hours.toString());
-    return this.http
-      .get<LoginStatsResponse>(`${this.AUTH_URL}/login-stats`, {
-        params,
-        withCredentials: true,
-      })
-      .pipe(catchError(this.handleError));
-  }
-
-  // ==================== ADMINISTRACIÓN ====================
-
-  getAllUsers(
-    skip = 0,
-    limit = 100,
-    activeOnly = true
-  ): Observable<UserInfoResponse[]> {
-    const params = new HttpParams()
-      .set('skip', skip.toString())
-      .set('limit', limit.toString())
-      .set('active_only', activeOnly.toString());
-
-    return this.http
-      .get<UserInfoResponse[]>(`${this.AUTH_URL}/users`, {
-        params,
-        withCredentials: true,
-      })
-      .pipe(catchError(this.handleError));
-  }
-
-  updateUserRole(
-    userId: number,
-    newRole: string
-  ): Observable<UserManagementResponse> {
-    return this.http
-      .patch<UserManagementResponse>(
-        `${this.AUTH_URL}/users/${userId}/role`,
-        { new_role: newRole },
-        { withCredentials: true }
-      )
-      .pipe(catchError(this.handleError));
-  }
-
-  deactivateUser(userId: number): Observable<UserManagementResponse> {
-    return this.http
-      .patch<UserManagementResponse>(
-        `${this.AUTH_URL}/users/${userId}/deactivate`,
-        {},
-        { withCredentials: true }
-      )
-      .pipe(catchError(this.handleError));
-  }
-
-  activateUser(userId: number): Observable<UserManagementResponse> {
-    return this.http
-      .patch<UserManagementResponse>(
-        `${this.AUTH_URL}/users/${userId}/activate`,
-        {},
-        { withCredentials: true }
-      )
-      .pipe(catchError(this.handleError));
-  }
-
-  getUserLoginStats(
-    userId: number,
-    hours = 24
-  ): Observable<LoginStatsResponse> {
-    const params = new HttpParams().set('hours', hours.toString());
-    return this.http
-      .get<LoginStatsResponse>(`${this.AUTH_URL}/users/${userId}/login-stats`, {
-        params,
-        withCredentials: true,
-      })
-      .pipe(catchError(this.handleError));
-  }
-
-  // ==================== MONITOREO Y ESTADÍSTICAS ====================
-
-  healthCheck(): Observable<any> {
-    return this.http
-      .get(`${this.AUTH_URL}/health`)
-      .pipe(catchError(this.handleError));
-  }
-
-  getAuthStatsSummary(): Observable<any> {
-    return this.http
-      .get(`${this.AUTH_URL}/stats/summary`, { withCredentials: true })
-      .pipe(catchError(this.handleError));
-  }
-
   // ==================== UTILIDADES ====================
 
   isAuthenticated(): boolean {
     return this.isAuthenticatedSubject.value;
-  }
-
-  isAdmin(): boolean {
-    return this.currentUserSubject.value?.role === 'admin';
   }
 
   getCurrentUser(): User | null {

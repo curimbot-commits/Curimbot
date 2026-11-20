@@ -106,14 +106,6 @@ export class UserPreferencesService {
     );
   }
 
-  /**
-   * Obtiene el estado de la preferencia de convocatorias.
-   * @returns Estado de habilitación
-   */
-  getConvocatoriaPreference(): Observable<{ convocatoria_enabled: boolean }> {
-    return this.http.get<{ convocatoria_enabled: boolean }>(`${this.API_URL}/convocatoria`);
-  }
-
   // ==================================================================
   // ACTUALIZACIÓN DE PREFERENCIAS
   // ==================================================================
@@ -264,11 +256,6 @@ export class UserPreferencesService {
     root.classList.toggle('dark', effectiveTheme === ThemeEnum.DARK);
   }
 
-  /** Obtiene el tema actualmente activo */
-  getCurrentTheme(): ThemeEnum {
-    return this.themeSubject.value;
-  }
-
   // ==================================================================
   // IDIOMA
   // ==================================================================
@@ -282,11 +269,6 @@ export class UserPreferencesService {
     localStorage.setItem('language', language);
     document.documentElement.lang = language;
     this.translate.use(language);
-  }
-
-  /** Obtiene el idioma actualmente activo */
-  getCurrentLanguage(): LanguageEnum {
-    return this.languageSubject.value;
   }
 
   // ==================================================================

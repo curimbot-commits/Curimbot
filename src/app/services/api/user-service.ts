@@ -4,19 +4,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   User,
-  UserCreate,
   Token,
-  RefreshTokenRequest,
-  LoginStatsResponse,
   UserManagementResponse,
   TwoFASetupResponse,
   TwoFAConfirmRequest,
   UserInfoResponse,
   ChangePasswordRequest,
-  AuthStatsSummary,
   ActiveSession,
   RevokeAllResponse,
-  SessionStatsResponse
 } from '../../domain/models/user.model';
 import { environment } from 'src/environments/environment';
 
@@ -32,20 +27,6 @@ export class UserService {
     private http: HttpClient
   ) { }
 
-  /** Registers a new user account */
-  signup(userData: UserCreate): Observable<Token> {
-    return this.http.post<Token>(`${this.AUTH_URL}/signup`, userData);
-  }
-
-  /** Logs out the current user by invalidating their token */
-  logout(refreshToken: RefreshTokenRequest): Observable<string> {
-    return this.http.post<string>(`${this.AUTH_URL}/logout`, refreshToken);
-  }
-
-  /** Refreshes access tokens using a valid refresh token */
-  refreshToken(refreshToken: RefreshTokenRequest): Observable<Token> {
-    return this.http.post<Token>(`${this.AUTH_URL}/refresh`, refreshToken);
-  }
 
   /** Initiates 2FA setup process (generates QR code and secret) */
   setup2FA(): Observable<TwoFASetupResponse> {
@@ -94,13 +75,6 @@ export class UserService {
     return this.http.delete<void>(`${this.AUTH_URL}/users/${id}`);
   }
 
-  /** Gets login stats for a specific user (admin only) */
-  getUserLoginStats(userId: number, hours = 24): Observable<LoginStatsResponse> {
-    return this.http.get<LoginStatsResponse>(`${this.AUTH_URL}/users/${userId}/login-stats`, {
-      params: { hours }
-    });
-  }
-
   /** Gets current user info (profile) */
   getCurrentUser(): Observable<UserInfoResponse> {
     return this.http.get<UserInfoResponse>(`${this.AUTH_URL}/me`);
@@ -109,23 +83,6 @@ export class UserService {
   /** Changes the current user's password */
   changePassword(passwordData: ChangePasswordRequest): Observable<string> {
     return this.http.patch<string>(`${this.AUTH_URL}/change-password`, passwordData);
-  }
-
-  /** Gets current user's login stats */
-  getLoginStats(hours = 24): Observable<LoginStatsResponse> {
-    return this.http.get<LoginStatsResponse>(`${this.AUTH_URL}/login-stats`, {
-      params: { hours }
-    });
-  }
-
-  /** Checks the health of the authentication service */
-  checkHealth(): Observable<string> {
-    return this.http.get<string>(`${this.AUTH_URL}/health`);
-  }
-
-  /** Gets overall authentication statistics (admin only) */
-  getStatsSummary(): Observable<AuthStatsSummary> {
-    return this.http.get<AuthStatsSummary>(`${this.AUTH_URL}/stats/summary`);
   }
 
   loginWith2FA(data: { challenge_token: string; code: string; single_session?: boolean }): Observable<Token> {
@@ -171,12 +128,5 @@ export class UserService {
       `${this.SESION}/revoke-others`,
       { except_current: exceptCurrent }
     );
-  }
-
-  /**
-   * Obtiene estadísticas de sesiones del usuario
-   */
-  getSessionStats(): Observable<SessionStatsResponse> {
-    return this.http.get<SessionStatsResponse>(`${this.SESION}/stats`);
   }
 }

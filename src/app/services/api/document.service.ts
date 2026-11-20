@@ -83,10 +83,6 @@ export class DocumentService {
     }).pipe(catchError((err) => this.handleError(err)));
   }
 
-  getDocumentMetadata(docId: number): Observable<Document> {
-    return this.http.get<Document>(`${this.DOCUMENTS_URL}/${docId}/metadata`).pipe(catchError((err) => this.handleError(err)));
-  }
-
   getAllDocumentsMetadata(includeAllUsers = true): Observable<DocumentWithMetadata[]> {
     const params = new HttpParams().set('include_all_users', includeAllUsers.toString());
     return this.http.get<any[]>(`${this.DOCUMENTS_URL}/metadata/all`, {
@@ -113,14 +109,6 @@ export class DocumentService {
     return this.http.delete<void>(`${this.DOCUMENTS_URL}/${docId}`).pipe(catchError((err) => this.handleError(err)));
   }
 
-  getDocuments(skip = 0, limit = 20, fileType?: DocumentType): Observable<PaginatedDocumentsResponse> {
-    let params = new HttpParams().set('skip', skip.toString()).set('limit', limit.toString());
-    if (fileType) params = params.set('file_type', fileType.toString());
-    return this.http.get<PaginatedDocumentsResponse>(`${this.DOCUMENTS_URL}/`, {
-      params
-    }).pipe(catchError((err) => this.handleError(err)));
-  }
-
   listDocuments(options?: { skip?: number; limit?: number; fileType?: string; text?: string }): Observable<PaginatedDocumentsResponse> {
     let params = new HttpParams().set('skip', (options?.skip ?? 0).toString()).set('limit', (options?.limit ?? 20).toString());
     if (options?.fileType) params = params.set('file_type', options.fileType);
@@ -128,9 +116,5 @@ export class DocumentService {
     return this.http.get<PaginatedDocumentsResponse>(`${this.DOCUMENTS_URL}/`, {
       params
     }).pipe(catchError((err) => this.handleError(err)));
-  }
-
-  getDocumentsMetadataById(docId: number): Observable<DocumentWithMetadata[]> {
-    return this.http.get<DocumentWithMetadata[]>(`${this.DOCUMENTS_URL}/${docId}/metadata`).pipe(catchError((err) => this.handleError(err)));
   }
 }

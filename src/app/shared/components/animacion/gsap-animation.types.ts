@@ -15,20 +15,6 @@ export interface StaggerOptions {
   start?: string;
 }
 
-export interface StaggerOffsetOptions extends StaggerOptions {
-  /** Número de columnas para la animación direccional. */
-  columns?: number;
-  /** Desplazamiento horizontal aplicado según la columna (izquierda/derecha). */
-  offsetX?: number;
-}
-
-export interface CounterOptions {
-  /** Selector CSS de los elementos con valores numéricos a animar. */
-  selector: string;
-  /** Duración de la animación en segundos. */
-  duration?: number;
-}
-
 export interface HeroAnimationOptions {
   /** Selector del badge superior. */
   badgeSelector?: string;

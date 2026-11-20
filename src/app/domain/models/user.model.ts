@@ -31,11 +31,6 @@ export interface Token {
   message?: string;
 }
 
-export interface UpdateUser {
-  name?: string;
-  role?: UserRole;
-}
-
 export interface LoginStatsResponse {
   email: string;
   period_hours: number;
@@ -74,14 +69,6 @@ export interface UserManagementResponse {
 }
 
 /*************************** */
-export interface ValidationError {
-  detail: {
-    loc: (string | number)[];
-    msg: string;
-    type: string;
-  }[];
-}
-
 export interface TwoFASetupResponse {
   backup_codes: string[];
   message: string;

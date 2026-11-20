@@ -6,8 +6,6 @@ import {
   AIInteractionLog,
   ChartDataPoint,
   DashboardStats,
-  StorageStats,
-  UserSummary,
 } from '../../domain/models/document.model';
 
 @Injectable({
@@ -101,22 +99,6 @@ export class AnalyticsService {
       .get<AIInteractionLog[]>(`${this.DOCUMENTS_URL}/ai-interactions/recent`, {
         params,
       })
-      .pipe(catchError((err) => this.handleError(err)));
-  }
-
-  getUserStorageStats(targetUserId?: number): Observable<StorageStats> {
-    let params = new HttpParams();
-    if (targetUserId !== undefined) {
-      params = params.set('target_user_id', targetUserId.toString());
-    }
-    return this.http
-      .get<StorageStats>(`${this.DOCUMENTS_URL}/stats/storage`, { params })
-      .pipe(catchError((err) => this.handleError(err)));
-  }
-
-  getUserSummary(): Observable<UserSummary> {
-    return this.http
-      .get<UserSummary>(`${this.DOCUMENTS_URL}/stats/summary`)
       .pipe(catchError((err) => this.handleError(err)));
   }
 }

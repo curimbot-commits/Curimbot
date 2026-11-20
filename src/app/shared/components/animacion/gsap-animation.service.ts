@@ -1,9 +1,7 @@
 import { Injectable, Inject, PLATFORM_ID, NgZone } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import {
-  CounterOptions,
   HeroAnimationOptions,
-  StaggerOffsetOptions,
   StaggerOptions,
 } from './gsap-animation.types';
 
@@ -286,53 +284,6 @@ export class GsapAnimationService {
   }
 
   // =====================================================
-  // 4) STAGGER DIRECCIONAL
-  // =====================================================
-
-  initStaggerDirectional(
-    gsap: any,
-    ScrollTrigger: any,
-    options: StaggerOffsetOptions
-  ): void {
-    const {
-      selector,
-      columns = 3,
-      offsetX = 50,
-      y = 50,
-      duration = 0.9,
-      start = 'top 88%',
-    } = options;
-
-    const elements = gsap.utils.toArray(selector);
-    if (!elements.length) return;
-
-    elements.forEach((el: any, i: number) => {
-      const col = i % columns;
-      const dx = col === 0 ? -offsetX : col === columns - 1 ? offsetX : 0;
-
-      gsap.fromTo(
-        el,
-        { x: dx, y, opacity: 0, scale: 0.92 },
-        {
-          x: 0,
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration,
-          ease: 'power3.out',
-          clearProps: 'all',
-          scrollTrigger: {
-            trigger: el,
-            start,
-            toggleActions: 'play none none none',
-            once: true,
-          },
-        }
-      );
-    });
-  }
-
-  // =====================================================
   // 5) ICON POP
   // =====================================================
 
@@ -399,82 +350,6 @@ export class GsapAnimationService {
           },
         }
       );
-    });
-  }
-
-  // =====================================================
-  // 7) COUNTERS
-  // =====================================================
-
-  initCounters(
-    gsap: any,
-    ScrollTrigger: any,
-    options: CounterOptions
-  ): void {
-    const { selector, duration = 1.8 } = options;
-    const elements = gsap.utils.toArray(selector);
-    if (!elements.length) return;
-
-    elements.forEach((el: any) => {
-      const raw = el.textContent?.trim() ?? '';
-      const num = parseFloat(raw.replace(/[^\d.]/g, ''));
-      if (isNaN(num)) return;
-
-      const suffix = raw.replace(/[\d.,]/g, '').trim();
-      const hasComma = raw.includes(',');
-
-      const obj = { val: 0 };
-      gsap.to(obj, {
-        val: num,
-        duration,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 88%',
-          toggleActions: 'play none none none',
-          once: true,
-        },
-        onUpdate: () => {
-          const v = hasComma
-            ? Math.floor(obj.val).toLocaleString('en-US')
-            : Math.floor(obj.val).toString();
-          el.textContent = v + suffix;
-        },
-      });
-    });
-  }
-
-  // =====================================================
-  // 8) PULSE
-  // =====================================================
-
-  initPulse(
-    gsap: any,
-    selector: string,
-    options: {
-      property?: string;
-      from?: string;
-      to?: string;
-      duration?: number;
-      stagger?: number;
-    } = {}
-  ): void {
-    const {
-      property = 'boxShadow',
-      to = '0 0 40px rgba(2, 171, 116, 0.15)',
-      duration = 2,
-      stagger = 0.4,
-    } = options;
-
-    if (!gsap.utils.toArray(selector).length) return;
-
-    gsap.to(selector, {
-      [property]: to,
-      duration,
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut',
-      stagger,
     });
   }
 

@@ -8,6 +8,7 @@ import { UserService } from 'src/app/services/api/user-service';
 import { AlertService } from '../alert/alert.service';
 import { DOCUMENT } from '@angular/common';
 import { Inject } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-profile-avatar',
@@ -19,8 +20,8 @@ export class ProfileAvatar implements OnInit, OnDestroy {
   @Input() size = 20;
   @Input() showEditControls = false;
   @Input() photoPreview?: string;
-  
-  
+
+
   @Input() userData!: UserInfoResponse;
   @Input() userPhotoUrl?: string | null;
 
@@ -35,8 +36,8 @@ export class ProfileAvatar implements OnInit, OnDestroy {
     private preferencesService: UserPreferencesService,
     private userService: UserService,
     private alertService: AlertService,
-    @Inject(DOCUMENT) public document: Document 
-  ) {}
+    @Inject(DOCUMENT) public document: Document
+  ) { }
 
   ngOnInit(): void {
     if (this.userData) {
@@ -47,7 +48,7 @@ export class ProfileAvatar implements OnInit, OnDestroy {
       this.subscribeToPreferences();
     }
   }
-  
+
 
   private loadUser(): void {
     this.userService.getCurrentUser()
@@ -80,22 +81,26 @@ export class ProfileAvatar implements OnInit, OnDestroy {
   getUserInitials(): string {
     if (!this.user?.name) return '??';
     const names = this.user.name.split(' ');
-    return names.length >= 2 
-      ? (names[0][0] + names[1][0]).toUpperCase() 
+    return names.length >= 2
+      ? (names[0][0] + names[1][0]).toUpperCase()
       : this.user.name.substring(0, 2).toUpperCase();
   }
 
   get profilePhoto(): string {
-    
+    // 1. Caso dashboard: recibimos userData + userPhotoUrl
     if (this.userData && this.userPhotoUrl) {
-      return this.userPhotoUrl;
+      return this.resolveUrl(this.userPhotoUrl);
     }
-    
+
+    // 2. Preview de una foto recién seleccionada
     if (this.photoPreview) {
       return this.photoPreview;
     }
-    
-    return this.preferencesService.getProfilePhotoUrl(this.photoPreview);
+
+    // 3. Preferencias del usuario actual (Navbar)
+    return this.resolveUrl(
+      this.preferencesService.getProfilePhotoUrl(this.photoPreview)
+    );
   }
 
   onFileSelected(event: Event): void {
@@ -167,5 +172,23 @@ export class ProfileAvatar implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /**
+ * Convierte rutas relativas del backend en URLs absolutas.
+ * - Si ya es absoluta (http/https/data), la devuelve tal cual.
+ * - Si empieza con "/", la prefija con la URL del backend.
+ */
+  private resolveUrl(url: string | null | undefined): string {
+    if (!url) return '';
+
+    // Ya es absoluta o data URI
+    if (url.startsWith('http') || url.startsWith('data:')) {
+      return url;
+    }
+
+    // Ruta relativa → apuntar al backend
+    const base = environment.apiUrl.replace(/\/api\/?$/, ''); // http://localhost:8000
+    return `${base}${url.startsWith('/') ? '' : '/'}${url}`;
   }
 }

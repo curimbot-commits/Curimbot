@@ -26,8 +26,11 @@ const INITIAL_STATE: LiveVoiceState = {
   isSpeaking: false, error: null, audioLevel: 0,
 };
 
+// Endpoint "Constrained": acepta tokens efímeros emitidos por el backend
+// (/api/v1/voice/token). La API key real de Gemini nunca llega al navegador.
 const GEMINI_WS_URL =
-  'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent';
+  'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained';
+// Debe coincidir con GEMINI_LIVE_MODEL del backend: el token solo permite ese modelo.
 const MODEL = 'models/gemini-2.5-flash-native-audio-preview-12-2025';
 
 const BASE_SYSTEM = `Eres Curim, un asistente de voz inteligente especializado en documentos.
@@ -67,7 +70,6 @@ export class VoiceLiveService implements OnDestroy {
   private analyser:     AnalyserNode | null = null;
   private analyserData: Uint8Array | null = null;
   private smoothedLevel = 0;
-  private apiKey:       string | null = null;
   private intentActive  = false;
   private retryCount    = 0;
   private readonly MAX_RETRIES = 5;
@@ -98,7 +100,6 @@ export class VoiceLiveService implements OnDestroy {
     this.intentActive = true;
     this.retryCount   = 0;
     try {
-      this.apiKey = await this.fetchApiKey();
       await this.openSession();
     } catch (err) {
       this.handleError((err as Error).message ?? 'Error al iniciar');
@@ -122,12 +123,17 @@ export class VoiceLiveService implements OnDestroy {
 
   // ─── Token ─────────────────────────────────────────────────
 
-  private async fetchApiKey(): Promise<string> {
+  /**
+   * Pide al backend un token efímero de un solo uso (válido 1 min para abrir
+   * la sesión). Se llama en cada conexión y reconexión: un token ya usado
+   * no sirve para reintentar.
+   */
+  private async fetchVoiceToken(): Promise<string> {
     const r = await firstValueFrom(
-      this.http.get<{ api_key: string }>(`${environment.apiUrl}/api/v1/voice/token`)
+      this.http.get<{ token: string; expire_time: string }>(`${environment.apiUrl}/api/v1/voice/token`)
     );
-    if (!r?.api_key) throw new Error('No se pudo obtener el token de voz');
-    return r.api_key;
+    if (!r?.token) throw new Error('No se pudo obtener el token de voz');
+    return r.token;
   }
 
   // ─── RAG ───────────────────────────────────────────────────
@@ -229,7 +235,8 @@ export class VoiceLiveService implements OnDestroy {
   private async openSession(): Promise<void> {
     this.patch({ status: 'CONNECTING', error: null });
 
-    this.ws = new WebSocket(`${GEMINI_WS_URL}?key=${this.apiKey}`);
+    const token = await this.fetchVoiceToken();
+    this.ws = new WebSocket(`${GEMINI_WS_URL}?access_token=${encodeURIComponent(token)}`);
     this.ws.binaryType = 'arraybuffer';
 
     this.ws.onopen    = () => this.ngZone.run(() => { this.retryCount = 0; this.sendSetup(); });

@@ -22,6 +22,8 @@ import {
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DocumentService } from '../../services/api/document.service';
+import { EyeTrackerComponent } from 'src/app/shared/components/Robot/eye-tracker.component';
+import { ProfileAvatar } from 'src/app/shared/components/profile-avatar/profile-avatar';
 declare const THREE: any;
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -38,7 +40,7 @@ export interface ChatMessage {
 @Component({
   selector: 'app-athenia-voice',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, EyeTrackerComponent, ProfileAvatar],
   templateUrl: './athenia-voice.html',
   styleUrls: ['./athenia-voice.css'],
 })
@@ -60,6 +62,7 @@ export class AtheniaVoice implements OnInit, OnDestroy {
   inputValue = '';
   inputFocused = false;
   isTyping = signal(false);
+  hoveredMsgId: string | null = null;
 
   // ─── Voice state ───────────────────────────────────────────────────────────
   state = signal<LiveVoiceState>({
@@ -186,17 +189,18 @@ export class AtheniaVoice implements OnInit, OnDestroy {
   // ─── Mode switching ────────────────────────────────────────────────────────
 
   setMode(mode: ChatMode): void {
-    if (mode === this.currentMode()) return;
-    this.currentMode.set(mode);
+  if (mode === this.currentMode()) return;
+  this.currentMode.set(mode);
 
-    if (mode === 'voice') {
-      // Boot Three.js lazily, after the panel renders
-      setTimeout(() => this.bootThreeIfNeeded(), 50);
-    } else {
-      // Stop voice when switching to text
-      if (this.isActive()) this.voiceService.stop();
-    }
+  if (mode === 'voice') {
+    // Esperar al próximo ciclo + margen para que el canvas exista
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => this.bootThreeIfNeeded());
+    });
+  } else {
+    if (this.isActive()) this.voiceService.stop();
   }
+}
 
   // ─── Voice actions ─────────────────────────────────────────────────────────
 
@@ -216,50 +220,50 @@ export class AtheniaVoice implements OnInit, OnDestroy {
   // ─── Text chat actions ─────────────────────────────────────────────────────
 
   sendText(): void {
-  const text = this.inputValue.trim(); 
-  if (!text) return;
+    const text = this.inputValue.trim();
+    if (!text) return;
 
-  this.addMessage('user', text);
-  this.inputValue = '';
+    this.addMessage('user', text);
+    this.inputValue = '';
 
-  if (this.textInputRef?.nativeElement) {
-    this.textInputRef.nativeElement.style.height = 'auto';
+    if (this.textInputRef?.nativeElement) {
+      this.textInputRef.nativeElement.style.height = 'auto';
+    }
+
+    this.askBackend(text);
   }
 
-  this.askBackend(text); 
-}
-
   sendHint(hintKey: string): void {
-  const translatedHint = this.translate.instant(hintKey);
-  this.addMessage('user', translatedHint);
-  this.askBackend(translatedHint);   
-}
+    const translatedHint = this.translate.instant(hintKey);
+    this.addMessage('user', translatedHint);
+    this.askBackend(translatedHint);
+  }
 
   private askBackend(question: string): void {
-  this.isTyping.set(true);
+    this.isTyping.set(true);
 
-  this.atheniaService.askQuestion({
-    question,
-    use_cache: true
-  })
-  .pipe(takeUntil(this.destroy$))
-  .subscribe({
-    next: (response) => {
-      this.isTyping.set(false);
+    this.atheniaService.askQuestion({
+      question,
+      use_cache: true
+    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.isTyping.set(false);
 
-      this.addMessage('ai', response.answer);
+          this.addMessage('ai', response.answer);
 
-      console.log('Confidence:', response.confidence);
-      console.log('Processing time:', response.processing_time_ms);
-      console.log('From cache:', response.from_cache);
-    },
-    error: (error: unknown) => {
-      this.isTyping.set(false);
-      console.error(error);
-      this.addMessage('ai', this.translate.instant('voice.errorConsulting'));
-    }
-  });
-}
+          console.log('Confidence:', response.confidence);
+          console.log('Processing time:', response.processing_time_ms);
+          console.log('From cache:', response.from_cache);
+        },
+        error: (error: unknown) => {
+          this.isTyping.set(false);
+          console.error(error);
+          this.addMessage('ai', this.translate.instant('voice.errorConsulting'));
+        }
+      });
+  }
 
   clearMessages(): void {
     this.messages.set([]);
@@ -434,7 +438,8 @@ export class AtheniaVoice implements OnInit, OnDestroy {
           vAlpha = smoothstep(400.0, 80.0, -mv.z);
         }`,
       fragmentShader: `
-        varying vec3 vColor; varying float vAlpha;
+        varying vec3 vColor; 
+        varying float vAlpha;
         void main(){
           vec2 uv = gl_PointCoord - 0.5;
           float d = length(uv);
@@ -446,7 +451,6 @@ export class AtheniaVoice implements OnInit, OnDestroy {
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
-      vertexColors: true,
     });
 
     this.particlesMesh = new THREE.Points(geo, mat);
@@ -598,5 +602,17 @@ export class AtheniaVoice implements OnInit, OnDestroy {
     this.particlesMesh.rotation.y += 0.0002;
 
     this.renderer.render(this.scene, this.camera);
+  }
+  /**
+ * Copia el texto de un mensaje al portapapeles.
+ */
+  async copyMessage(text: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text);
+      // Opcional: feedback visual
+      console.log('Mensaje copiado');
+    } catch (err) {
+      console.error('Error al copiar:', err);
+    }
   }
 }

@@ -136,7 +136,7 @@ export class Login implements OnInit, OnDestroy {
           this.isLoading = false;
 
           if (response?.requires_2fa) {
-            this.handle2FARequired(email, password);
+            this.handle2FARequired();
             return;
           }
 
@@ -146,7 +146,7 @@ export class Login implements OnInit, OnDestroy {
           this.isLoading = false;
 
           if (error?.requires2FA) {
-            this.handle2FARequired(email, password);
+            this.handle2FARequired();
             return;
           }
 
@@ -156,12 +156,8 @@ export class Login implements OnInit, OnDestroy {
   }
 
   // ==================== MANEJO DE 2FA ====================
-  private handle2FARequired(email: string, password: string): void {
-    sessionStorage.setItem(
-      'temp_2fa_auth',
-      JSON.stringify({ email, password })
-    );
-
+  // AuthService.login ya guardó { email, challenge_token } en sessionStorage.
+  private handle2FARequired(): void {
     this.alertService.info(this.translate.instant('login.success.twoFactorRequired'), '', 3000);
 
     setTimeout(() => {

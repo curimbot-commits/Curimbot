@@ -16,9 +16,9 @@ export const twoFactorGuard: CanActivateFn = () => {
     }
 
     try {
-        const { email, password } = JSON.parse(tempAuth);
+        const { email, challenge_token } = JSON.parse(tempAuth);
 
-        if (!email || !password) {
+        if (!email || !challenge_token) {
             console.warn('Datos de 2FA inválidos');
             sessionStorage.removeItem('temp_2fa_auth');
             router.navigate(['/login']);

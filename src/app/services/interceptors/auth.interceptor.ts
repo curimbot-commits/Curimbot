@@ -31,7 +31,6 @@ const PUBLIC_ENDPOINTS = [
   '/auth/login-with-2fa',
   '/auth/health',
   '/auth/google/',
-  '/auth/oauth/set-cookies',
   '/auth/refresh',
   '/auth/me',
   '/auth/logout',

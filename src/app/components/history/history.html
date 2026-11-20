@@ -39,27 +39,6 @@
         />
       </div>
 
-      <!-- Channel filter -->
-      <div class="sm:w-48">
-        <div class="relative">
-          <select
-            [(ngModel)]="filterChannel"
-            (change)="filterInteractions()"
-            class="w-full appearance-none pl-10 pr-10 py-2 rounded-lg border border-gray-200 bg-white text-gray-900 focus:border-[#02ab74] focus:ring-1 focus:ring-[#02ab74] focus:outline-none"
-          >
-            <option value="all">Todos los canales</option>
-            <option value="text">Texto</option>
-            <option value="voice">Voz</option>
-          </select>
-          <lucide-angular name="filter" class="absolute left-2 top-1/2 -translate-y-1/4 w-4 h-4 text-gray-600 pointer-events-none"></lucide-angular>
-          <div class="absolute right-3 top-1/2 -translate-y-1/4 pointer-events-none">
-            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </div>
-        </div>
-      </div>
-
       <!-- Status filter -->
       <div class="sm:w-48">
         <div class="relative">

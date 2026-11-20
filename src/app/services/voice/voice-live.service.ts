@@ -44,13 +44,34 @@ Responde OBLIGATORIAMENTE en el mismo idioma en el que el usuario te hable.
 2. Si el usuario habla en Español, responde 100% en Español.
 No mezcles idiomas en una misma respuesta.
 
-REGLA CRÍTICA PARA RESPUESTAS DE DOCUMENTOS:
-Cuando el usuario te pregunte sobre información específica o de sus documentos, el sistema realizará una búsqueda y te enviará los resultados en un mensaje que comenzará con [CONTEXTO].
-Por lo tanto:
-1. NUNCA digas "no tengo esa información" ni "según el documento" de forma introductoria negativa.
-2. Si te hacen una pregunta de documentos y aún no tienes el [CONTEXTO], tu primera respuesta debe ser ÚNICAMENTE una frase muy breve, natural y conversacional en el IDIOMA DEL USUARIO como "Buscando esa información..." o "Revisando el documento...".
-3. Inmediatamente después, el sistema te enviará el [CONTEXTO]. Cuando lo recibas, da la respuesta completa, fluida y precisa.
-4. Si la interacción es solo un saludo o charla general que no requiere buscar en documentos, responde de manera normal al instante sin mencionar contextos.`;
+REGLAS PARA PREGUNTAS SOBRE DOCUMENTOS:
+1. Si el usuario pregunta por información concreta (normas, datos, procesos, contenido de sus documentos), llama a la herramienta buscar_documentos con la pregunta completa y clara. No respondas de memoria.
+2. Llama a la herramienta directamente, sin anunciarlo: no digas "buscando" ni frases de espera.
+3. Cuando recibas el resultado, responde UNA sola vez, de forma completa, fluida y precisa, usando solo esa información.
+4. Si el resultado indica que no hay información, dilo en una frase breve y ofrece reformular la pregunta. No inventes.
+5. Si es un saludo o charla general, responde normalmente sin usar la herramienta.
+6. No repitas una respuesta que ya diste.`;
+
+/** Herramienta que Gemini Live llama para buscar en los documentos del usuario. */
+const SEARCH_TOOL = {
+  functionDeclarations: [{
+    name: 'buscar_documentos',
+    description:
+      'Busca en los documentos del usuario y devuelve los fragmentos relevantes para responder su pregunta.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        consulta: {
+          type: 'STRING',
+          description: 'La pregunta del usuario, completa y en su idioma.',
+        },
+      },
+      required: ['consulta'],
+    },
+  }],
+};
+
+const NO_RESULTS = 'No se encontró información sobre esto en los documentos del usuario.';
 
 @Injectable({ providedIn: 'root' })
 export class VoiceLiveService implements OnDestroy {
@@ -81,32 +102,12 @@ export class VoiceLiveService implements OnDestroy {
   private readonly MAX_RETRIES = 5;
   private retryTimer: ReturnType<typeof setTimeout> | null = null;
 
-  // ── RAG ────────────────────────────────────────────────────
-  // Buffer que ACUMULA todos los chunks de transcripción del usuario
-  // Gemini envía la transcripción de forma incremental, ej:
-  //   chunk 1: "Háblame sobre"
-  //   chunk 2: "Háblame sobre los casos"
-  //   chunk 3: "Háblame sobre los casos de trabajo"
-  // Cada chunk es la frase completa hasta ese momento (no solo el delta)
-  // Por eso simplemente sobreescribimos con el último chunk recibido.
+  // ── Transcripción del usuario ─────────────────────────────
+  // Lo que dice el usuario en el turno actual; se muestra en el transcript
+  // cuando Gemini empieza a responder (o llama a la herramienta).
   private userTranscriptBuffer = '';
-  private ragTimer: ReturnType<typeof setTimeout> | null = null;
-  private ragInFlight = false;
-  // Guardar último query enviado para evitar duplicados
-  private lastRagQuery = '';
-
-  /**
-   * Turno en curso para el historial: la pregunta enviada con su contexto RAG
-   * y la respuesta de Gemini, que llega en trozos (outputTranscription).
-   * Se registra en /voice/log-interaction cuando el turno termina.
-   */
-  private pendingTurn: {
-    question: string;
-    found: boolean;
-    sourcesInfo: VoiceSource[];
-    answer: string;
-    startedAt: number;
-  } | null = null;
+  /** Llamadas a herramientas que Gemini canceló (el usuario lo interrumpió). */
+  private cancelledToolCalls = new Set<string>();
 
   constructor(private ngZone: NgZone, private http: HttpClient) {
     this.startLevelLoop();
@@ -126,10 +127,8 @@ export class VoiceLiveService implements OnDestroy {
   }
 
   stop(): void {
-    this.flushTurn();
     this.intentActive = false;
     this.clearRetryTimer();
-    this.clearRagTimer();
     this.closeSession();
     this.teardownAudio();
     this.patch({ status: 'DISCONNECTED', isListening: false, isSpeaking: false, error: null });
@@ -157,123 +156,62 @@ export class VoiceLiveService implements OnDestroy {
     return r.token;
   }
 
-  // ─── Historial ─────────────────────────────────────────────
-
-  private beginTurn(question: string, found: boolean, sourcesInfo: VoiceSource[]): void {
-    this.flushTurn(); // el anterior quedó sin turnComplete
-    this.pendingTurn = { question, found, sourcesInfo, answer: '', startedAt: performance.now() };
-  }
-
-  /** Registra el turno en el historial (channel=voice). No bloquea la voz. */
-  private flushTurn(): void {
-    const turn = this.pendingTurn;
-    this.pendingTurn = null;
-    if (!turn) return;
-    this.http.post(`${environment.apiUrl}/api/v1/voice/log-interaction`, {
-      question: turn.question,
-      answer: turn.answer.trim() || null,
-      status: turn.found ? 'success' : 'no_context',
-      sources: turn.sourcesInfo.map(s => s.document_id),
-      sources_info: turn.sourcesInfo,
-      processing_time_ms: Math.round(performance.now() - turn.startedAt),
-      from_cache: false,
-    }).subscribe({ error: (err) => console.warn('[Voz] No se pudo registrar la interacción', err) });
-  }
-
-  // ─── RAG ───────────────────────────────────────────────────
-
-  private clearRagTimer(): void {
-    if (this.ragTimer) { clearTimeout(this.ragTimer); this.ragTimer = null; }
-  }
+  // ─── Transcripción del usuario ─────────────────────────────
 
   /**
-   * Gemini Live envía inputAudioTranscription de forma acumulativa:
-   * cada mensaje contiene la frase COMPLETA hasta ese momento.
-   * Por eso simplemente guardamos el último valor recibido.
-   *
-   * Iniciamos un timer de 1.5s. Si en 1.5s no llega nada nuevo
-   * = el usuario terminó de hablar → disparamos RAG con la frase completa.
+   * inputTranscription puede llegar acumulada (cada mensaje trae la frase
+   * completa hasta ese momento) o por fragmentos: si el texto nuevo empieza
+   * por el anterior se reemplaza; si no, se añade.
    */
-  private onTranscriptChunk(fullTextSoFar: string): void {
-    // Guardar el texto completo acumulado (Gemini ya lo acumula por nosotros)
-    this.userTranscriptBuffer = fullTextSoFar;
-
-    // Reiniciar timer — si el usuario sigue hablando, se cancela y reinicia
-    this.clearRagTimer();
-    this.ragTimer = setTimeout(() => this.fireRag(), 400);
+  private onUserTranscript(text: string): void {
+    const prev = this.userTranscriptBuffer;
+    this.userTranscriptBuffer = prev && text.startsWith(prev) ? text : prev + text;
   }
 
-  private async fireRag(): Promise<void> {
-    this.clearRagTimer();
-
-    const query = this.userTranscriptBuffer.trim();
+  /** Muestra en el transcript lo que dijo el usuario en este turno (una vez). */
+  private flushUserTranscript(): void {
+    const text = this.userTranscriptBuffer.trim();
     this.userTranscriptBuffer = '';
+    if (text) this.transcriptSubject.next({ role: 'user', text, timestamp: new Date() });
+  }
 
-    // Ignorar frases muy cortas o duplicadas
-    if (!query || query.split(/\s+/).length < 3) return;
-    if (query === this.lastRagQuery) return;
-    if (this.ragInFlight) return;
+  // ─── RAG por function calling ──────────────────────────────
 
-    this.lastRagQuery = query;
-    this.ragInFlight  = true;
+  /**
+   * Gemini decide cuándo buscar: llama a buscar_documentos, espera la
+   * respuesta y contesta una sola vez con el contexto. Así no hay frase de
+   * espera sin respuesta ni respuesta nativa duplicada.
+   */
+  private async handleToolCall(toolCall: any): Promise<void> {
+    this.flushUserTranscript();
+    const calls: any[] = toolCall?.functionCalls ?? [];
+    const responses = await Promise.all(calls.map(async (call) => {
+      if (call.name !== 'buscar_documentos') {
+        return { id: call.id, name: call.name, response: { error: 'Herramienta desconocida' } };
+      }
+      return { id: call.id, name: call.name, response: { result: await this.searchDocuments(call.args?.consulta) } };
+    }));
 
-    // Interrumpir cualquier respuesta nativa de Gemini (sin contexto) antes de inyectar RAG
-    this.stopAllSources();
-    this.nextPlayTime = 0;
-    this.patch({ isSpeaking: false });
+    const pending = responses.filter(r => !this.cancelledToolCalls.has(r.id));
+    responses.forEach(r => this.cancelledToolCalls.delete(r.id));
+    if (!pending.length) return;
+    this.wsSend(JSON.stringify({ toolResponse: { functionResponses: pending } }));
+  }
 
-    // Mostrar en transcript lo que dijo el usuario
-    this.ngZone.run(() =>
-      this.transcriptSubject.next({ role: 'user', text: query, timestamp: new Date() })
-    );
-
-    console.log('[RAG] Buscando contexto para:', query);
-
+  private async searchDocuments(query: unknown): Promise<string> {
+    const q = typeof query === 'string' ? query.trim() : '';
+    if (!q) return NO_RESULTS;
     try {
       const resp = await firstValueFrom(
         this.http.post<{ context: string | null; found: boolean; sources_info?: VoiceSource[] }>(
           `${environment.apiUrl}/api/v1/voice/context`,
-          { query }
+          { query: q }
         )
       );
-
-      if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
-
-      // Construir el mensaje que Gemini recibirá
-      const text = resp.found && resp.context
-        ? `[CONTEXTO]\n${resp.context}\n[/CONTEXTO]\n\n${query}`
-        : query;
-
-      if (resp.found) {
-        console.log('[RAG] ✅ Contexto encontrado, inyectando', resp.context!.length, 'chars');
-      } else {
-        console.log('[RAG] ⚠️ Sin contexto, respondiendo sin documento');
-      }
-
-      this.beginTurn(query, resp.found, resp.sources_info ?? []);
-
-      // Enviar a Gemini como turno completo del usuario
-      this.wsSend(JSON.stringify({
-        clientContent: {
-          turns: [{ role: 'user', parts: [{ text }] }],
-          turnComplete: true,
-        },
-      }));
-
+      return resp.found && resp.context ? resp.context : NO_RESULTS;
     } catch (err) {
-      console.error('[RAG] Error:', err);
-      // Fallback sin contexto
-      if (this.ws?.readyState === WebSocket.OPEN) {
-        this.beginTurn(query, false, []);
-        this.wsSend(JSON.stringify({
-          clientContent: {
-            turns: [{ role: 'user', parts: [{ text: query }] }],
-            turnComplete: true,
-          },
-        }));
-      }
-    } finally {
-      this.ragInFlight = false;
+      console.error('[RAG] Error buscando contexto:', err);
+      return 'La búsqueda en los documentos falló. Pide al usuario que lo intente de nuevo.';
     }
   }
 
@@ -304,6 +242,7 @@ export class VoiceLiveService implements OnDestroy {
           speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } } },
         },
         systemInstruction: { parts: [{ text: BASE_SYSTEM }] },
+        tools: [SEARCH_TOOL],
         inputAudioTranscription: {},   // transcripción de lo que dice el usuario
         outputAudioTranscription: {},  // transcripción de lo que responde Gemini
       },
@@ -324,21 +263,26 @@ export class VoiceLiveService implements OnDestroy {
 
     if (msg.setupComplete !== undefined) { this.onReady(); return; }
 
+    if (msg.toolCall) { this.handleToolCall(msg.toolCall); return; }
+
+    if (msg.toolCallCancellation) {
+      // El usuario interrumpió mientras se buscaba: no enviar esa respuesta.
+      for (const id of msg.toolCallCancellation.ids ?? []) this.cancelledToolCalls.add(id);
+      return;
+    }
+
     const sc = msg.serverContent;
     if (!sc) return;
 
     if (sc.interrupted) {
-      // Al enviar el turno con contexto, Gemini interrumpe su respuesta
-      // nativa: solo se registra si ya había respuesta a nuestra pregunta.
-      if (this.pendingTurn?.answer.trim()) this.flushTurn();
+      // El usuario habló encima de la respuesta: cortar el audio en curso.
       this.stopAllSources(); this.nextPlayTime = 0;
       this.patch({ isSpeaking: false });
       return;
     }
 
     if (sc.turnComplete) {
-      // Un turnComplete sin respuesta es el de la respuesta nativa interrumpida
-      if (this.pendingTurn?.answer.trim()) this.flushTurn();
+      this.flushUserTranscript();
       this.patch({ isSpeaking: false, isListening: true });
       return;
     }
@@ -351,17 +295,16 @@ export class VoiceLiveService implements OnDestroy {
       }
     }
 
-    // ── TRANSCRIPCIÓN DEL USUARIO ──
-    // inputAudioTranscription llega con la frase acumulada hasta ese momento
+    // Transcripción de lo que dice el usuario
     const inputText = sc.inputTranscription?.text;
     if (inputText?.trim()) {
-      this.onTranscriptChunk(inputText);
+      this.onUserTranscript(inputText);
     }
 
     // Transcripción de lo que dijo Gemini (texto de su respuesta en audio)
     const outputText = sc.outputTranscription?.text;
     if (outputText?.trim()) {
-      if (this.pendingTurn) this.pendingTurn.answer += outputText;
+      this.flushUserTranscript();
       this.transcriptSubject.next({ role: 'assistant', text: outputText, timestamp: new Date() });
     }
   }
@@ -520,8 +463,7 @@ export class VoiceLiveService implements OnDestroy {
     this.nextPlayTime     = 0;
     this.smoothedLevel    = 0;
     this.userTranscriptBuffer = '';
-    this.ragInFlight      = false;
-    this.lastRagQuery     = '';
+    this.cancelledToolCalls.clear();
   }
 
   private handleError(msg: string): void {

@@ -65,7 +65,6 @@ export class History implements OnInit {
   searchQuery = '';
 
   // Filtros
-  filterChannel: 'all' | AIChannel = 'all';
   filterStatus: 'all' | AIInteractionStatus = 'all';
 
   // ==================================================================
@@ -172,15 +171,11 @@ export class History implements OnInit {
         interaction.answer?.toLowerCase().includes(query) ||
         interaction.user_name?.toLowerCase().includes(query);
 
-      const matchesChannel =
-        this.filterChannel === 'all' ||
-        interaction.channel === this.filterChannel;
-
       const matchesStatus =
         this.filterStatus === 'all' ||
         interaction.status === this.filterStatus;
 
-      return matchesSearch && matchesChannel && matchesStatus;
+      return matchesSearch && matchesStatus;
     });
 
     this.currentPage = 1;

@@ -434,12 +434,18 @@ export class History implements OnInit {
   }
 
   convertToUTCMinus5(dateString: string): string {
-    const date = new Date(dateString);
-    const utcMinus5 = new Date(date.getTime() - 5 * 60 * 60 * 1000);
+    // El backend guarda UTC. Si llega sin zona (versiones anteriores), se
+    // interpreta como UTC: sin esto, el navegador lo tomaría como hora local.
+    const hasZone = /([zZ]|[+-]dd:?dd)$/.test(dateString);
+    const iso = hasZone ? dateString : dateString.replace(' ', 'T') + 'Z';
+    const utcMinus5 = new Date(new Date(iso).getTime() - 5 * 60 * 60 * 1000);
     const pad = (n: number) => String(n).padStart(2, '0');
+    // Componentes UTC del instante desplazado = hora de Colombia, sin depender
+    // de la zona del navegador. Formato ISO (con "T"): el pipe date lo
+    // interpreta igual en todos los navegadores (Safari rechaza el espacio).
     return (
-      `${utcMinus5.getFullYear()}-${pad(utcMinus5.getMonth() + 1)}-${pad(utcMinus5.getDate())} ` +
-      `${pad(utcMinus5.getHours())}:${pad(utcMinus5.getMinutes())}:${pad(utcMinus5.getSeconds())}`
+      `${utcMinus5.getUTCFullYear()}-${pad(utcMinus5.getUTCMonth() + 1)}-${pad(utcMinus5.getUTCDate())}T` +
+      `${pad(utcMinus5.getUTCHours())}:${pad(utcMinus5.getUTCMinutes())}:${pad(utcMinus5.getUTCSeconds())}`
     );
   }
 

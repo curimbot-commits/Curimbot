@@ -14,6 +14,8 @@ export interface AtheniaQueryRequest {
   question: string;
   document_ids?: number[];
   use_cache?: boolean;
+  /** Conversación a continuar (undefined = nueva) */
+  conversation_id?: number;
 }
 
 /**

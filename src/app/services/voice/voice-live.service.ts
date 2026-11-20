@@ -15,6 +15,8 @@ export interface LiveVoiceState {
   audioLevel: number;
 }
 
+interface VoiceSource { document_id: number; filename: string; }
+
 export interface TranscriptEntry {
   role: 'user' | 'assistant';
   text: string;
@@ -93,6 +95,19 @@ export class VoiceLiveService implements OnDestroy {
   // Guardar último query enviado para evitar duplicados
   private lastRagQuery = '';
 
+  /**
+   * Turno en curso para el historial: la pregunta enviada con su contexto RAG
+   * y la respuesta de Gemini, que llega en trozos (outputTranscription).
+   * Se registra en /voice/log-interaction cuando el turno termina.
+   */
+  private pendingTurn: {
+    question: string;
+    found: boolean;
+    sourcesInfo: VoiceSource[];
+    answer: string;
+    startedAt: number;
+  } | null = null;
+
   constructor(private ngZone: NgZone, private http: HttpClient) {
     this.startLevelLoop();
   }
@@ -111,6 +126,7 @@ export class VoiceLiveService implements OnDestroy {
   }
 
   stop(): void {
+    this.flushTurn();
     this.intentActive = false;
     this.clearRetryTimer();
     this.clearRagTimer();
@@ -139,6 +155,29 @@ export class VoiceLiveService implements OnDestroy {
     if (!r?.token) throw new Error('No se pudo obtener el token de voz');
     this.liveModel = r.model || DEFAULT_MODEL;
     return r.token;
+  }
+
+  // ─── Historial ─────────────────────────────────────────────
+
+  private beginTurn(question: string, found: boolean, sourcesInfo: VoiceSource[]): void {
+    this.flushTurn(); // el anterior quedó sin turnComplete
+    this.pendingTurn = { question, found, sourcesInfo, answer: '', startedAt: performance.now() };
+  }
+
+  /** Registra el turno en el historial (channel=voice). No bloquea la voz. */
+  private flushTurn(): void {
+    const turn = this.pendingTurn;
+    this.pendingTurn = null;
+    if (!turn) return;
+    this.http.post(`${environment.apiUrl}/api/v1/voice/log-interaction`, {
+      question: turn.question,
+      answer: turn.answer.trim() || null,
+      status: turn.found ? 'success' : 'no_context',
+      sources: turn.sourcesInfo.map(s => s.document_id),
+      sources_info: turn.sourcesInfo,
+      processing_time_ms: Math.round(performance.now() - turn.startedAt),
+      from_cache: false,
+    }).subscribe({ error: (err) => console.warn('[Voz] No se pudo registrar la interacción', err) });
   }
 
   // ─── RAG ───────────────────────────────────────────────────
@@ -192,7 +231,7 @@ export class VoiceLiveService implements OnDestroy {
 
     try {
       const resp = await firstValueFrom(
-        this.http.post<{ context: string | null; found: boolean }>(
+        this.http.post<{ context: string | null; found: boolean; sources_info?: VoiceSource[] }>(
           `${environment.apiUrl}/api/v1/voice/context`,
           { query }
         )
@@ -211,6 +250,8 @@ export class VoiceLiveService implements OnDestroy {
         console.log('[RAG] ⚠️ Sin contexto, respondiendo sin documento');
       }
 
+      this.beginTurn(query, resp.found, resp.sources_info ?? []);
+
       // Enviar a Gemini como turno completo del usuario
       this.wsSend(JSON.stringify({
         clientContent: {
@@ -223,6 +264,7 @@ export class VoiceLiveService implements OnDestroy {
       console.error('[RAG] Error:', err);
       // Fallback sin contexto
       if (this.ws?.readyState === WebSocket.OPEN) {
+        this.beginTurn(query, false, []);
         this.wsSend(JSON.stringify({
           clientContent: {
             turns: [{ role: 'user', parts: [{ text: query }] }],
@@ -286,12 +328,17 @@ export class VoiceLiveService implements OnDestroy {
     if (!sc) return;
 
     if (sc.interrupted) {
+      // Al enviar el turno con contexto, Gemini interrumpe su respuesta
+      // nativa: solo se registra si ya había respuesta a nuestra pregunta.
+      if (this.pendingTurn?.answer.trim()) this.flushTurn();
       this.stopAllSources(); this.nextPlayTime = 0;
       this.patch({ isSpeaking: false });
       return;
     }
 
     if (sc.turnComplete) {
+      // Un turnComplete sin respuesta es el de la respuesta nativa interrumpida
+      if (this.pendingTurn?.answer.trim()) this.flushTurn();
       this.patch({ isSpeaking: false, isListening: true });
       return;
     }
@@ -314,6 +361,7 @@ export class VoiceLiveService implements OnDestroy {
     // Transcripción de lo que dijo Gemini (texto de su respuesta en audio)
     const outputText = sc.outputTranscription?.text;
     if (outputText?.trim()) {
+      if (this.pendingTurn) this.pendingTurn.answer += outputText;
       this.transcriptSubject.next({ role: 'assistant', text: outputText, timestamp: new Date() });
     }
   }

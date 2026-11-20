@@ -110,7 +110,8 @@ export class AtheniaChat implements OnInit, OnDestroy {
     // Preparar request
     const request: AtheniaQueryRequest = {
       question: questionText,
-      use_cache: true
+      use_cache: true,
+      conversation_id: this.currentConversationId
     };
 
     // Llamar a ATHENIA

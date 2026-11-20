@@ -4,17 +4,16 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Auth as AuthService } from '../auth';
-import { jwtDecode } from 'jwt-decode';
 
 /**
- * Componente que captura el JWT del callback OAuth.
- *
- * Flujo:
- *   Backend redirige → /auth/callback (con cookies HttpOnly configuradas)
- *   Este componente:
- *     1. Verifica si hubo un error `?error=`
- *     2. Llama a AuthService para obtener el perfil de usuario a través de cookies
- *     3. Redirige al dashboard o documento según el rol
+ * Destino del callback OAuth. El backend redirige aquí con:
+ *   - ?status=success → cookies HttpOnly ya establecidas; se carga el perfil
+ *     y se redirige según el rol.
+ *   - #requires_2fa=1&challenge=...&email=... → el usuario tiene 2FA; se
+ *     guarda el challenge y se va a /twoverification. Va en el fragmento
+ *     para que no llegue a servidores, logs ni Referer.
+ *   - ?error=<código> → mensaje genérico y vuelta al login.
+ * Los tokens de sesión nunca viajan en la URL.
  */
 @Component({
   selector: 'app-oauth-callback',
@@ -61,8 +60,6 @@ export class OAuthCallbackComponent implements OnInit {
 
   errorMessage: string | null = null;
 
-  // Ya no usamos TOKEN_KEY localmente.
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -70,40 +67,45 @@ export class OAuthCallbackComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    const snapshot = this.route.snapshot;
 
-      const error = params['error'];
-
-      // ── Caso error: backend mandó ?error=... ──────────────────────
-      if (error) {
-        this.handleOAuthError(error);
-        return;
-      }
-
-      // ── Caso éxito: Backend manda token y refresh en la URL ────────────────
-      const token = params['token'];
-      const refresh = params['refresh'];
-
-      if (token && refresh) {
-        // Llamar al backend para que setee las cookies en el proxy/frontend
-        this.authService.setOAuthCookies(token, refresh).subscribe({
-          next: (user) => {
-            const role = user.role;
-            const destination = role === 'admin' ? '/app/dashboard' : '/app/document';
-
-            setTimeout(() => {
-              this.router.navigateByUrl(destination);
-            }, 300);
-          },
-          error: (err) => {
-            console.error('Error seteando cookies OAuth:', err);
-            this.errorMessage = 'No se pudo iniciar sesión. Las credenciales pueden haber expirado.';
-          }
-        });
+    // ── Caso 2FA: challenge en el fragmento (#) ───────────────────
+    const fragment = new URLSearchParams(snapshot.fragment ?? '');
+    if (fragment.get('requires_2fa') === '1') {
+      const email = fragment.get('email');
+      const challenge = fragment.get('challenge');
+      if (email && challenge) {
+        this.authService.startOAuth2FA(email, challenge);
+        // replaceUrl: el challenge no queda en el historial del navegador
+        this.router.navigate(['/twoverification'], { replaceUrl: true });
       } else {
-        this.errorMessage = 'No se recibieron tokens del servidor.';
-        setTimeout(() => this.goToLogin(), 3000);
+        this.handleOAuthError('oauth_failed');
       }
+      return;
+    }
+
+    // ── Caso error: backend mandó ?error=... ──────────────────────
+    const error = snapshot.queryParamMap.get('error');
+    if (error) {
+      this.handleOAuthError(error);
+      return;
+    }
+
+    // ── Caso éxito: cookies ya establecidas por el backend ────────
+    if (snapshot.queryParamMap.get('status') !== 'success') {
+      this.handleOAuthError('oauth_failed');
+      return;
+    }
+
+    this.authService.completeOAuthLogin().subscribe({
+      next: (user) => {
+        const destination = user.role === 'admin' ? '/app/dashboard' : '/app/document';
+        this.router.navigateByUrl(destination, { replaceUrl: true });
+      },
+      error: () => {
+        this.errorMessage = 'No se pudo iniciar sesión. Intenta de nuevo.';
+        setTimeout(() => this.goToLogin(), 3000);
+      },
     });
   }
 
@@ -112,13 +114,15 @@ export class OAuthCallbackComponent implements OnInit {
    */
   private handleOAuthError(error: string): void {
     const errorMessages: Record<string, string> = {
-      cancelled:     'Cancelaste el inicio de sesión.',
-      invalid_state: 'La sesión expiró. Por favor intenta de nuevo.',
-      server_error:  'Error interno del servidor. Intenta más tarde.',
+      cancelled:          'Cancelaste el inicio de sesión.',
+      invalid_state:      'La sesión expiró. Por favor intenta de nuevo.',
+      email_not_verified: 'Tu email no está verificado en el proveedor.',
+      account_disabled:   'Tu cuenta está desactivada. Contacta al administrador.',
+      oauth_failed:       'No se pudo completar el inicio de sesión. Intenta de nuevo.',
+      server_error:       'Error interno del servidor. Intenta más tarde.',
     };
 
-    this.errorMessage = errorMessages[error]
-      ?? `Error de autenticación: ${error}`;
+    this.errorMessage = errorMessages[error] ?? 'Error de autenticación.';
 
     // Redirigir al login automáticamente después de 3 segundos
     setTimeout(() => this.goToLogin(), 3000);

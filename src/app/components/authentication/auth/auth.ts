@@ -369,21 +369,30 @@ export class Auth {
       .pipe(catchError(this.handleError));
   }
 
-  setOAuthCookies(token: string, refresh: string): Observable<UserInfoResponse> {
-    return this.http
-      .post<UserInfoResponse>(
-        `${this.AUTH_URL}/oauth/set-cookies`,
-        { token, refresh },
-        { withCredentials: true }
-      )
-      .pipe(
-        tap((user) => {
-          this.currentUserSubject.next(this.mapUserInfoToUser(user));
-          this.isAuthenticatedSubject.next(true);
-          sessionStorage.setItem('hadSession', '1');
-        }),
-        catchError(this.handleError)
-      );
+  /**
+   * Completa el login OAuth. El backend ya dejó las cookies HttpOnly en el
+   * redirect del callback; aquí solo se carga el perfil del usuario.
+   */
+  completeOAuthLogin(): Observable<UserInfoResponse> {
+    this.clearSession();
+    return this.getUserProfile().pipe(
+      tap((user) => {
+        this.currentUserSubject.next(this.mapUserInfoToUser(user));
+        this.setAuthData();
+        sessionStorage.setItem('hadSession', '1');
+      })
+    );
+  }
+
+  /**
+   * Login OAuth de un usuario con 2FA: guarda el challenge_token (5 min,
+   * un solo uso) para que /twoverification complete con loginWith2FA.
+   */
+  startOAuth2FA(email: string, challengeToken: string): void {
+    sessionStorage.setItem(
+      'temp_2fa_auth',
+      JSON.stringify({ email, challenge_token: challengeToken })
+    );
   }
 
   changePassword(oldPassword: string, newPassword: string): Observable<any> {

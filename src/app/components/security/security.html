@@ -42,7 +42,7 @@
         <lucide-angular name="shield-check" class="w-5 h-5 text-[#02ab74]"></lucide-angular>
         <h2 class="text-lg font-semibold text-[#070025]">{{ 'security.twoFactor.title' | translate }}</h2>
       </div>
-      <z-switch [ngModel]="twoFactorEnabled" (checkChange)="handleToggleTwoFactor($event)" />
+      <z-switch #twoFactorSwitch [ngModel]="twoFactorEnabled" (checkChange)="handleToggleTwoFactor($event)" />
     </div>
     <div class="p-4 sm:p-6">
       <p class="text-gray-600 text-sm mb-4">{{ 'security.twoFactor.description' | translate }}</p>
@@ -53,6 +53,11 @@
             <p class="text-sm text-[#02ab74]">{{ 'security.twoFactor.activeDesc' | translate }}</p>
           </div>
         </div>
+        <button type="button" (click)="openTwoFactorDialog('regenerate')"
+          class="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          <lucide-angular name="key" class="w-4 h-4 text-[#02ab74]"></lucide-angular>
+          {{ 'security.twoFactor.regenerateCodesBtn' | translate }}
+        </button>
       }
     </div>
   </section>
@@ -119,4 +124,4 @@
 
 </div>
 
-<app-two-factor-setup-dialog [open]="showSetupDialog" (openChange)="showSetupDialog = $event" (setupComplete)="handleSetupComplete()" (setupCancelled)="onSetupCancelled()"></app-two-factor-setup-dialog>
+<app-two-factor-setup-dialog [open]="showSetupDialog" [mode]="twoFactorDialogMode" (openChange)="showSetupDialog = $event" (completed)="onTwoFactorCompleted($event)" (cancelled)="onTwoFactorCancelled()"></app-two-factor-setup-dialog>

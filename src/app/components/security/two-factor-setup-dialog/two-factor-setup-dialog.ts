@@ -1,14 +1,20 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { LucideAngularModule } from "lucide-angular";
-import { UserService } from 'src/app/services/api/user-service'
+import { LucideAngularModule } from 'lucide-angular';
+import { UserService } from 'src/app/services/api/user-service';
 
-import { NgOtpInputComponent } from "ng-otp-input";
+import { NgOtpInputComponent } from 'ng-otp-input';
 import { AlertService } from '@shared/components/alert/alert.service';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
-type SetupStep = 'qr' | 'verify' | 'backup';
+/**
+ * - setup:      escanear QR → verificar código → guardar códigos de respaldo
+ * - regenerate: verificar código → guardar los códigos nuevos
+ * - disable:    verificar código (app o respaldo) → 2FA desactivado
+ */
+export type TwoFactorDialogMode = 'setup' | 'regenerate' | 'disable';
+type Step = 'qr' | 'verify' | 'backup';
 
 @Component({
   selector: 'app-two-factor-setup-dialog',
@@ -17,14 +23,19 @@ type SetupStep = 'qr' | 'verify' | 'backup';
   styleUrl: './two-factor-setup-dialog.css'
 })
 export class TwoFactorSetupDialog implements OnChanges {
-  digit = '';
   @Input() open = false;
+  @Input() mode: TwoFactorDialogMode = 'setup';
   @Output() openChange = new EventEmitter<boolean>();
-  @Output() setupComplete = new EventEmitter<void>();
-  @Output() setupCancelled = new EventEmitter<void>();
+  /** Se emite al terminar el flujo del modo actual. */
+  @Output() completed = new EventEmitter<TwoFactorDialogMode>();
+  /** Se emite si el usuario cierra el diálogo sin terminar. */
+  @Output() cancelled = new EventEmitter<TwoFactorDialogMode>();
 
-  step: SetupStep = 'qr';
-  verificationCode = ['', '', '', '', '', ''];
+  step: Step = 'qr';
+  code = '';
+  /** En modo disable: usar un código de respaldo en vez del de la app. */
+  useBackupCode = false;
+  busy = false;
   copiedSecret = false;
   copiedBackup = false;
 
@@ -32,191 +43,196 @@ export class TwoFactorSetupDialog implements OnChanges {
   qrCodeUrl = '';
   backupCodes: string[] = [];
 
-  constructor(private userService: UserService, private alertService: AlertService, private translate: TranslateService) { }
-
-
-  @Input() isAlreadyEnabled = false;
+  constructor(
+    private userService: UserService,
+    private alertService: AlertService,
+    private translate: TranslateService,
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['open'] && changes['open'].currentValue) {
-      this.initializeSetup();
-    }
+    if (changes['open']?.currentValue) this.start();
   }
 
-  initializeSetup(): void {
-    if (this.step === 'backup' && !this.isAlreadyEnabled) return;
-
-    this.verificationCode = ['', '', '', '', '', ''];
+  private start(): void {
+    this.code = '';
+    this.useBackupCode = false;
+    this.busy = false;
     this.copiedSecret = false;
     this.copiedBackup = false;
+    this.backupCodes = [];
 
-    if (this.isAlreadyEnabled) {
-      this.step = 'backup';
-      this.userService.getBackupCodes().subscribe({
+    if (this.mode !== 'setup') {
+      this.step = 'verify';
+      return;
+    }
+
+    this.step = 'qr';
+    this.secretKey = '';
+    this.qrCodeUrl = '';
+    this.userService.setup2FA().subscribe({
+      next: (response) => {
+        this.secretKey = response.secret;
+        this.qrCodeUrl = response.qr_code;
+      },
+      error: (error) => {
+        this.toast(error?.error?.detail || this.t('security.alerts.setup2faError'), 'error');
+        this.close();
+      }
+    });
+  }
+
+  get codeIsValid(): boolean {
+    return this.useBackupCode
+      ? /^[0-9A-Fa-f]{8}$/.test(this.code.trim())
+      : /^\d{6}$/.test(this.code);
+  }
+
+  get titleKey(): string {
+    return {
+      setup: 'security.setup2fa.title',
+      regenerate: 'security.setup2fa.regenerateTitle',
+      disable: 'security.setup2fa.disableTitle',
+    }[this.mode];
+  }
+
+  get descriptionKey(): string {
+    if (this.step === 'qr') return 'security.setup2fa.step1Desc';
+    if (this.step === 'backup') return 'security.setup2fa.step3Desc';
+    return {
+      setup: 'security.setup2fa.step2Desc',
+      regenerate: 'security.setup2fa.regenerateDesc',
+      disable: 'security.setup2fa.disableDesc',
+    }[this.mode];
+  }
+
+  onOtpChange(otp: string): void {
+    this.code = otp;
+  }
+
+  toggleBackupCode(): void {
+    this.useBackupCode = !this.useBackupCode;
+    this.code = '';
+  }
+
+  continueToVerify(): void {
+    this.step = 'verify';
+    this.code = '';
+  }
+
+  goBack(): void {
+    if (this.mode === 'setup' && this.step === 'verify') {
+      this.step = 'qr';
+      this.code = '';
+    }
+  }
+
+  submitCode(): void {
+    if (!this.codeIsValid || this.busy) {
+      this.toast(this.t('security.alerts.enter6digits'), 'error');
+      return;
+    }
+    const code = this.code.trim();
+    this.busy = true;
+
+    if (this.mode === 'setup') {
+      this.userService.confirm2FA({ code }).subscribe({
         next: (response) => {
+          this.busy = false;
           this.backupCodes = response.backup_codes || [];
+          this.toast(this.t('security.alerts.codeVerified'), 'success');
+          this.step = 'backup';
         },
-        error: (error) => {
-          console.error('Error al obtener códigos de respaldo:', error);
-          this.showToast(this.translate.instant('security.alerts.getBackupCodesError'), 'error');
-          this.closeDialog();
-        }
+        error: () => this.onWrongCode(),
+      });
+    } else if (this.mode === 'regenerate') {
+      this.userService.regenerateBackupCodes({ code }).subscribe({
+        next: (response) => {
+          this.busy = false;
+          this.backupCodes = response.backup_codes || [];
+          this.step = 'backup';
+        },
+        error: () => this.onWrongCode(),
       });
     } else {
-      this.step = 'qr';
-      this.userService.setup2FA().subscribe({
-        next: (response) => {
-          this.secretKey = response.secret;
-          this.qrCodeUrl = response.qr_code;
-          this.backupCodes = response.backup_codes || [];
+      this.userService.disable2FA({ code }).subscribe({
+        next: () => {
+          this.busy = false;
+          this.completed.emit('disable');
+          this.close();
         },
-        error: (error) => {
-          console.error('Error setting up 2FA:', error);
-
-          if (error.status === 400 && error.error?.detail) {
-            
-            this.showToast(error.error.detail, 'error');
-            
-          } else {
-            this.showToast(this.translate.instant('security.alerts.setup2faError'), 'error');
-            this.closeDialog();
-          }
-        }
+        error: () => this.onWrongCode(),
       });
     }
   }
 
-
-  handleOtpInput(otp: string): void {
-    this.verificationCode = otp.split('');
-    
+  private onWrongCode(): void {
+    this.busy = false;
+    this.code = '';
+    this.toast(this.t('security.alerts.wrongCode'), 'error');
   }
 
-  handleOtpKeydown(index: number, event: KeyboardEvent): void {
-    if (event.key === 'Backspace' && !this.verificationCode[index] && index > 0) {
-      const prevInput = (event.target as HTMLElement).previousElementSibling as HTMLInputElement;
-      if (prevInput) {
-        prevInput.focus();
-        this.verificationCode[index - 1] = '';
-      }
-    }
-  }
-
-  handleCopySecret(): void {
+  copySecret(): void {
     navigator.clipboard.writeText(this.secretKey);
     this.copiedSecret = true;
-    this.showToast(this.translate.instant('security.alerts.secretCopied'), 'success');
+    this.toast(this.t('security.alerts.secretCopied'), 'success');
     setTimeout(() => this.copiedSecret = false, 2000);
   }
 
-  handleCopyBackupCodes(): void {
-    const codesText = this.backupCodes.join('\n');
-    navigator.clipboard.writeText(codesText);
+  copyBackupCodes(): void {
+    navigator.clipboard.writeText(this.backupCodes.join('\n'));
     this.copiedBackup = true;
-    this.showToast(this.translate.instant('security.alerts.backupCopied'), 'success');
+    this.toast(this.t('security.alerts.backupCopied'), 'success');
     setTimeout(() => this.copiedBackup = false, 2000);
   }
 
-  handleDownloadBackupCodes(): void {
-    const title = this.translate.instant('security.setup2fa.downloadContentTitle');
-    const footer = this.translate.instant('security.setup2fa.downloadContentFooter');
+  downloadBackupCodes(): void {
+    const title = this.t('security.setup2fa.downloadContentTitle');
+    const footer = this.t('security.setup2fa.downloadContentFooter');
     const content = `${title}${this.backupCodes.join('\n')}${footer}${new Date().toLocaleString()}`;
 
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(new Blob([content], { type: 'text/plain' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'codigos-respaldo-2fa.txt';
+    a.download = this.t('security.setup2fa.downloadFileName');
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    this.showToast(this.translate.instant('security.alerts.codesDownloaded'), 'success');
+    this.toast(this.t('security.alerts.codesDownloaded'), 'success');
   }
 
-  continueToVerify(): void {
-    this.step = 'verify';
-    this.verificationCode = ['', '', '', '', '', ''];
+  finish(): void {
+    this.completed.emit(this.mode);
+    this.close();
   }
 
-  goBack(): void {
-    if (this.step === 'verify') {
-      this.step = 'qr';
-      this.verificationCode = ['', '', '', '', '', ''];
+  /** Cerrar desde el fondo o el botón Cancelar. */
+  async requestClose(): Promise<void> {
+    // Con los códigos ya mostrados el flujo está terminado: cerrar = finalizar.
+    if (this.step === 'backup') { this.finish(); return; }
+
+    if (this.mode === 'setup') {
+      const confirmed = await this.alertService.confirm(
+        this.t('alerts.confirm'),
+        this.t('security.alerts.cancelConfirm')
+      );
+      if (!confirmed) return;
     }
+    this.cancelled.emit(this.mode);
+    this.close();
   }
 
-  handleVerify(): void {
-    const code = this.verificationCode.join('');
-
-    if (code.length !== 6) {
-      this.showToast(this.translate.instant('security.alerts.enter6digits'), 'error');
-      return;
-    }
-
-    this.userService.confirm2FA({ code }).subscribe({
-      next: () => {
-        this.showToast(this.translate.instant('security.alerts.codeVerified'), 'success');
-        this.step = 'backup';
-      },
-      error: (error) => {
-        console.error('Error verifying 2FA:', error);
-        this.showToast(this.translate.instant('security.alerts.wrongCode'), 'error');
-        this.verificationCode = ['', '', '', '', '', ''];
-        setTimeout(() => {
-          const firstInput = document.querySelector('.otp-input') as HTMLInputElement;
-          if (firstInput) firstInput.focus();
-        }, 100);
-      }
-    });
-  }
-
-  handleComplete(): void {
-    this.showToast(this.translate.instant('security.alerts.setup2faSuccess'), 'success');
-    this.setupComplete.emit();
-    this.closeDialog();
-  }
-
-  async handleCancel(): Promise<void> {
-    const confirmed = await this.alertService.confirm(
-      this.translate.instant('alerts.confirm'),
-      this.translate.instant('security.alerts.cancelConfirm')
-    );
-
-    if (confirmed) {
-      this.setupCancelled.emit();
-      this.closeDialog();
-    }
-  }
-
-  closeDialog(): void {
+  private close(): void {
     this.openChange.emit(false);
-    setTimeout(() => {
-      this.step = 'qr';
-      this.verificationCode = ['', '', '', '', '', ''];
-      this.copiedSecret = false;
-      this.copiedBackup = false;
-    }, 300);
   }
 
-  get isCodeComplete(): boolean {
-    return this.verificationCode.every(digit => digit !== '');
+  private t(key: string): string {
+    return this.translate.instant(key);
   }
 
-  private showToast(message: string, type: 'success' | 'error' | 'info'): void {
-  switch(type) {
-    case 'success':
-      this.alertService.success(this.translate.instant('alerts.success'), message);
-      break;
-    case 'error':
-      this.alertService.error(this.translate.instant('alerts.error'), message);
-      break;
-    case 'info':
-    default:
-      this.alertService.info(this.translate.instant('alerts.info'), message);
-      break;
+  private toast(message: string, type: 'success' | 'error'): void {
+    if (type === 'success') this.alertService.success(this.t('alerts.success'), message);
+    else this.alertService.error(this.t('alerts.error'), message);
   }
-}
-
 }

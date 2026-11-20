@@ -12,7 +12,7 @@ import {
   Languages, Linkedin, Map, Play, Menu, ShieldCheck, Award, MapPin, Flag,
   Layers, Compass, Cog, Cpu, LifeBuoy, HeartHandshake, Target, Lightbulb,
   Sprout, Rocket, Crown, Package, FolderSearch, FilePlusIcon, Megaphone,
-  FilePenLine, CreditCard
+  FilePenLine, CreditCard, Copy, ShieldOff, Smartphone
 } from 'lucide-angular';
 
 /**
@@ -32,5 +32,5 @@ export const LucideIcons = {
   Languages, Linkedin, Map, Play, Menu, ShieldCheck, Award, MapPin, Flag,
   Layers, Compass, Cog, Cpu, LifeBuoy, HeartHandshake, Target, Lightbulb,
   Sprout, Rocket, Crown, Package, FolderSearch, FilePlusIcon, Megaphone,
-  FilePenLine, CreditCard
+  FilePenLine, CreditCard, Copy, ShieldOff, Smartphone
 };

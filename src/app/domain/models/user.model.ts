@@ -70,7 +70,6 @@ export interface UserManagementResponse {
 
 /*************************** */
 export interface TwoFASetupResponse {
-  backup_codes: string[];
   message: string;
   qr_code: string;
   secret: string;
@@ -100,13 +99,11 @@ export interface TwoFAConfirmRequest {
   code: string;
 }
 
-export interface TwoFAStatusResponse {
+/** Al confirmar el 2FA se generan y devuelven los códigos de respaldo. */
+export interface TwoFAConfirmResponse {
+  message: string;
   enabled: boolean;
-  backup_codes_remaining?: number;
-}
-export interface TwoFADisableRequest {
-  code: string; // Código de 6 dígitos o código de respaldo
-  password?: string; // Contraseña actual como medida de seguridad adicional
+  backup_codes: string[];
 }
 export type AuthStatsSummary = Record<string, unknown>;
 

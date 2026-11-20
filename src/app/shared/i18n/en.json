@@ -690,7 +690,8 @@
       "description": "Add an extra layer of security to your account. Requires a verification code in addition to your password when signing in.",
       "activeTitle": "2FA Active",
       "activeDesc": "Your account is protected with two-factor authentication.",
-      "viewCodesBtn": "View backup codes"
+      "viewCodesBtn": "View backup codes",
+      "regenerateCodesBtn": "Regenerate backup codes"
     },
     "preferences": {
       "title": "Security Preferences",
@@ -717,8 +718,6 @@
       "passwordError": "Could not update password. Please check your data again.",
       "disable2FATitle": "Disable Two-Step Verification",
       "disable2FADesc": "Are you sure you want to remove this layer of security from your account?",
-      "codePrompt": "Enter your 6-digit verification code (App or Backup):",
-      "invalidCode": "The code entered is invalid or the process was canceled.",
       "disable2FASuccess": "Two-factor authentication has been successfully disabled.",
       "disable2FAError": "An error occurred while trying to disable 2FA. Please try again.",
       "enable2FASuccess": "Great! You have successfully enabled two-step verification.",
@@ -744,7 +743,8 @@
       "codeVerified": "Code successfully verified!",
       "wrongCode": "Incorrect code. Please check your app and try again.",
       "setup2faSuccess": "Setup complete. Your account is now more secure.",
-      "cancelConfirm": "Are you sure you want to cancel 2FA protection? Your account will be less secure."
+      "cancelConfirm": "Are you sure you want to cancel 2FA protection? Your account will be less secure.",
+      "backupRegenerated": "New backup codes were generated. The previous ones no longer work."
     },
     "setup2fa": {
       "title": "Set Up Two-Factor Authentication",
@@ -769,7 +769,19 @@
       "download": "Download",
       "finish": "Finish Setup",
       "downloadContentTitle": "BACKUP CODES - AI VIRTUAL ASSISTANT\n\nSave these codes securely.\nEach code can only be used once.\n\n",
-      "downloadContentFooter": "\n\nGenerated on: "
+      "downloadContentFooter": "\n\nGenerated on: ",
+      "regenerateTitle": "Regenerate backup codes",
+      "regenerateDesc": "Confirm with the code from your app. Your previous codes will stop working.",
+      "disableTitle": "Turn off two-step verification",
+      "disableDesc": "Confirm with the code from your app or with a backup code.",
+      "enterBackupTitle": "Enter a backup code",
+      "enterBackupDesc": "Type one of the 8-character codes you saved. Each code works only once.",
+      "useBackupCode": "Don't have your app? Use a backup code",
+      "useAppCode": "Use the code from your app",
+      "disableBtn": "Turn off 2FA",
+      "done": "Done",
+      "qrAlt": "QR code for your authentication app",
+      "downloadFileName": "curim-backup-codes.txt"
     },
     "time": {
       "activeNow": "Active now",

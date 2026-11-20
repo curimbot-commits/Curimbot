@@ -8,6 +8,7 @@ import {
   UserManagementResponse,
   TwoFASetupResponse,
   TwoFAConfirmRequest,
+  TwoFAConfirmResponse,
   UserInfoResponse,
   ChangePasswordRequest,
   ActiveSession,
@@ -33,14 +34,14 @@ export class UserService {
     return this.http.post<TwoFASetupResponse>(`${this.AUTH_URL}/2fa/setup`, {});
   }
 
-  /** Gets backup codes if 2FA is already enabled */
-  getBackupCodes(): Observable<{ backup_codes: string[] }> {
-    return this.http.post<{ backup_codes: string[] }>(`${this.AUTH_URL}/2fa/backup-codes`, {});
+  /** Replaces the backup codes; requires a valid code from the authenticator app */
+  regenerateBackupCodes(data: TwoFAConfirmRequest): Observable<{ backup_codes: string[] }> {
+    return this.http.post<{ backup_codes: string[] }>(`${this.AUTH_URL}/2fa/regenerate-backup-codes`, data);
   }
 
-  /** Confirms 2FA setup with a verification code */
-  confirm2FA(confirmData: TwoFAConfirmRequest): Observable<string> {
-    return this.http.post<string>(`${this.AUTH_URL}/2fa/confirm`, confirmData);
+  /** Confirms 2FA setup with a verification code; returns the backup codes */
+  confirm2FA(confirmData: TwoFAConfirmRequest): Observable<TwoFAConfirmResponse> {
+    return this.http.post<TwoFAConfirmResponse>(`${this.AUTH_URL}/2fa/confirm`, confirmData);
   }
 
   /** Disables 2FA using a verification or backup code */

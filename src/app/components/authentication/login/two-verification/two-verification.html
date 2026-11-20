@@ -79,7 +79,7 @@
           <div>
             <input type="text" formControlName="backupCode"
               (input)="twoFaForm.get('backupCode')?.setValue(twoFaForm.get('backupCode')?.value.toUpperCase(), { emitEvent: false })"
-              placeholder="XXXX-XXXX-XXXX" maxlength="14"
+              placeholder="A1B2C3D4" maxlength="8" autocomplete="one-time-code"
               class="w-full px-4 py-3 text-center text-lg font-mono border-2 border-gray-300 rounded-lg focus:border-[#02ab74] focus:ring-2 focus:ring-[#02ab74]/20 outline-none transition-all" />
               @if (twoFaForm.get('backupCode')?.invalid && (twoFaForm.get('backupCode')?.touched || twoFaForm.get('backupCode')?.dirty)) {
                 <div

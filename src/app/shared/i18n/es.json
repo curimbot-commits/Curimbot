@@ -690,7 +690,8 @@
       "description": "Agrega una capa adicional de seguridad a tu cuenta. Requiere un código de verificación además de tu contraseña al iniciar sesión.",
       "activeTitle": "2FA Activo",
       "activeDesc": "Tu cuenta está protegida con autenticación de dos factores.",
-      "viewCodesBtn": "Ver códigos de respaldo"
+      "viewCodesBtn": "Ver códigos de respaldo",
+      "regenerateCodesBtn": "Regenerar códigos de respaldo"
     },
     "preferences": {
       "title": "Preferencias de Seguridad",
@@ -717,8 +718,6 @@
       "passwordError": "No pudimos actualizar tu contraseña. Asegúrate de que la actual sea correcta.",
       "disable2FATitle": "Desactivar Verificación en Dos Pasos",
       "disable2FADesc": "¿Estás seguro de que deseas eliminar esta capa de seguridad de tu cuenta?",
-      "codePrompt": "Introduce tu código de verificación de 6 dígitos (App o Respaldo):",
-      "invalidCode": "El código ingresado es inválido o el proceso fue cancelado.",
       "disable2FASuccess": "La autenticación de dos factores ha sido desactivada correctamente.",
       "disable2FAError": "Hubo un error al intentar desactivar el 2FA. Reintenta.",
       "enable2FASuccess": "¡Excelente! Has activado correctamente la verificación en dos pasos.",
@@ -744,7 +743,8 @@
       "codeVerified": "¡Código verificado correctamente!",
       "wrongCode": "Código incorrecto. Por favor, verifica tu aplicación e inténtalo de nuevo.",
       "setup2faSuccess": "Configuración finalizada. Tu cuenta ahora es más segura.",
-      "cancelConfirm": "¿Estás seguro de que deseas cancelar la protección 2FA? Tu cuenta será menos segura."
+      "cancelConfirm": "¿Estás seguro de que deseas cancelar la protección 2FA? Tu cuenta será menos segura.",
+      "backupRegenerated": "Se generaron códigos de respaldo nuevos. Los anteriores ya no funcionan."
     },
     "setup2fa": {
       "title": "Configurar Autenticación de Dos Factores",
@@ -769,7 +769,19 @@
       "download": "Descargar",
       "finish": "Finalizar Configuración",
       "downloadContentTitle": "CÓDIGOS DE RESPALDO - ASISTENTE VIRTUAL IA\n\nGuarda estos códigos en un lugar seguro.\nCada código solo puede usarse una vez.\n\n",
-      "downloadContentFooter": "\n\nFecha de generación: "
+      "downloadContentFooter": "\n\nFecha de generación: ",
+      "regenerateTitle": "Regenerar códigos de respaldo",
+      "regenerateDesc": "Confirma con el código de tu aplicación. Los códigos anteriores dejarán de funcionar.",
+      "disableTitle": "Desactivar la verificación en dos pasos",
+      "disableDesc": "Confirma con el código de tu aplicación o con un código de respaldo.",
+      "enterBackupTitle": "Ingresa un código de respaldo",
+      "enterBackupDesc": "Escribe uno de los códigos de 8 caracteres que guardaste. Cada código solo sirve una vez.",
+      "useBackupCode": "¿No tienes la aplicación? Usar un código de respaldo",
+      "useAppCode": "Usar el código de la aplicación",
+      "disableBtn": "Desactivar 2FA",
+      "done": "Listo",
+      "qrAlt": "Código QR para tu aplicación de autenticación",
+      "downloadFileName": "codigos-respaldo-curim.txt"
     },
     "time": {
       "activeNow": "Activo ahora",

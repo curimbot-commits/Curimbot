@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @angular-eslint/prefer-inject */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from "lucide-angular";
 import { Subject, takeUntil } from 'rxjs';
-import { TwoFactorSetupDialog } from "./two-factor-setup-dialog/two-factor-setup-dialog";
+import { TwoFactorDialogMode, TwoFactorSetupDialog } from "./two-factor-setup-dialog/two-factor-setup-dialog";
 import { ZardSwitchComponent } from "@shared/components/switch/switch.component";
 import { UserPreferencesService } from 'src/app/services/api/user-preferences.service';
 import { UserService } from 'src/app/services/api/user-service';
@@ -68,6 +68,9 @@ export class Security implements OnInit, OnDestroy {
 
   /** Controla la visibilidad del diálogo de configuración 2FA */
   showSetupDialog = false;
+  twoFactorDialogMode: TwoFactorDialogMode = 'setup';
+  /** El switch guarda su propio estado: se le reescribe al cancelar. */
+  @ViewChild('twoFactorSwitch') twoFactorSwitch?: ZardSwitchComponent;
 
   // ==================== PROPIEDADES DE SESIONES ACTIVAS ====================
 
@@ -141,6 +144,7 @@ export class Security implements OnInit, OnDestroy {
       .subscribe({
         next: (user: any) => {
           this.twoFactorEnabled = user.two_factor_enabled ?? false;
+          this.twoFactorSwitch?.writeValue(this.twoFactorEnabled);
           this.cdr.detectChanges();
         },
         error: () => {
@@ -231,59 +235,47 @@ export class Security implements OnInit, OnDestroy {
    */
   async handleToggleTwoFactor(enabled: boolean): Promise<void> {
     if (enabled) {
-      this.showSetupDialog = true;
-      this.twoFactorEnabled = false;
-      this.cdr.detectChanges();
+      this.openTwoFactorDialog('setup');
+      return;
+    }
+
+    const confirmed = await this.alertService.confirm(
+      this.translate.instant('security.alerts.disable2FATitle'),
+      this.translate.instant('security.alerts.disable2FADesc')
+    );
+    if (confirmed) {
+      this.openTwoFactorDialog('disable');
     } else {
-      const confirmed = await this.alertService.confirm(
-        this.translate.instant('security.alerts.disable2FATitle'),
-        this.translate.instant('security.alerts.disable2FADesc')
-      );
-
-      if (!confirmed) {
-        this.twoFactorEnabled = true;
-        return;
-      }
-
-      const code = prompt(this.translate.instant('security.alerts.codePrompt'));
-      if (!code || code.trim().length < 6) {
-        this.alertService.error(this.translate.instant('security.alerts.invalidCode'), '', 3000);
-        this.twoFactorEnabled = true;
-        return;
-      }
-
-      try {
-        await this.userService.disable2FA({ code }).toPromise();
-        this.twoFactorEnabled = false;
-        this.alertService.info(this.translate.instant('security.alerts.disable2FASuccess'), '', 3000);
-      } catch (error: any) {
-        const message = error?.error?.detail || this.translate.instant('security.alerts.disable2FAError');
-        this.alertService.error(message, '', 4000);
-        this.twoFactorEnabled = true;
-      }
+      this.check2FAStatus(); // devolver el switch a su estado real
     }
   }
 
-  /**
-   * Callback ejecutado al completar exitosamente la configuración de 2FA
-   * Actualiza el estado y cierra el diálogo de configuración
-   */
-  handleSetupComplete(): void {
-    this.twoFactorEnabled = true;
-    this.showSetupDialog = false;
-    this.alertService.success(this.translate.instant('security.alerts.enable2FASuccess'), '', 3000);
+  /** Abre el diálogo de 2FA: configurar, regenerar códigos o desactivar. */
+  openTwoFactorDialog(mode: TwoFactorDialogMode): void {
+    this.twoFactorDialogMode = mode;
+    this.showSetupDialog = true;
     this.cdr.detectChanges();
   }
 
-  /**
-   * Callback ejecutado al cancelar la configuración de 2FA
-   * Resetea el estado para asegurar que el switch de la UI refleje la realidad
-   */
-  onSetupCancelled(): void {
+  /** El diálogo terminó su flujo. */
+  onTwoFactorCompleted(mode: TwoFactorDialogMode): void {
     this.showSetupDialog = false;
-    this.twoFactorEnabled = false;
+    if (mode === 'setup') {
+      this.twoFactorEnabled = true;
+      this.alertService.success(this.translate.instant('security.alerts.enable2FASuccess'), '', 3000);
+    } else if (mode === 'disable') {
+      this.twoFactorEnabled = false;
+      this.alertService.info(this.translate.instant('security.alerts.disable2FASuccess'), '', 3000);
+    } else {
+      this.alertService.success(this.translate.instant('security.alerts.backupRegenerated'), '', 3000);
+    }
     this.cdr.detectChanges();
-    // Re-verificar con el servidor para estar 100% seguros
+  }
+
+  /** El usuario cerró el diálogo sin terminar: el switch vuelve al estado real. */
+  onTwoFactorCancelled(): void {
+    this.showSetupDialog = false;
+    this.cdr.detectChanges();
     this.check2FAStatus();
   }
 

@@ -14,30 +14,18 @@
     --dark-color: #212529;           /* Texto principal */
     --text-color: #1f2933;
 
-    /* Estados */
-    --success-color: #2f9e44;
-    --warning-color: #f08c00;
-    --logout-color: #d00000;
-
     /* Documentos */
     --pdf-color: #c92a2a;
     --docx-color: #364fc7;
     --txt-color: #2b8a3e;
 
     /* UI */
-    --btn-hover-color: #2f3e9e;
     --card-bg: #ffffff;
     --card-hover-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-
-    /* Glass / Blur (muy sutil) */
-    --glass-bg: rgba(255, 255, 255, 0.75);
-    --glass-border: rgba(0, 0, 0, 0.04);
 
     /* Sombras suaves */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-    --header-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-    --sidebar-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 
     /* Texto secundario */
     --small-text-color: #6b7280;
@@ -48,12 +36,6 @@
     --filter-btn-border: #e5e7eb;
     --filter-btn-text-color: #374151;
     --filter-btn-hover-text-color: #1f2933;
-
-    /* Navegación */
-    --nav-item-color: #1f2933;
-    --nav-item-separator: rgba(0, 0, 0, 0.06);
-    --sidebar-border-color: #e5e7eb;
-    --logout-hover-bg: #fbeaea;
 
     /* Upload / áreas */
     --upload-area-hover-bg: #f0f4ff;
@@ -107,14 +89,6 @@ body::-webkit-scrollbar-thumb:hover {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.section-title {
-    font-size: 1.5rem;
-    color: var(--secondary-color);
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--accent-color);
-}
-
 /* Content: La columna derecha (sección del dashboard) */
 .content {
     width: 100%;
@@ -140,15 +114,10 @@ body.dark {
     --light-color: #111827;    /* gray-900 */
     --dark-color: #f9fafb;     /* gray-50  */
     --text-color: #d1d5db;
-    --success-color: #00cec9;
-    --warning-color: #fab1a0;
     --pdf-color: #e17055;
     --docx-color: #0984e3;
     --txt-color: #55efc4;
-    --btn-hover-color: #ffffff;
     --card-hover-shadow: 0 8px 20px rgba(255, 255, 255, 0.08);
-    --glass-bg: rgba(17,24,39, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.1);
     --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
     --upload-area-hover-bg: #1e3a5f;
@@ -160,13 +129,6 @@ body.dark {
     --meta-text-color: #9ca3af;
     --doc-actions-border: #374151;
     --action-btn-color: #9ca3af;
-    --header-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-    --sidebar-border-color: #374151;
-    --sidebar-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-    --nav-item-color: #d1d5db;
-    --nav-item-separator: rgba(255, 255, 255, 0.07);
-    --logout-color: #f87171;
-    --logout-hover-bg: #3b0000;
 
     background-color: #111827;
     color: #f9fafb;
@@ -294,19 +256,5 @@ body, button, input, select, textarea, a, .card, .sidebar, header {
 
 /* Responsive */
 @media (max-width: 768px) {
-    .main-content { flex-direction: column; }
     .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #eaeaea; padding: 1rem; }
-    .nav-item { justify-content: center; text-align: center; }
-    .documents-grid { grid-template-columns: 1fr; }
-    .assistant-section { flex-direction: column; text-align: center; gap: 15px; }
-    .assistant-text { flex-grow: 0; }
-    .mic-btn { margin-top: 10px; }
-    .landing-header { flex-direction: column; padding: 1rem; margin: 1rem; }
-    .nav-links { margin-top: 1rem; flex-direction: column; align-items: center; }
-    .nav-links a { margin: 5px 0; }
-    .hero-content h2 { font-size: 2.5rem; }
-    .hero-content p { font-size: 1rem; }
-    .cta-buttons .btn { padding: 12px 25px; font-size: 1rem; }
-    .features-grid,
-    .testimonials-grid { grid-template-columns: 1fr; }
 }

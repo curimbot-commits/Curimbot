@@ -11,9 +11,7 @@
     "paths": {
       "src/*": ["src/*"],
       "@shared/*": ["src/app/shared/*"],
-      "@core/*": ["src/app/core/*"],
-      "@domain/*": ["src/app/domain/*"],
-      "@features/*": ["src/app/features/*"]
+      "@domain/*": ["src/app/domain/*"]
     }
   },
   "include": [

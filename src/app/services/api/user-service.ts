@@ -168,7 +168,7 @@ export class UserService {
    */
   revokeAllSessions(exceptCurrent = true): Observable<RevokeAllResponse> {
     return this.http.post<RevokeAllResponse>(
-      `${this.SESION}/revoke-all`,
+      `${this.SESION}/revoke-others`,
       { except_current: exceptCurrent }
     );
   }

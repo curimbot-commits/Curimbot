@@ -198,6 +198,7 @@ html.dark .to-white {
 html.dark .border-gray-100,
 html.dark .border-gray-200,
 html.dark .border-gray-300,
+html.dark .divide-gray-100 > * + *,
 html.dark .divide-gray-200 > * + * {
     border-color: #334155 !important; /* slate-700 */
 }

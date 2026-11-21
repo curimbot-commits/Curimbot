@@ -33,7 +33,7 @@ type OnChangeType = (value: any) => void;
             data-[state=checked]:translate-x-2.5
             data-[state=unchecked]:translate-x-0
             data-[state=checked]:bg-[#02ab74]
-            data-[state=unchecked]:bg-[#a3e4cf]
+            data-[state=unchecked]:bg-white
             data-[size=sm]:w-4 data-[size=sm]:h-4
             data-[size=sm]:data-[state=checked]:translate-x-4
             data-[size=sm]:data-[state=unchecked]:translate-x-0

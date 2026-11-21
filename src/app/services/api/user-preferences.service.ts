@@ -2,6 +2,7 @@
 // src/app/services/user/user-preferences.service.ts
 
 import { Injectable, inject } from '@angular/core';
+import { AppTheme, ThemeService } from '../theme/theme.service';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
@@ -59,6 +60,7 @@ export class UserPreferencesService {
 
   private http = inject(HttpClient);
   private translate = inject(TranslateService);
+  private themeService = inject(ThemeService);
 
   // ==================================================================
   // CONSTRUCTOR
@@ -78,9 +80,9 @@ export class UserPreferencesService {
     const savedTheme = localStorage.getItem('theme') as ThemeEnum | null;
     const savedLanguage = localStorage.getItem('language') as LanguageEnum | null;
 
+    // El tema visual lo aplica ThemeService.init() (clave 'app-theme'); aquí solo se refleja.
     if (savedTheme) {
       this.themeSubject.next(savedTheme);
-      this.applyTheme(savedTheme);
     }
 
     if (savedLanguage) {
@@ -248,12 +250,8 @@ export class UserPreferencesService {
 
   /** Aplica clases CSS al documento según el tema */
   private applyTheme(theme: ThemeEnum): void {
-    const root = document.documentElement;
-    const effectiveTheme = theme === ThemeEnum.AUTO
-      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? ThemeEnum.DARK : ThemeEnum.LIGHT)
-      : theme;
-
-    root.classList.toggle('dark', effectiveTheme === ThemeEnum.DARK);
+    // Una sola fuente de verdad: ThemeService marca <html> y <body> a la vez.
+    this.themeService.setTheme(theme as AppTheme);
   }
 
   // ==================================================================

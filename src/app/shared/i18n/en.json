@@ -50,10 +50,6 @@
     "title": "Documents Dashboard",
     "subtitleAdmin": "Global view of all users",
     "subtitleUser": "Visualization and analysis of document activity",
-    "exportAll": "Export All",
-    "exportMine": "Export My Data",
-    "searchAdmin": "Search by user or document name...",
-    "searchUser": "Search my documents...",
     "loadingStats": "Loading statistics...",
     "retry": "Retry",
     "distributionTitle": "Document Distribution",
@@ -85,16 +81,6 @@
       "of": "of",
       "activities": "activities"
     },
-    "stats": {
-      "today": "Today",
-      "todayGlobal": "Today (Global)",
-      "docsUploaded": "documents uploaded",
-      "thisWeek": "This Week",
-      "thisWeekGlobal": "This Week (Global)",
-      "storage": "Storage",
-      "storageGlobal": "Storage (Global)",
-      "spaceUsed": "space used"
-    },
     "errors": {
       "stats": "Error loading statistics:",
       "chart": "Error loading chart data:",
@@ -104,6 +90,36 @@
       "week": "Week",
       "month": "Month",
       "year": "Year"
+    },
+    "allTypes": "Total",
+    "documents": "documents",
+    "activity": {
+      "title": "Recent AI interactions",
+      "allUsers": "All users",
+      "count": "{{count}} interactions",
+      "loading": "Loading interactions...",
+      "empty": "No recent AI interactions",
+      "refresh": "Refresh",
+      "range": "{{start}}–{{end}} of {{total}}",
+      "prev": "Previous page",
+      "next": "Next page",
+      "cols": {
+        "user": "User",
+        "question": "Question",
+        "channel": "Channel",
+        "status": "Status",
+        "date": "Date"
+      },
+      "channel": {
+        "text": "Text",
+        "voice": "Voice"
+      },
+      "status": {
+        "success": "Successful",
+        "error": "Error",
+        "no_context": "No context",
+        "unknown": "Unknown"
+      }
     }
   },
   "voice": {
@@ -241,7 +257,8 @@
       "dragDrop": "Drag and drop your files here",
       "or": "or",
       "select": "Select files",
-      "supported": "Supported formats: PDF, DOCX, TXT (Max 10MB per file)"
+      "supported": "Supported formats: PDF, DOCX, TXT (Max 10MB per file)",
+      "uploading": "Uploading files..."
     },
     "filters": {
       "all": "All",
@@ -255,7 +272,9 @@
       "uploadFirst": "Upload your first document by dragging it to the top area",
       "noType": "There are no documents of type",
       "viewed": "Document viewed",
-      "view": "View document"
+      "view": "View document",
+      "download": "Download",
+      "delete": "Delete"
     },
     "pagination": {
       "previous": "Previous",
@@ -303,7 +322,8 @@
     "stats": {
       "total": "Total Actions",
       "uploadsThisMonth": "Uploads This Month",
-      "errors": "Errors"
+      "errors": "Errors",
+      "successes": "Successful"
     },
     "labels": {
       "upload": "Document uploaded",
@@ -1178,5 +1198,10 @@
         }
       }
     }
+  },
+  "alerts": {
+    "success": "Done",
+    "error": "Error",
+    "confirm": "Are you sure?"
   }
 }

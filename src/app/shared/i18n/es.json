@@ -50,10 +50,6 @@
     "title": "Dashboard de Documentos",
     "subtitleAdmin": "Visualización global de todos los usuarios",
     "subtitleUser": "Visualización y análisis de actividad de documentos",
-    "exportAll": "Exportar Todo",
-    "exportMine": "Exportar Mis Datos",
-    "searchAdmin": "Buscar por usuario o nombre de documento...",
-    "searchUser": "Buscar en mis documentos...",
     "loadingStats": "Cargando estadísticas...",
     "retry": "Reintentar",
     "distributionTitle": "Distribución de Documentos",
@@ -85,16 +81,6 @@
       "of": "de",
       "activities": "actividades"
     },
-    "stats": {
-      "today": "Hoy",
-      "todayGlobal": "Hoy (Global)",
-      "docsUploaded": "documentos subidos",
-      "thisWeek": "Esta Semana",
-      "thisWeekGlobal": "Esta Semana (Global)",
-      "storage": "Almacenamiento",
-      "storageGlobal": "Almacenamiento (Global)",
-      "spaceUsed": "espacio utilizado"
-    },
     "errors": {
       "stats": "Error al cargar las estadísticas:",
       "chart": "Error al cargar los datos del gráfico:",
@@ -104,6 +90,36 @@
       "week": "Semana",
       "month": "Mes",
       "year": "Año"
+    },
+    "allTypes": "Total",
+    "documents": "documentos",
+    "activity": {
+      "title": "Interacciones IA recientes",
+      "allUsers": "Todos los usuarios",
+      "count": "{{count}} interacciones",
+      "loading": "Cargando interacciones...",
+      "empty": "No hay interacciones IA recientes",
+      "refresh": "Actualizar",
+      "range": "{{start}}–{{end}} de {{total}}",
+      "prev": "Página anterior",
+      "next": "Página siguiente",
+      "cols": {
+        "user": "Usuario",
+        "question": "Pregunta",
+        "channel": "Canal",
+        "status": "Estado",
+        "date": "Fecha"
+      },
+      "channel": {
+        "text": "Texto",
+        "voice": "Voz"
+      },
+      "status": {
+        "success": "Exitosa",
+        "error": "Error",
+        "no_context": "Sin contexto",
+        "unknown": "Desconocido"
+      }
     }
   },
   "voice": {
@@ -241,7 +257,8 @@
       "dragDrop": "Arrastra y suelta tus archivos aquí",
       "or": "o",
       "select": "Seleccionar archivos",
-      "supported": "Formatos soportados: PDF, DOCX, TXT (Máx. 10MB por archivo)"
+      "supported": "Formatos soportados: PDF, DOCX, TXT (Máx. 10MB por archivo)",
+      "uploading": "Subiendo archivos..."
     },
     "filters": {
       "all": "Todos",
@@ -255,7 +272,9 @@
       "uploadFirst": "Sube tu primer documento arrastrándolo al área superior",
       "noType": "No hay documentos de tipo",
       "viewed": "Documento visto",
-      "view": "Ver documento"
+      "view": "Ver documento",
+      "download": "Descargar",
+      "delete": "Eliminar"
     },
     "pagination": {
       "previous": "Anterior",
@@ -332,7 +351,8 @@
     "stats": {
       "total": "Total Acciones",
       "uploadsThisMonth": "Subidos Este Mes",
-      "errors": "Errores"
+      "errors": "Errores",
+      "successes": "Exitosas"
     },
     "labels": {
       "upload": "Documento subido",
@@ -1178,5 +1198,10 @@
         }
       }
     }
+  },
+  "alerts": {
+    "success": "Listo",
+    "error": "Error",
+    "confirm": "¿Estás seguro?"
   }
 }

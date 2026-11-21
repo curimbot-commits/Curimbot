@@ -1,93 +1,64 @@
-<div class="max-w-7xl mx-auto w-full p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6" role="main" aria-labelledby="dashboard-title">
-  <!-- Header -->
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in-up stagger-1">
+<div class="max-w-7xl mx-auto w-full px-4 py-6 sm:px-6 lg:px-8 lg:py-8 space-y-6 lg:space-y-8" role="main" aria-labelledby="dashboard-title">
+  <!-- Encabezado -->
+  <header class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between animate-fade-in-up">
     <div>
-      <h1 id="dashboard-title" class="text-[#070025] mb-2 text-2xl font-bold">
+      <h1 id="dashboard-title" class="text-2xl sm:text-3xl font-bold tracking-tight text-[#070025]">
         {{ 'dashboard.title' | translate }}
       </h1>
-      <p class="text-gray-600">
+      <p class="mt-1 text-sm sm:text-base text-gray-500">
         {{ isAdmin() ? ('dashboard.subtitleAdmin' | translate) : ('dashboard.subtitleUser' | translate) }}
       </p>
     </div>
+    @if (isAdmin()) {
+      <span class="inline-flex w-fit items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 dark:border-violet-500/30 dark:bg-violet-500/15 dark:text-violet-300">
+        <lucide-angular name="ShieldCheck" class="w-3.5 h-3.5"></lucide-angular>
+        {{ 'dashboard.activity.allUsers' | translate }}
+      </span>
+    }
+  </header>
 
-    <div class="flex gap-2">
-      <button (click)="exportActivities()" [disabled]="isLoadingActivities() || filteredInteractions().length === 0"
-        class="flex items-center gap-2 px-4 py-2 text-white rounded-lg hover:shadow-lg smooth-transition disabled:opacity-50 disabled:cursor-not-allowed"
-        style="background: linear-gradient(to bottom right, #028a5e, #5a058f);" aria-label="Exportar actividades">
-        <lucide-angular name="Download" class="w-5 h-5"></lucide-angular>
-        <span>{{ isAdmin() ? ('dashboard.exportAll' | translate) : ('dashboard.exportMine' | translate) }}</span>
-      </button>
-    </div>
-  </div>
-  
-
-  <!-- Búsqueda -->
-  <div class="relative animate-fade-in-up stagger-2">
-    <!-- input controlado por eventos pasivos, no binding directo para poder hacer debounce -->
-    <input type="text" [value]="searchQuery()" (input)="onSearchInput($event)"
-      class="w-full pl-10 pr-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#02ab74] focus:ring-2 focus:ring-[#02ab74] focus:ring-offset-1 focus:outline-none transition-colors"
-      [placeholder]="isAdmin() ? ('dashboard.searchAdmin' | translate) : ('dashboard.searchUser' | translate)"
-      aria-label="Buscar actividades">
-    <lucide-angular name="Search" class="absolute left-2 top-1/2 -translate-y-1/4 w-5 h-5 text-gray-400"></lucide-angular>
-  </div>
-
-  <!-- Loading y Errores (Stats) -->
-  @if (isLoadingStats()) {
-    <div class="text-center py-8">
-      <div class="inline-flex items-center gap-3">
-        <lucide-angular name="Loader" class="w-6 h-6 text-[#02ab74] spinner"></lucide-angular>
-        <p class="text-gray-600">{{ 'dashboard.loadingStats' | translate }}</p>
-      </div>
-    </div>
-  }
+  <!-- Error de estadísticas -->
   @if (errorStats()) {
-    <div class="bg-red-50 border border-red-200 rounded-lg p-4 animate-scale-in" role="alert">
-      <div class="flex items-center gap-2 mb-2">
-        <lucide-angular name="AlertCircle" class="w-5 h-5 text-red-600"></lucide-angular>
-        <p class="text-red-700 font-medium">{{ errorStats() }}</p>
+    <div class="flex flex-col gap-2 rounded-xl border border-red-200 bg-red-50 p-4 sm:flex-row sm:items-center sm:justify-between animate-scale-in" role="alert">
+      <div class="flex items-center gap-2">
+        <lucide-angular name="AlertCircle" class="w-5 h-5 shrink-0 text-red-600"></lucide-angular>
+        <p class="text-sm font-medium text-red-700">{{ errorStats() }}</p>
       </div>
-      <button (click)="loadStats()" class="mt-2 text-sm text-red-600 underline hover:text-red-800 smooth-transition">
+      <button (click)="loadStats()" class="text-sm font-medium text-red-700 underline-offset-2 hover:underline">
         {{ 'dashboard.retry' | translate }}
       </button>
     </div>
   }
 
-  <!-- Stats Tipo Documento -->
-  @if (stats() && !isLoadingStats() && showContent()) {
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-      @for (type of documentTypes; track type; let i = $index) {
-        <button (click)="setActiveFilter(type)" [ngClass]="[
-          'p-4 rounded-xl border-2 smooth-transition card-hover animate-fade-in-up',
-          'stagger-' + (i + 3),
-          activeFilter() === type 
-            ? 'border-' + documentColors[type] + '-500 bg-' + documentColors[type] + '-50 shadow-md scale-105' 
-            : 'border-gray-200 bg-white hover:border-' + documentColors[type] + '-300'
-        ]">
-          <div class="flex items-center gap-3">
-            <div [ngClass]="activeFilter() === type 
-              ? 'p-2 rounded-lg bg-' + documentColors[type] + '-500 smooth-transition' 
-              : 'p-2 rounded-lg bg-' + documentColors[type] + '-100 smooth-transition'">
-              <lucide-angular name="FileText"
-                [class]="activeFilter() === type ? 'w-5 h-5 text-white' : 'w-5 h-5 text-' + documentColors[type] + '-600'">
-              </lucide-angular>
-            </div>
-            <div class="text-left">
-              <p class="text-sm text-gray-600">{{ type.toUpperCase() }}</p>
-              <p [ngClass]="activeFilter() === type 
-                ? 'text-xl font-semibold text-' + documentColors[type] + '-600 smooth-transition' 
-                : 'text-xl font-semibold text-[#070025] smooth-transition'">
-                {{ getDocumentCountByType(type) }}
-              </p>
-            </div>
-          </div>
-        </button>
-      }
-    </div>
-  }
-
-  <!-- Componente Dumb: Gráficos -->
   @if (showContent()) {
-    <app-dashboard-charts
+    <!-- Tarjetas por tipo de documento (filtran los gráficos) -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" [attr.aria-label]="'dashboard.byFileType' | translate">
+      @for (type of documentTypes; track type) {
+        @if (isLoadingStats()) {
+          <div class="h-[88px] rounded-2xl border border-gray-100 bg-gray-50 animate-pulse"></div>
+        } @else {
+          <button type="button" (click)="setActiveFilter(type)" [attr.aria-pressed]="activeFilter() === type"
+            [class]="'group flex items-center gap-3 rounded-2xl border bg-white p-4 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' +
+              (activeFilter() === type ? typeStyles[type].active : 'border-gray-200 hover:border-gray-300')">
+            <span [class]="'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors ' +
+              (activeFilter() === type ? typeStyles[type].iconActive : typeStyles[type].icon)">
+              <lucide-angular [name]="type === 'all' ? 'Layers' : 'FileText'" class="w-5 h-5"></lucide-angular>
+            </span>
+            <span class="min-w-0">
+              <span class="block text-xs font-medium uppercase tracking-wide text-gray-500">
+                {{ type === 'all' ? ('dashboard.allTypes' | translate) : type.toUpperCase() }}
+              </span>
+              <span class="block text-2xl font-semibold leading-tight text-[#070025]">
+                {{ getDocumentCountByType(type) }}
+              </span>
+            </span>
+          </button>
+        }
+      }
+    </section>
+
+    <!-- Gráficos -->
+    <app-dashboard-charts class="block"
       [pieData]="pieData()"
       [chartData]="chartData()"
       [activeFilter]="activeFilter()"
@@ -97,60 +68,14 @@
       [isLoadingChart]="isLoadingChart()"
       (timeRangeChange)="onTimeRangeChange($event)">
     </app-dashboard-charts>
-  }
 
-  <!-- Componente Dumb: Actividades Recientes -->
-  @if (showContent()) {
-    <app-recent-activities
+    <!-- Interacciones IA recientes -->
+    <app-recent-activities class="block"
       [interactions]="recentInteractions()"
-      [searchQuery]="searchQuery()"
-      [activeFilter]="activeFilter()"
       [isAdmin]="isAdmin()"
       [isLoading]="isLoadingActivities()"
       [usersList]="users()"
       (refresh)="loadRecentActivities()">
     </app-recent-activities>
-  }
-
-  <!-- Stats Globales -->
-  @if (stats() && !isLoadingStats() && showContent()) {
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="p-4 rounded-xl border border-blue-200 bg-blue-50 card-hover animate-fade-in-up stagger-3">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-blue-700 font-medium mb-1">
-              {{ isAdmin() ? ('dashboard.stats.todayGlobal' | translate) : ('dashboard.stats.today' | translate) }}
-            </p>
-            <p class="text-3xl font-bold text-blue-900">{{ stats()?.documentsToday || 0 }}</p>
-            <p class="text-xs text-blue-600 mt-1">{{ 'dashboard.stats.docsUploaded' | translate }}</p>
-          </div>
-          <lucide-angular name="CalendarDays" class="w-10 h-10 text-blue-600 opacity-50"></lucide-angular>
-        </div>
-      </div>
-      <div class="p-4 rounded-xl border border-green-200 bg-green-50 card-hover animate-fade-in-up stagger-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-green-700 font-medium mb-1">
-              {{ isAdmin() ? ('dashboard.stats.thisWeekGlobal' | translate) : ('dashboard.stats.thisWeek' | translate) }}
-            </p>
-            <p class="text-3xl font-bold text-green-900">{{ stats()?.documentsThisWeek || 0 }}</p>
-            <p class="text-xs text-green-600 mt-1">{{ 'dashboard.stats.docsUploaded' | translate }}</p>
-          </div>
-          <lucide-angular name="Calendar" class="w-10 h-10 text-green-600 opacity-50"></lucide-angular>
-        </div>
-      </div>
-      <div class="p-4 rounded-xl border border-purple-200 bg-purple-50 card-hover animate-fade-in-up stagger-5">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-purple-700 font-medium mb-1">
-              {{ isAdmin() ? ('dashboard.stats.storageGlobal' | translate) : ('dashboard.stats.storage' | translate) }}
-            </p>
-            <p class="text-3xl font-bold text-purple-900">{{ formatBytes(stats()?.totalSize || 0) }}</p>
-            <p class="text-xs text-purple-600 mt-1">{{ 'dashboard.stats.spaceUsed' | translate }}</p>
-          </div>
-          <lucide-angular name="HardDrive" class="w-10 h-10 text-purple-600 opacity-50"></lucide-angular>
-        </div>
-      </div>
-    </div>
   }
 </div>

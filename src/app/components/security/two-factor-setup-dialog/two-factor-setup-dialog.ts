@@ -1,5 +1,5 @@
 /* eslint-disable @angular-eslint/prefer-inject */
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { UserService } from 'src/app/services/api/user-service';
 
@@ -43,10 +43,15 @@ export class TwoFactorSetupDialog implements OnChanges {
   qrCodeUrl = '';
   backupCodes: string[] = [];
 
+  /** Para vaciar las casillas tras un código incorrecto. */
+  @ViewChild(NgOtpInputComponent) private otpInput?: NgOtpInputComponent;
+
   constructor(
     private userService: UserService,
     private alertService: AlertService,
     private translate: TranslateService,
+    // El padre (Security) es OnPush: los cambios hechos en callbacks async deben marcarse.
+    private cdr: ChangeDetectorRef,
   ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -73,6 +78,7 @@ export class TwoFactorSetupDialog implements OnChanges {
       next: (response) => {
         this.secretKey = response.secret;
         this.qrCodeUrl = response.qr_code;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.toast(error?.error?.detail || this.t('security.alerts.setup2faError'), 'error');
@@ -141,6 +147,7 @@ export class TwoFactorSetupDialog implements OnChanges {
           this.backupCodes = response.backup_codes || [];
           this.toast(this.t('security.alerts.codeVerified'), 'success');
           this.step = 'backup';
+          this.cdr.markForCheck();
         },
         error: () => this.onWrongCode(),
       });
@@ -150,6 +157,7 @@ export class TwoFactorSetupDialog implements OnChanges {
           this.busy = false;
           this.backupCodes = response.backup_codes || [];
           this.step = 'backup';
+          this.cdr.markForCheck();
         },
         error: () => this.onWrongCode(),
       });
@@ -168,21 +176,23 @@ export class TwoFactorSetupDialog implements OnChanges {
   private onWrongCode(): void {
     this.busy = false;
     this.code = '';
+    this.otpInput?.setValue('');
     this.toast(this.t('security.alerts.wrongCode'), 'error');
+    this.cdr.markForCheck();
   }
 
   copySecret(): void {
     navigator.clipboard.writeText(this.secretKey);
     this.copiedSecret = true;
     this.toast(this.t('security.alerts.secretCopied'), 'success');
-    setTimeout(() => this.copiedSecret = false, 2000);
+    setTimeout(() => { this.copiedSecret = false; this.cdr.markForCheck(); }, 2000);
   }
 
   copyBackupCodes(): void {
     navigator.clipboard.writeText(this.backupCodes.join('\n'));
     this.copiedBackup = true;
     this.toast(this.t('security.alerts.backupCopied'), 'success');
-    setTimeout(() => this.copiedBackup = false, 2000);
+    setTimeout(() => { this.copiedBackup = false; this.cdr.markForCheck(); }, 2000);
   }
 
   downloadBackupCodes(): void {

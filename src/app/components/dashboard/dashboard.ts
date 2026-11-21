@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnDestroy,
   OnInit,
   inject,
   signal,
@@ -8,20 +9,11 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
-import {
-  Subject,
-  takeUntil,
-  finalize,
-  debounceTime,
-  distinctUntilChanged,
-  forkJoin,
-} from 'rxjs';
+import { Subject, takeUntil, finalize, forkJoin } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AnalyticsService } from '../../services/api/analytics.service';
-import { DocumentService } from '../../services/api/document.service';
 import { Auth as AuthService } from '../../components/authentication/auth/auth';
 import { UserService } from 'src/app/services/api/user-service';
 import {
@@ -32,32 +24,28 @@ import {
   TimeRange,
   UserExtended,
 } from 'src/app/domain/models/document.model';
-import { User, UserRole } from 'src/app/domain/models/user.model';
+import { UserRole } from 'src/app/domain/models/user.model';
 
 import { DashboardChartsComponent } from './dashboard-charts/dashboard-charts';
 import { RecentActivitiesComponent } from './recent-activities/recent-activities';
-import { ProfileAvatar } from 'src/app/shared/components/profile-avatar/profile-avatar';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     LucideAngularModule,
     TranslateModule,
     DashboardChartsComponent,
     RecentActivitiesComponent,
-    ProfileAvatar
-],
+  ],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Dashboard implements OnInit {
+export class Dashboard implements OnInit, OnDestroy {
   // ==================== DEPENDENCIAS ====================
   private analyticsService = inject(AnalyticsService);
-  private documentService = inject(DocumentService);
   private authService = inject(AuthService);
   private router = inject(Router);
   private userService = inject(UserService);
@@ -69,7 +57,6 @@ export class Dashboard implements OnInit {
 
   activeFilter = signal<DocumentType | 'all'>('all');
   timeRange = signal<TimeRange>('week');
-  searchQuery = signal<string>('');
 
   stats = signal<DashboardStats | null>(null);
   chartData = signal<ChartDataPoint[]>([]);
@@ -79,7 +66,6 @@ export class Dashboard implements OnInit {
   isLoadingStats = signal<boolean>(false);
   isLoadingChart = signal<boolean>(false);
   isLoadingActivities = signal<boolean>(false);
-  isRefreshing = signal<boolean>(false);
 
   errorStats = signal<string | null>(null);
   errorChart = signal<string | null>(null);
@@ -116,30 +102,15 @@ export class Dashboard implements OnInit {
     }
   });
 
-  filteredInteractions = computed(() => {
-    let list = this.recentInteractions();
-    const query = this.searchQuery().trim().toLowerCase();
-
-    if (query) {
-      list = list.filter(
-        (i) =>
-          (i.user_name || '').toLowerCase().includes(query) ||
-          (i.question || '').toLowerCase().includes(query) ||
-          (i.answer || '').toLowerCase().includes(query)
-      );
-    }
-    return list;
-  });
-
   documentTypes: (DocumentType | 'all')[] = ['all', 'pdf', 'txt', 'docx'];
-  documentColors: Record<DocumentType | 'all', string> = {
-    pdf: 'red',
-    txt: 'green',
-    docx: 'blue',
-    all: 'purple',
+  /** Clases completas y estáticas: Tailwind v4 no genera clases construidas en tiempo de ejecución. */
+  readonly typeStyles: Record<DocumentType | 'all', { active: string; icon: string; iconActive: string }> = {
+    all: { active: 'border-violet-400 ring-1 ring-violet-200 focus-visible:ring-violet-400', icon: 'bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300', iconActive: 'bg-violet-600 text-white' },
+    pdf: { active: 'border-red-400 ring-1 ring-red-200 focus-visible:ring-red-400', icon: 'bg-red-50 text-red-600', iconActive: 'bg-red-500 text-white' },
+    txt: { active: 'border-emerald-400 ring-1 ring-emerald-200 focus-visible:ring-emerald-400', icon: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300', iconActive: 'bg-emerald-500 text-white' },
+    docx: { active: 'border-blue-400 ring-1 ring-blue-200 focus-visible:ring-blue-400', icon: 'bg-blue-50 text-blue-600', iconActive: 'bg-blue-500 text-white' },
   };
 
-  private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
 
   // ==================== LIFECYCLE ====================
@@ -148,12 +119,6 @@ export class Dashboard implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-
-    this.searchSubject
-      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
-      .subscribe((query) => {
-        this.searchQuery.set(query);
-      });
 
     this.checkAdminStatus();
   }
@@ -293,11 +258,6 @@ export class Dashboard implements OnInit {
       });
   }
 
-  onSearchInput(event: Event): void {
-    const input = (event.target as HTMLInputElement).value;
-    this.searchSubject.next(input);
-  }
-
   setActiveFilter(filter: DocumentType | 'all') {
     this.activeFilter.set(filter);
   }
@@ -321,70 +281,11 @@ export class Dashboard implements OnInit {
   getColorValue(type: string): string {
     const c: Record<string, string> = {
       pdf: '#ef4444',
-      txt: '#02ab74',
+      txt: '#10b981',
       docx: '#3b82f6',
       all: '#7209b7',
     };
     return c[type] ?? '#6b7280';
   }
 
-  formatBytes(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${Math.round((bytes / Math.pow(k, i)) * 100) / 100} ${sizes[i]}`;
-  }
-
-  exportActivities(): void {
-    const headers = this.isAdmin()
-      ? ['Usuario', 'Pregunta', 'Canal', 'Estado', 'Confianza', 'Fecha', 'Hora']
-      : ['Pregunta', 'Canal', 'Estado', 'Confianza', 'Fecha', 'Hora'];
-
-    const data = this.filteredInteractions().map((i) => {
-      const date = new Date(i.timestamp);
-      const confidence =
-        i.confidence !== null ? `${Math.round(i.confidence * 100)}%` : '—';
-      const row = [
-        ...(this.isAdmin() ? [i.user_name || ''] : []),
-        i.question || '',
-        i.channel || '',
-        i.status || '',
-        confidence,
-        i.timestamp ? date.toLocaleDateString() : '',
-        i.timestamp ? date.toLocaleTimeString() : '',
-      ];
-      return row;
-    });
-
-    const escapeCSV = (field: any) => {
-      if (!field) return '';
-      const strField = String(field);
-      if (
-        strField.includes(';') ||
-        strField.includes('"') ||
-        strField.includes('\n')
-      ) {
-        return `"${strField.replace(/"/g, '""')}"`;
-      }
-      return strField;
-    };
-
-    const csvContent = [
-      headers.map(escapeCSV).join(';'),
-      ...data.map((row) => row.map(escapeCSV).join(';')),
-    ].join('\n');
-
-    const blob = new Blob(['\uFEFF' + csvContent], {
-      type: 'text/csv;charset=utf-8;',
-    });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `interacciones_ia_${Date.now()}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  }
 }
